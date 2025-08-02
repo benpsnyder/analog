@@ -14,9 +14,8 @@ import {
   renderServerComponent,
 } from './server-component-render';
 
-if (import.meta.env.PROD) {
-  enableProdMode();
-}
+// Note: Production mode should be enabled by the consuming application
+// Libraries should not directly access import.meta.env or enable production mode
 
 /**
  * Returns a function that accepts the navigation URL,

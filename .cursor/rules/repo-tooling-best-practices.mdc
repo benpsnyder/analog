@@ -1,0 +1,255 @@
+
+---
+description: Repository Tooling Best Practices
+globs:
+alwaysApply: true
+---
+## Overview
+This document enforces modern best practices for web development tooling across the repository. All code must use the latest stable APIs (Vite 7.0+, Nitro 2.12+, H3 1.15+), prioritize type safety, avoid deprecations, and ensure maintainability.
+
+## Vite Best Practices
+Leverage Vite's Environment API for variable access and configurations.
+
+### MANDATORY: Environment API Usage
+- **ALWAYS** use Environment API for variables and configs.
+- **NEVER** use legacy patterns like direct `process.env`.
+- **REQUIRED**: Strongly type variables in `types/env.d.ts`.
+- **REQUIRED**: Implement runtime-safe access with fallbacks.
+
+#### ✅ CORRECT: Typed Access
+```typescript
+const debugLevel = import.meta.env.DEBUG as '0' | '1' | '2' | undefined;
+
+const getDebugEnv = (): string | undefined => {
+  try {
+    if (typeof import.meta !== 'undefined' && import.meta.env) {
+      return import.meta.env.DEBUG;
+    }
+  } catch {}
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env.DEBUG;
+  }
+  return undefined;
+};
+```
+
+#### ❌ FORBIDDEN: Unsafe Access
+```typescript
+const debug = import.meta.env.DEBUG; // Untyped
+const debug = process.env.DEBUG; // Dot notation
+```
+
+### Configuration
+#### ✅ CORRECT: Environment Config
+```typescript
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  environments: {
+    client: {
+      define: {
+        'globalThis.DEBUG_CLIENT': JSON.stringify(process.env.DEBUG ?? false),
+      },
+    },
+    ssr: {
+      define: {
+        'globalThis.DEBUG_SERVER': JSON.stringify(process.env.DEBUG ?? false),
+      },
+    },
+  },
+});
+```
+
+#### ❌ FORBIDDEN: Legacy Config
+```typescript
+export default defineConfig({
+  define: {
+    'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
+  },
+});
+```
+
+## Nitro Best Practices
+Use modern Nitro APIs for plugins and handlers.
+
+### MANDATORY: API Usage
+- **ALWAYS** use `defineNitroPlugin` for plugins.
+- **ALWAYS** use `defineEventHandler` for routes.
+- **NEVER** use deprecated v1 patterns.
+- **REQUIRED**: Strongly type plugins and configs.
+
+#### ✅ CORRECT: Typed Plugin
+```typescript
+import type { NitroApp } from 'nitropack';
+import type { H3Event } from 'h3';
+
+export default defineNitroPlugin((nitroApp: NitroApp) => {
+  nitroApp.hooks.hook('request', async (event: H3Event) => {});
+  nitroApp.hooks.hook('beforeResponse', async (event: H3Event, response: { body?: unknown }) => {});
+});
+```
+
+#### ❌ FORBIDDEN: Untyped Plugin
+```typescript
+export default defineNitroPlugin((nitroApp) => {
+  nitroApp.hooks.hook('request', (event) => {});
+});
+```
+
+### Configuration
+#### ✅ CORRECT: Typed Config
+```typescript
+import type { NitroConfig } from 'nitropack';
+
+const nitroConfig: NitroConfig = {
+  logLevel: import.meta.env.DEBUG ? 3 : 0,
+  timing: !!import.meta.env.DEBUG,
+  experimental: { wasm: true },
+  runtimeConfig: { debug: import.meta.env.DEBUG },
+};
+```
+
+## H3 Best Practices
+Prioritize type safety and error handling in H3 handlers.
+
+### MANDATORY: API Usage
+- **ALWAYS** use `defineEventHandler` for handlers.
+- **ALWAYS** type requests/responses.
+- **NEVER** use deprecated utilities.
+- **REQUIRED**: Include error handling.
+
+#### ✅ CORRECT: Typed Handler
+```typescript
+import { defineEventHandler, readBody, createError, setHeader } from 'h3';
+
+interface RequestBody { data: string; userId?: string; }
+interface ResponseData { success: boolean; result?: unknown; error?: string; }
+
+export default defineEventHandler(async (event): Promise<ResponseData> => {
+  try {
+    const body = await readBody<RequestBody>(event);
+    if (!body.data) throw createError({ statusCode: 400, statusMessage: 'Missing data' });
+    setHeader(event, 'Content-Type', 'application/json');
+    return { success: true, result: body.data };
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown' };
+  }
+});
+```
+
+#### ❌ FORBIDDEN: Untyped Handler
+```typescript
+export default defineEventHandler(async (event) => {
+  const body = await readBody(event);
+  return body;
+});
+```
+
+### Utilities
+#### ✅ REQUIRED: Modern Utilities
+```typescript
+import {
+  getQuery, getRouterParams, readBody, readMultipartFormData,
+  setHeader, setHeaders, setCookie,
+  createError, isError, assertMethod,
+} from 'h3';
+```
+
+#### ❌ FORBIDDEN: Deprecated
+```typescript
+import { useQuery } from 'h3'; // Use getQuery
+import { useCookies } from 'h3'; // Use getCookie/setCookie
+```
+
+## TypeScript Best Practices
+- **ALWAYS** use explicit types for APIs.
+- **NEVER** use `any`; prefer `unknown`.
+- **REQUIRED**: Type environment variables and plugins.
+
+#### ✅ REQUIRED: Strong Types
+```typescript
+interface ImportMetaEnv {
+  readonly DEBUG?: '0' | '1' | '2';
+  readonly NODE_ENV?: 'development' | 'production' | 'test';
+}
+
+interface DebugConfig {
+  level: 0 | 1 | 2;
+  enableServerTiming: boolean;
+  enableFileOutput: boolean;
+}
+
+type ApiResponse<T = unknown> = {
+  success: boolean;
+  data?: T;
+  error?: string;
+  timestamp: number;
+};
+```
+
+#### ❌ FORBIDDEN: Weak Types
+```typescript
+function processData(data: any): any {}
+const config = {};
+function handler(event) {}
+```
+
+## Deprecation Policy
+- **IMMEDIATELY** replace deprecated APIs.
+- **NEVER** introduce deprecated code.
+- **REQUIRED**: Regular audits.
+
+### Avoid Common Deprecations
+#### Vite
+```typescript
+process.env.NODE_ENV; // Use import.meta.env.NODE_ENV
+```
+
+#### Nitro
+```typescript
+import { createNitro } from 'nitropack/dist/nitro'; // Use v2 API
+```
+
+#### H3
+```typescript
+import { useBody } from 'h3'; // Use readBody
+```
+
+## Development Workflow
+### Pre-Commit Checks
+1. Type check: `nx run-many --target=typecheck --all`
+2. Lint: `nx run-many --target=lint --all`
+3. API audit: Scan deprecations
+4. Environment test: Verify configs
+
+### Build Requirements
+1. Zero warnings
+2. Strict TypeScript
+3. Bundle analysis
+4. Performance monitoring
+
+### Testing Requirements
+1. Environment tests
+2. SSR/CSR verification
+3. Handler tests
+4. Error scenarios
+
+## Enforcement
+### Automated
+- ESLint for deprecations
+- Strict TypeScript
+- CI/CD failures
+- Git hooks
+
+### Code Review
+1. API/type checks
+2. Environment validation
+3. Doc updates
+
+### Consequences
+- Build failures
+- PR blocks
+- Immediate fixes
+- Doc updates
+
+**MANDATORY: All code must comply. No exceptions.**

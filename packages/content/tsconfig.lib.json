@@ -5,7 +5,7 @@
     "declaration": true,
     "declarationMap": true,
     "inlineSources": true,
-    "types": [],
+    "types": ["node"],
     "allowJs": true
   },
   "exclude": ["jest.config.ts", "**/*.test.ts", "**/*.spec.ts"],

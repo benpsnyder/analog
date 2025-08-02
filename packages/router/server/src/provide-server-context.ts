@@ -18,9 +18,8 @@ export function provideServerContext({
 }): StaticProvider[] {
   const baseUrl = getBaseUrl(req);
 
-  if (import.meta.env.DEV) {
-    ɵresetCompiledComponents();
-  }
+  // Note: Component reset should be handled by the consuming application in dev mode
+  // Libraries should not directly access import.meta.env
 
   return [
     { provide: SERVER_CONTEXT, useValue: 'ssr-analog' },

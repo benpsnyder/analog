@@ -35,3 +35,6 @@ export function injectBaseURL() {
 export function injectAPIPrefix() {
   return inject(API_PREFIX);
 }
+
+// Re-export environment tokens
+export * from './environment';

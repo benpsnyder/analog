@@ -1,0 +1,216 @@
+---
+description: Debug Strategy for ESM Bundling and Dev Server Tooling with DEBUG Flag
+alwaysApply: true
+---
+## Overview
+This document enforces best practices for implementing debug modes in the repository using a global DEBUG flag. All debug code must be tree-shakeable in production, strongly typed, and compatible with Vite 7+ and Nitro 2.12+. Prioritize structured logging, performance tracking, and reproducible testing while ensuring zero runtime cost in production.
+
+## Global Debug Flag
+- **ALWAYS** use `import.meta.env.DEBUG` with typed values: `'0'` (production, no output), `'1'` (basic logging), `'2'` (verbose with dumps).
+- **NEVER** hardcode debug flags; use environment-specific injections via Vite's Environment API.
+- **REQUIRED**: Leverage `@analogjs/platform` for typed debug utilities and environment detection.
+
+#### ✅ CORRECT: Typed Flag Usage
+```typescript
+import { debug, trace, isClient, isServer, isSSR, isCSR, debugClient, debugServer, debugSSR, debugCSR } from '@analogjs/platform';
+
+const debugLevel = import.meta.env.DEBUG as '0' | '1' | '2' | undefined;
+const isDevMode = import.meta.env.DEV;
+const isSSRMode = import.meta.env.SSR;
+
+if (isClient()) debugClient('Client operation');
+if (isServer()) debugServer('Server operation');
+```
+
+#### ❌ FORBIDDEN: Untyped or Hardcoded
+```typescript
+const debug = console.log; // Untyped, no flag check
+if (process.env.DEBUG) {} // Legacy access
+```
+
+## Debug Patterns
+### Conditional Logging and Tracing
+- **ALWAYS** guard debug statements with `DEBUG` checks for tree-shaking.
+- **REQUIRED**: Use consistent prefixes like `[DEBUG]`, `[TRACE]`, `[PERF]`.
+
+#### ✅ CORRECT: Guarded Logging
+```typescript
+const debug = (...args: unknown[]) => DEBUG && console.log('[DEBUG]', ...args);
+const trace = (label: string, data: unknown) => DEBUG && console.trace(`[TRACE:${label}]`, data);
+```
+
+### Performance Tracking
+- **ALWAYS** use `performance.mark` and `performance.measure` for metrics.
+- **REQUIRED**: Log durations only in debug mode.
+
+#### ✅ CORRECT: Perf Tracking
+```typescript
+const perfMark = (name: string) => DEBUG && performance.mark(name);
+const perfMeasure = (name: string, start: string) => {
+  if (!DEBUG) return;
+  performance.measure(name, start);
+  console.log(`[PERF] ${name}: ${performance.getEntriesByName(name)[0].duration.toFixed(2)}ms`);
+};
+```
+
+### Bundle Analysis
+- **REQUIRED**: Track transformations and dump files in verbose mode.
+
+#### ✅ CORRECT: Analysis
+```typescript
+if (DEBUG === '2') {
+  debug('Transform:', { file: id, format, size: code.length });
+  writeFileSync(`debug/transform-${Date.now()}.js`, code);
+}
+```
+
+### Dev Server Debugging
+- **ALWAYS** log requests/responses in middleware for dev servers.
+
+#### ✅ CORRECT: Server Logging
+```typescript
+if (DEBUG) {
+  server.use((req, res, next) => {
+    debug('Request:', req.method, req.url);
+    const start = Date.now();
+    res.on('finish', () => debug('Response:', req.url, res.statusCode, `${Date.now() - start}ms`));
+    next();
+  });
+}
+```
+
+## Reproducible Test Strategy
+### Snapshot Testing
+- **REQUIRED**: Capture outputs as JSON snapshots in debug mode.
+
+#### ✅ CORRECT: Snapshots
+```typescript
+if (DEBUG) {
+  const snapshot = { timestamp: Date.now(), env: process.env, output: bundleOutput };
+  writeFileSync(`debug/snapshot-${testName}.json`, JSON.stringify(snapshot, null, 2));
+}
+```
+
+### Deterministic Builds
+- **ALWAYS** enforce deterministic chunking in debug.
+
+#### ✅ CORRECT: Deterministic Config
+```typescript
+if (DEBUG) {
+  config.build.rollupOptions = {
+    ...config.build.rollupOptions,
+    output: { manualChunks: deterministicChunking, chunkFileNames: '[name]-[hash:8].js' }
+  };
+}
+```
+
+### Debug Commands
+- Use environment variables for modes:
+  ```bash
+  # Basic debug
+  DEBUG=1 nx build package-name
+  # Verbose
+  DEBUG=2 nx test package-name --runInBand
+  # Production
+  DEBUG=0 nx build package-name
+  ```
+
+## Nitro Debug Patterns
+### Configuration
+- **REQUIRED**: Set log levels and timing based on DEBUG.
+
+#### ✅ CORRECT: Nitro Config
+```typescript
+import type { NitroConfig } from 'nitropack';
+
+const nitroConfig: NitroConfig = {
+  logLevel: DEBUG ? 3 : 0,
+  timing: !!DEBUG,
+  runtimeConfig: { debug: DEBUG }
+};
+```
+
+### Plugin Debugging
+- **ALWAYS** hook into lifecycle events for logging.
+
+#### ✅ CORRECT: Nitro Plugin
+```typescript
+import type { NitroApp } from 'nitropack';
+
+export default defineNitroPlugin((nitroApp: NitroApp) => {
+  if (!DEBUG) return;
+  nitroApp.hooks.hook('request', (event) => { perfMark(`request:${event.path}`); debug('Request:', event.path); });
+  nitroApp.hooks.hook('beforeResponse', (event, { body }) => { perfMeasure(`response:${event.path}`, `request:${event.path}`); });
+  nitroApp.hooks.hook('error', (error, { event }) => { console.error('[ERROR]', event?.path, error); });
+});
+```
+
+### Storage Debugging
+- **REQUIRED**: Wrap storage ops with debug logs.
+
+#### ✅ CORRECT: Debug Storage
+```typescript
+const debugStorage = {
+  async getItem(key: string) {
+    const value = await storage.getItem(key);
+    debug('[STORAGE GET]', { key, found: !!value });
+    return value;
+  }
+};
+```
+
+## Vite Environment API Compatibility
+- **ALWAYS** use typed environment vars and detection functions.
+- **REQUIRED**: Define client/server-specific debug flags.
+
+#### ✅ CORRECT: Env Detection
+```typescript
+if (isSSR()) debugSSR('SSR rendering');
+```
+
+## Debug Utilities
+- **ALWAYS** include assertions, graph dumps, and route debugging in verbose mode.
+
+#### ✅ CORRECT: Utilities
+```typescript
+const assert = (condition: boolean, message: string) => DEBUG && !condition && throw new Error(message);
+const dumpModuleGraph = (graph: ModuleGraph) => DEBUG && writeFileSync('debug/module-graph.dot', generateDotGraph(graph));
+```
+
+## Implementation Guidelines
+1. **Zero-Cost**: Ensure debug code is eliminated in prod builds.
+2. **Structured Output**: Consistent prefixes and JSON dumps.
+3. **File Dumps**: Use `debug/` directory.
+4. **Source Maps**: Enable in debug.
+5. **Error Context**: Full stacks on errors.
+
+## Development Workflow
+### Pre-Commit Checks
+1. Type check with debug flags.
+2. Lint for unguarded debug statements.
+3. Audit tree-shaking.
+
+### Build Requirements
+1. Zero debug output in prod.
+2. Verify snapshots in tests.
+
+### Testing Requirements
+1. Test all DEBUG levels.
+2. Validate SSR/CSR debug.
+
+## Enforcement
+### Automated
+- ESLint rules for debug guards.
+- CI failures on prod debug leaks.
+- Git hooks.
+
+### Code Review
+1. Verify tree-shaking.
+2. Check typing and compatibility.
+
+### Consequences
+- Build failures.
+- PR blocks.
+- Immediate fixes.
+
+**MANDATORY: All debug implementations must comply. No exceptions.**

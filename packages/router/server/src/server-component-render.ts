@@ -36,9 +36,20 @@ export function serverComponentRequest(serverContext: ServerContext) {
   return serverComponentId;
 }
 
-const components = import.meta.glob([
-  '/src/server/components/**/*.{ts,analog,ag}',
-]);
+// Note: Component globbing should be handled by the consuming application
+// Libraries cannot use import.meta.glob directly
+// The consuming application should provide a component map through configuration
+let components: Record<string, () => Promise<any>> = {};
+
+/**
+ * Set the server components map. This should be called by the consuming application
+ * with the result of import.meta.glob() or a similar component loading mechanism.
+ */
+export function setServerComponents(
+  componentMap: Record<string, () => Promise<any>>,
+) {
+  components = componentMap;
+}
 
 export async function renderServerComponent(
   url: string,

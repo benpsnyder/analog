@@ -2,6 +2,7 @@ import { inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import type { Route } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { injectAnalogPublicBaseURL } from '@analogjs/router/tokens';
 
 import { RedirectRouteMeta, RouteConfig, RouteMeta } from './models';
 import { ROUTE_META_TAGS_KEY } from './meta-tags';
@@ -40,11 +41,9 @@ export function toRouteConfig(routeMeta: RouteMeta | undefined): RouteConfig {
       if (ANALOG_PAGE_ENDPOINTS[routeConfig[ANALOG_META_KEY].endpointKey]) {
         const http = inject(HttpClient);
         const url = injectRouteEndpointURL(route);
+        const analogPublicBaseUrl = injectAnalogPublicBaseURL();
 
-        if (
-          !!import.meta.env['VITE_ANALOG_PUBLIC_BASE_URL'] &&
-          (globalThis as any).$fetch
-        ) {
+        if (!!analogPublicBaseUrl && (globalThis as any).$fetch) {
           return (globalThis as any).$fetch(url.pathname);
         }
 

@@ -76,7 +76,7 @@
   "nxCloudAccessToken": "NDRkYzdkYmMtNDI3NS00MDI0LWFkMGQtMmI0Zjc2MTY2YzU0fHJlYWQtb25seQ==",
   "defaultBase": "beta",
   "tui": {
-    "enabled": true,
+    "enabled": false,
     "autoExit": true
   },
   "plugins": [

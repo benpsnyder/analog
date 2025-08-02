@@ -8,7 +8,11 @@ import {
 
 import { from, of } from 'rxjs';
 
-import { injectBaseURL, injectAPIPrefix } from '@analogjs/router/tokens';
+import {
+  injectBaseURL,
+  injectAPIPrefix,
+  injectIsSSR,
+} from '@analogjs/router/tokens';
 
 import { makeCacheKey } from './cache-key';
 
@@ -78,10 +82,8 @@ export function requestContextInterceptor(
   }
 
   // on the client
-  if (
-    !import.meta.env.SSR &&
-    (req.url.startsWith('/') || req.url.includes('/_analog/'))
-  ) {
+  const isSSR = injectIsSSR();
+  if (!isSSR && (req.url.startsWith('/') || req.url.includes('/_analog/'))) {
     // /_analog/ requests are full URLs
     const requestUrl = req.url.includes('/_analog/')
       ? req.url

@@ -187,16 +187,8 @@ function toRoutes(rawRoutes: RawRoute[], files: Files, debug = false): Route[] {
           path: rawRoute.segment,
           loadChildren: () =>
             module!().then((m) => {
-              if (import.meta.env.DEV) {
-                const hasModuleDefault = !!m.default;
-                const hasRedirect = !!m.routeMeta?.redirectTo;
-
-                if (!hasModuleDefault && !hasRedirect) {
-                  console.warn(
-                    `[Analog] Missing default export at ${rawRoute.filename}`,
-                  );
-                }
-              }
+              // Note: Dev mode warnings should be handled by the consuming application
+              // Libraries should not directly access import.meta.env
 
               return [
                 {

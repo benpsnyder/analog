@@ -1,12 +1,13 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "module": "es2020",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "outDir": "../../dist/out-tsc",
     "inlineSourceMap": true,
     "sourceMap": false,
     "declaration": true,
-    "types": [],
+    "types": ["node", "vite/client"],
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "paths": {
@@ -18,7 +19,7 @@
       ]
     }
   },
-  "include": ["**/*.ts"],
+  "include": ["**/*.ts", "../../types/env.d.ts"],
   "exclude": [
     "vite.config.ts",
     "**/*.spec.ts",

@@ -17,7 +17,7 @@ import {
 } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { injectBaseURL } from '@analogjs/router/tokens';
+import { injectBaseURL, injectIsSSR } from '@analogjs/router/tokens';
 import { catchError, map, of, throwError } from 'rxjs';
 
 import { makeCacheKey } from './cache-key';
@@ -88,7 +88,8 @@ export class ServerOnly {
           .pipe(
             map((response) => {
               if (response instanceof HttpResponse) {
-                if (import.meta.env.SSR) {
+                const isSSR = injectIsSSR();
+                if (isSSR) {
                   this.transferState.set(storeKey, response.body);
                 }
 

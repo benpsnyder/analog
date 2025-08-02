@@ -14,7 +14,10 @@
     "lib": ["es2021", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
+    "noPropertyAccessFromIndexSignature": false,
     "baseUrl": ".",
+    "typeRoots": ["./node_modules/@types", "./types"],
+    "types": ["node", "vite/client"],
     "paths": {
       "@analogjs/astro-angular": ["packages/astro-angular/src/index.ts"],
       "@analogjs/content": [

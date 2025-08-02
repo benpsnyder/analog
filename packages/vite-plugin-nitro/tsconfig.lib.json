@@ -3,8 +3,7 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "outDir": "../../dist/out-tsc",
-    "declaration": true,
-    "types": []
+    "declaration": true
   },
   "include": ["src/**/*.ts"],
   "exclude": [

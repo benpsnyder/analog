@@ -13,7 +13,7 @@
       "executor": "nx:run-commands",
       "options": {
         "cwd": "",
-        "command": "start-server-and-test 'nx serve-nitro trpc-app' http://localhost:4205/api/health 'nx run trpc-app-e2e-playwright:vitest'"
+        "command": "start-server-and-test 'nx serve-nitro trpc-app' http://localhost:4205/health 'nx run trpc-app-e2e-playwright:vitest'"
       }
     },
     "lint": {
