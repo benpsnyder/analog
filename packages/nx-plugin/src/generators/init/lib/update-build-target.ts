@@ -46,7 +46,7 @@ export function updateBuildTarget(
       json.projects[schema.project].root = projectConfig.root;
       json.projects[schema.project].sourceRoot = projectConfig.sourceRoot;
       json.projects[schema.project].architect.build = {
-        builder: '@analogjs/platform:vite',
+        builder: '@benpsnyder/analogjs-esm-platform:vite',
         ...commonConfig,
         options: {
           configFile: `${joinPathFragments(
@@ -78,7 +78,7 @@ export function updateBuildTarget(
     }
 
     projectConfig.targets.build = {
-      executor: '@analogjs/platform:vite',
+      executor: '@benpsnyder/analogjs-esm-platform:vite',
       ...commonConfig,
       options: {
         configFile: `${joinPathFragments(

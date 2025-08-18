@@ -9,7 +9,7 @@ import { AsyncPipe, DatePipe, JsonPipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Note } from '../../note';
 import { catchError, of, shareReplay, Subject, switchMap, take } from 'rxjs';
-import { waitFor } from '@analogjs/trpc';
+import { waitFor } from '@benpsnyder/analogjs-esm-trpc';
 import { TRPCClientError } from '@trpc/client';
 import { AppRouter } from '../../server/trpc/routers';
 

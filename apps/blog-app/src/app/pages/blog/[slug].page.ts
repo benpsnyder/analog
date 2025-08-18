@@ -2,8 +2,8 @@ import {
   ContentRenderer,
   injectContent,
   MarkdownComponent,
-} from '@analogjs/content';
-import { RouteMeta } from '@analogjs/router';
+} from '@benpsnyder/analogjs-esm-content';
+import { RouteMeta } from '@benpsnyder/analogjs-esm-router';
 import { AsyncPipe, JsonPipe, NgFor, NgIf } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { map } from 'rxjs';

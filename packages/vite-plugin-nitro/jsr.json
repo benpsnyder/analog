@@ -1,0 +1,30 @@
+{
+  "$schema": "https://jsr.io/schema/config-file.v1.json",
+  "name": "@benpsnyder/analogjs-esm-vite-plugin-nitro",
+  "version": "2.0.0-alpha.16",
+  "description": "A Vite plugin for adding a nitro API server - ESM edition",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/benpsnyder/analog.git"
+  },
+  "exports": {
+    ".": "./src/jsr-types.ts",
+    "./package.json": "./package.json"
+  },
+  "publish": {
+    "exclude": [
+      "**/*.spec.ts",
+      "**/*.test.ts",
+      "**/test-setup.ts",
+      "**/__tests__/**",
+      "**/coverage/**",
+      "**/node_modules/**",
+      "**/*.map",
+      "migrations/**",
+      "tsconfig.*.json",
+      "jest.config.*",
+      "vite.config.*"
+    ]
+  }
+}

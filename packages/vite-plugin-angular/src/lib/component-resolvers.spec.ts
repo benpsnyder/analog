@@ -31,7 +31,7 @@ const thePathsAreEqual = (actual: string[], expected: string[]) => {
 };
 
 describe('component-resolvers', () => {
-  const id = '/path/to/src/app.component.ts';
+  const id = '/path/to/src/app.component';
 
   describe('matcher', () => {
     it('should handle single line styleUrls', () => {
@@ -216,7 +216,7 @@ describe('component-resolvers', () => {
   });
 
   describe('component-resolvers templateUrl', () => {
-    const id = '/path/to/src/app.component.ts';
+    const id = '/path/to/src/app.component';
 
     describe('matcher', () => {
       it('should handle templateUrls with single quotes', () => {

@@ -19,7 +19,7 @@ export function updateTestTarget(
       angularJsonPath,
       (json) => {
         json.projects[schema.project].architect.test = {
-          builder: '@analogjs/vitest-angular:test',
+          builder: '@benpsnyder/analogjs-esm-vitest-angular:test',
         };
 
         return json;
@@ -40,7 +40,7 @@ export function updateTestTarget(
     }
 
     projectConfig.targets.test = {
-      executor: '@analogjs/vitest-angular:test',
+      executor: '@benpsnyder/analogjs-esm-vitest-angular:test',
     };
 
     updateProjectConfiguration(tree, schema.project, projectConfig);

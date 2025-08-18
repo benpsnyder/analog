@@ -1,4 +1,4 @@
-import '@analogjs/vitest-angular/setup-zone';
+import '@benpsnyder/analogjs-esm-vitest-angular/setup-zone';
 
 /**
  * Initialize TestBed for all tests inside of content

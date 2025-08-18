@@ -8,7 +8,9 @@
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:ng-packagr",
-      "outputs": ["{workspaceRoot}/node_modules/@analogjs/router"],
+      "outputs": [
+        "{workspaceRoot}/node_modules/@benpsnyder/analogjs-esm-router"
+      ],
       "options": {
         "project": "packages/router/ng-package.json"
       },

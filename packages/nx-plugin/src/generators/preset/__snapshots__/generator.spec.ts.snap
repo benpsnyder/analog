@@ -29,7 +29,7 @@ exports[`preset generator > should match project.json 1`] = `
   "tags": ["tag1", "tag2", "type:app"],
   "targets": {
     "build": {
-      "executor": "@analogjs/platform:vite",
+      "executor": "@benpsnyder/analogjs-esm-platform:vite",
       "options": {
         "configFile": "my-app/vite.config.ts",
         "main": "my-app/src/main.ts",
@@ -49,7 +49,7 @@ exports[`preset generator > should match project.json 1`] = `
       "outputs": ["{workspaceRoot}/dist/apps/my-app"]
     },
     "serve": {
-      "executor": "@analogjs/platform:vite-dev-server",
+      "executor": "@benpsnyder/analogjs-esm-platform:vite-dev-server",
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "my-app:build",
@@ -72,7 +72,7 @@ exports[`preset generator > should match project.json 1`] = `
       }
     },
     "test": {
-      "executor": "@analogjs/vitest-angular:test",
+      "executor": "@benpsnyder/analogjs-esm-vitest-angular:test",
       "options": {
         "config": "vite.config.ts"
       }
@@ -94,7 +94,7 @@ exports[`preset generator > should match project.json 1`] = `
 
 exports[`preset generator > should match src/test-setup.ts 1`] = `
 "import '@angular/compiler';
-import '@analogjs/vitest-angular/setup-zone';
+import '@benpsnyder/analogjs-esm-vitest-angular/setup-zone';
 
 import {
   BrowserTestingModule,
@@ -112,7 +112,7 @@ getTestBed().initTestEnvironment(
 exports[`preset generator > should match vite.config.ts 1`] = `
 "/// <reference types="vitest" />
 
-import analog from '@analogjs/platform';
+import analog from '@benpsnyder/analogjs-esm-platform';
 import { defineConfig } from 'vite';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 

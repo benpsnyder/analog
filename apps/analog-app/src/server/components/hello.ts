@@ -8,7 +8,7 @@ import {
 import {
   injectStaticOutputs,
   injectStaticProps,
-} from '@analogjs/router/server';
+} from '@benpsnyder/analogjs-esm-router/server';
 
 @Component({
   selector: 'app-hello',

@@ -32,8 +32,8 @@ import {
 } from './ng_19_X/versions';
 
 const dependencyKeys = [
-  '@analogjs/content',
-  '@analogjs/router',
+  '@benpsnyder/analogjs-esm-content',
+  '@benpsnyder/analogjs-esm-router',
   '@nx/angular',
   'marked',
   'marked-gfm-heading-id',
@@ -61,8 +61,8 @@ const getDependencies = (escapedAngularVersion: string) => {
   // install 17.x deps for versions <18.0.0
   if (lt(escapedAngularVersion, '18.0.0')) {
     return {
-      '@analogjs/content': V17_X_ANALOG_JS_CONTENT,
-      '@analogjs/router': V17_X_ANALOG_JS_ROUTER,
+      '@benpsnyder/analogjs-esm-content': V17_X_ANALOG_JS_CONTENT,
+      '@benpsnyder/analogjs-esm-router': V17_X_ANALOG_JS_ROUTER,
       '@nx/angular': V17_X_NX_ANGULAR,
       marked: V17_X_MARKED,
       'marked-gfm-heading-id': V17_X_MARKED_GFM_HEADING_ID,
@@ -75,8 +75,8 @@ const getDependencies = (escapedAngularVersion: string) => {
   // install 18.x deps for versions <19.0.0
   if (lt(escapedAngularVersion, '19.0.0')) {
     return {
-      '@analogjs/content': V18_X_ANALOG_JS_CONTENT,
-      '@analogjs/router': V18_X_ANALOG_JS_ROUTER,
+      '@benpsnyder/analogjs-esm-content': V18_X_ANALOG_JS_CONTENT,
+      '@benpsnyder/analogjs-esm-router': V18_X_ANALOG_JS_ROUTER,
       '@nx/angular': V18_X_NX_ANGULAR,
       marked: V18_X_MARKED,
       'marked-gfm-heading-id': V18_X_MARKED_GFM_HEADING_ID,
@@ -88,8 +88,8 @@ const getDependencies = (escapedAngularVersion: string) => {
 
   // return latest 19.x deps for versions >19.0.0
   return {
-    '@analogjs/content': V19_X_ANALOG_JS_CONTENT,
-    '@analogjs/router': V19_X_ANALOG_JS_ROUTER,
+    '@benpsnyder/analogjs-esm-content': V19_X_ANALOG_JS_CONTENT,
+    '@benpsnyder/analogjs-esm-router': V19_X_ANALOG_JS_ROUTER,
     '@nx/angular': V19_X_NX_ANGULAR,
     marked: V19_X_MARKED,
     'marked-gfm-heading-id': V19_X_MARKED_GFM_HEADING_ID,

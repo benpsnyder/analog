@@ -21,7 +21,7 @@ export function addAnalogProjectConfig(
     projectType: 'application',
     [targets]: {
       build: {
-        [builders]: `@analogjs/platform:vite`,
+        [builders]: `@benpsnyder/analogjs-esm-platform:vite`,
         defaultConfiguration: 'production',
         configurations: {
           development: {
@@ -34,7 +34,7 @@ export function addAnalogProjectConfig(
         },
       },
       serve: {
-        [builders]: `@analogjs/platform:vite-dev-server`,
+        [builders]: `@benpsnyder/analogjs-esm-platform:vite-dev-server`,
         defaultConfiguration: 'development',
         options: {
           buildTarget: `${projectName}:build`,
@@ -51,7 +51,7 @@ export function addAnalogProjectConfig(
         },
       },
       test: {
-        [builders]: `@analogjs/vitest-angular:test`,
+        [builders]: `@benpsnyder/analogjs-esm-vitest-angular:test`,
       },
     },
   };

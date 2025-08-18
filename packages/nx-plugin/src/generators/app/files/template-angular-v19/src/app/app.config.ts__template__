@@ -5,7 +5,7 @@ import {
   withInterceptors,
 } from '@angular/common/http';
 import { provideClientHydration } from '@angular/platform-browser';
-import { provideFileRouter, requestContextInterceptor } from '@analogjs/router';
+import { provideFileRouter, requestContextInterceptor } from '@benpsnyder/analogjs-esm-router';
 <% if (addTRPC) { %>
 import { provideTrpcClient } from '../trpc-client';
 <% } %>

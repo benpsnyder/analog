@@ -35,8 +35,8 @@ describe('nx-plugin generator', () => {
     dependencies: Record<string, string>,
     devDependencies: Record<string, string>,
   ) => {
-    expect(dependencies['@analogjs/content']).toBeDefined();
-    expect(dependencies['@analogjs/router']).toBeDefined();
+    expect(dependencies['@benpsnyder/analogjs-esm-content']).toBeDefined();
+    expect(dependencies['@benpsnyder/analogjs-esm-router']).toBeDefined();
     expect(dependencies['@angular/platform-server']).toBeDefined();
     expect(dependencies['front-matter']).toBe('^4.0.2');
     expect(dependencies['marked']).toBe('^15.0.7');
@@ -50,9 +50,13 @@ describe('nx-plugin generator', () => {
     // we just check for truthy because @nx/eslint generator
     // will install the correct version based on Nx version
     // expect(devDependencies['@nx/eslint']).toBeTruthy();
-    expect(devDependencies['@analogjs/platform']).toBeDefined();
-    expect(devDependencies['@analogjs/vite-plugin-angular']).toBeDefined();
-    expect(devDependencies['@analogjs/vitest-angular']).toBeDefined();
+    expect(devDependencies['@benpsnyder/analogjs-esm-platform']).toBeDefined();
+    expect(
+      devDependencies['@benpsnyder/analogjs-esm-vite-plugin-angular'],
+    ).toBeDefined();
+    expect(
+      devDependencies['@benpsnyder/analogjs-esm-vitest-angular'],
+    ).toBeDefined();
     expect(devDependencies['@nx/vite']).toBeDefined();
     expect(devDependencies['jsdom']).toBeDefined();
     expect(devDependencies['vite']).toBeDefined();
@@ -137,7 +141,7 @@ describe('nx-plugin generator', () => {
     tree: Tree,
     dependencies: Record<string, string>,
   ) => {
-    expect(dependencies['@analogjs/trpc']).toBeDefined();
+    expect(dependencies['@benpsnyder/analogjs-esm-trpc']).toBeDefined();
     const hasTrpcClientFile = tree.exists('apps/trpc-app/src/trpc-client.ts');
     const hasNoteFile = tree.exists('apps/trpc-app/src/note.ts');
     const hasTrpcServerRoute = tree.exists(

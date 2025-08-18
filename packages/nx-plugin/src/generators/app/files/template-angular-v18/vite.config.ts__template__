@@ -1,6 +1,6 @@
 /// <reference types="vitest" />
 
-import analog from '@analogjs/platform';
+import analog from '@benpsnyder/analogjs-esm-platform';
 import { defineConfig, Plugin } from 'vite';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 <% if (addTailwind) { %>
@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
     cacheDir: `<%= offsetFromRoot %>node_modules/.vite`,
     <% if (addTRPC) { %>
     ssr: {
-      noExternal: ['@analogjs/trpc','@trpc/server'],
+      noExternal: ['@benpsnyder/analogjs-esm-trpc','@trpc/server'],
     },
     <% } %>
     build: {

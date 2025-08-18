@@ -1,6 +1,6 @@
 /// <reference types="vitest" />
 
-import angular from '@analogjs/vite-plugin-angular';
+import angular from '@benpsnyder/analogjs-esm-vite-plugin-angular';
 <% if (addNxPaths) { %>
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 <% } %>

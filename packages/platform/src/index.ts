@@ -1,4 +1,4 @@
 import { platformPlugin } from './lib/platform-plugin.js';
 
-export { Options, PrerenderContentFile } from './lib/options';
+export { Options, PrerenderContentFile } from './lib/options.js';
 export default platformPlugin;

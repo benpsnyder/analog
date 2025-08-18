@@ -4,13 +4,11 @@
     "rootDir": ".",
     "sourceMap": true,
     "declaration": false,
-
     "lib": ["ES2022", "DOM"],
     "target": "ES2022",
     "module": "Preserve",
     "moduleDetection": "force",
     "allowJs": true,
-
     "moduleResolution": "bundler",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -18,60 +16,62 @@
     "importHelpers": true,
     "strict": true,
     "skipLibCheck": true,
-
     "noFallthroughCasesInSwitch": false,
     "noUncheckedIndexedAccess": false,
     "noImplicitOverride": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false,
-
     "baseUrl": ".",
     "paths": {
-      "@analogjs/astro-angular": ["packages/astro-angular/src/index.ts"],
-      "@analogjs/content": [
-        "./node_modules/@analogjs/content",
+      "@benpsnyder/analogjs-esm-astro-angular": [
+        "packages/astro-angular/src/index.ts"
+      ],
+      "@benpsnyder/analogjs-esm-content": [
+        "./node_modules/@benpsnyder/analogjs-esm-content",
         "packages/content/src/index.ts"
       ],
-      "@analogjs/content-plugin": ["packages/content-plugin/src/index.ts"],
-      "@analogjs/content/prism-highlighter": [
+      "@benpsnyder/analogjs-esm-content-plugin": [
+        "packages/content-plugin/src/index.ts"
+      ],
+      "@benpsnyder/analogjs-esm-content/prism-highlighter": [
         "packages/content/prism-highlighter/src/index.ts"
       ],
-      "@analogjs/content/shiki-highlighter": [
+      "@benpsnyder/analogjs-esm-content/shiki-highlighter": [
         "packages/content/shiki-highlighter/src/index.ts"
       ],
-      "@analogjs/nx": ["packages/nx-plugin/src/index.ts"],
-      "@analogjs/platform": [
-        "./node_modules/@analogjs/platform",
+      "@benpsnyder/analogjs-esm-nx": ["packages/nx-plugin/src/index.ts"],
+      "@benpsnyder/analogjs-esm-platform": [
+        "./node_modules/@benpsnyder/analogjs-esm-platform",
         "packages/platform/src/index.ts"
       ],
-      "@analogjs/router": [
-        "./node_modules/@analogjs/router",
+      "@benpsnyder/analogjs-esm-router": [
+        "./node_modules/@benpsnyder/analogjs-esm-router",
         "packages/router/src/index.ts"
       ],
-      "@analogjs/router/server": [
-        "./node_modules/@analogjs/router/server",
+      "@benpsnyder/analogjs-esm-router/server": [
+        "./node_modules/@benpsnyder/analogjs-esm-router/server",
         "packages/router/server/src/index.ts"
       ],
-      "@analogjs/router/tokens": [
-        "./node_modules/@analogjs/router/tokens",
+      "@benpsnyder/analogjs-esm-router/tokens": [
+        "./node_modules/@benpsnyder/analogjs-esm-router/tokens",
         "packages/router/tokens/src/index.ts"
       ],
-      "@analogjs/top-bar": ["libs/top-bar/src/index.ts"],
-      "@analogjs/trpc": ["packages/trpc/src/index.ts"],
-      "@analogjs/vite-plugin-angular": [
-        "./node_modules/@analogjs/vite-plugin-angular",
+      "@benpsnyder/analogjs-esm-top-bar": ["libs/top-bar/src/index.ts"],
+      "@benpsnyder/analogjs-esm-trpc": ["packages/trpc/src/index.ts"],
+      "@benpsnyder/analogjs-esm-vite-plugin-angular": [
+        "./node_modules/@benpsnyder/analogjs-esm-vite-plugin-angular",
         "packages/vite-plugin-angular/src/index.ts"
       ],
-      "@analogjs/vite-plugin-nitro": [
-        "./node_modules/@analogjs/vite-plugin-nitro",
+      "@benpsnyder/analogjs-esm-vite-plugin-nitro": [
+        "./node_modules/@benpsnyder/analogjs-esm-vite-plugin-nitro",
         "packages/vite-plugin-nitro/src/index.ts"
       ],
       "libs/card": ["libs/card/src/index.ts"],
       "my-package": ["./dist/libs/my-package", "libs/my-package/src/index.ts"],
       "shared/feature": ["libs/shared/feature/src/index.ts"],
       "vitest-angular": [
-        "./node_modules/@analogjs/vitest-angular",
+        "./node_modules/@benpsnyder/analogjs-esm-vitest-angular",
         "packages/vitest-angular/src/index.ts"
       ]
     }

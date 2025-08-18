@@ -8,7 +8,7 @@ export function jitPlugin({
   let config: ResolvedConfig;
 
   return {
-    name: '@analogjs/vite-plugin-angular-jit',
+    name: '@benpsnyder/analogjs-esm-vite-plugin-angular-jit',
     configResolved(_config) {
       config = _config;
     },

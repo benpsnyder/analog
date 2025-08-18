@@ -15,7 +15,7 @@ export function depsPlugin(options?: Options): Plugin[] {
           esbuild: { exclude: ['**/*.ts', '**/*.js'] },
           ssr: {
             noExternal: [
-              '@analogjs/**',
+              '@benpsnyder/analogjs-esm-**',
               'firebase/**',
               'firebase-admin/**',
               'rxfire',
@@ -35,8 +35,8 @@ export function depsPlugin(options?: Options): Plugin[] {
             ],
             exclude: [
               '@angular/platform-server',
-              '@analogjs/content',
-              '@analogjs/router',
+              '@benpsnyder/analogjs-esm-content',
+              '@benpsnyder/analogjs-esm-router',
               '@nx/angular',
               '@nx/vite',
               '@nx/devkit',

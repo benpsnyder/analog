@@ -38,7 +38,7 @@ export function updateServeTarget(
         json.projects[schema.project].root =
           json.projects[schema.project].root || '.';
         json.projects[schema.project].architect.serve = {
-          builder: '@analogjs/platform:vite-dev-server',
+          builder: '@benpsnyder/analogjs-esm-platform:vite-dev-server',
           ...commonConfig,
         };
 
@@ -60,7 +60,7 @@ export function updateServeTarget(
     }
 
     projectConfig.targets.serve = {
-      executor: '@analogjs/platform:vite-dev-server',
+      executor: '@benpsnyder/analogjs-esm-platform:vite-dev-server',
       ...commonConfig,
     };
     projectConfig.targets.build.outputs = [
