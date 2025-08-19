@@ -22,13 +22,13 @@ import {
   V18_X_ANALOG_JS_VITEST_ANGULAR,
 } from './nx_18_X/versions';
 
-// TODO: @analogjs/vite-plugin-angular is being defined as we must pin
+// TODO: @benpsnyder/analogjs-esm-vite-plugin-angular is being defined as we must pin
 // a supported version for Angular 15.x. This is not necessary for 16.x,
 // so this could probably be amended to only add as an explicit
 // devDependency for 15.x.
 const devDependencyKeys = [
-  '@analogjs/platform',
-  '@analogjs/vite-plugin-angular',
+  '@benpsnyder/analogjs-esm-platform',
+  '@benpsnyder/analogjs-esm-vite-plugin-angular',
   'jsdom',
   'vite',
   'vite-tsconfig-paths',
@@ -79,8 +79,9 @@ const getDevDependencies = (escapedNxVersion: string) => {
   // install 17.x deps for versions <18.0.0
   if (lt(escapedNxVersion, '18.0.0')) {
     return {
-      '@analogjs/platform': V17_X_ANALOG_JS_PLATFORM,
-      '@analogjs/vite-plugin-angular': V17_X_ANALOG_JS_VITE_PLUGIN_ANGULAR,
+      '@benpsnyder/analogjs-esm-platform': V17_X_ANALOG_JS_PLATFORM,
+      '@benpsnyder/analogjs-esm-vite-plugin-angular':
+        V17_X_ANALOG_JS_VITE_PLUGIN_ANGULAR,
       '@angular-devkit/build-angular': V17_X_ANGULAR_DEVKIT_BUILD_ANGULAR,
       jsdom: V17_X_JSDOM,
       vite: V17_X_VITE,
@@ -91,9 +92,10 @@ const getDevDependencies = (escapedNxVersion: string) => {
 
   // return latest 18.x deps for versions >18.0.0
   return {
-    '@analogjs/platform': V18_X_ANALOG_JS_PLATFORM,
-    '@analogjs/vite-plugin-angular': V18_X_ANALOG_JS_VITE_PLUGIN_ANGULAR,
-    '@analogjs/vitest-angular': V18_X_ANALOG_JS_VITEST_ANGULAR,
+    '@benpsnyder/analogjs-esm-platform': V18_X_ANALOG_JS_PLATFORM,
+    '@benpsnyder/analogjs-esm-vite-plugin-angular':
+      V18_X_ANALOG_JS_VITE_PLUGIN_ANGULAR,
+    '@benpsnyder/analogjs-esm-vitest-angular': V18_X_ANALOG_JS_VITEST_ANGULAR,
     '@angular-devkit/build-angular': V18_X_ANGULAR_DEVKIT_BUILD_ANGULAR,
     jsdom: V18_X_JSDOM,
     vite: V18_X_VITE,

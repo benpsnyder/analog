@@ -5,7 +5,7 @@ import {
 } from '@angular/common/http';
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideClientHydration } from '@angular/platform-browser';
-import { provideFileRouter, requestContextInterceptor } from '@analogjs/router';
+import { provideFileRouter, requestContextInterceptor } from '@benpsnyder/analogjs-esm-router';
 
 export const appConfig: ApplicationConfig = {
   providers: [

@@ -21,7 +21,7 @@ import { bootstrapApplication } from '@angular/platform-browser';
 const ANALOG_ASTRO_STATIC_PROPS = new InjectionToken<{
   props: Record<string, unknown>;
   mirror: ComponentMirror<unknown>;
-}>('@analogjs/astro-angular: Static Props w/ Mirror Provider', {
+}>('@benpsnyder/analogjs-esm-astro-angular: Static Props w/ Mirror Provider', {
   factory() {
     return { props: {}, mirror: {} as ComponentMirror<unknown> };
   },

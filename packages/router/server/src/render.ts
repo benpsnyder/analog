@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { renderApplication } from '@angular/platform-server';
-import type { ServerContext } from '@analogjs/router/tokens';
+import type { ServerContext } from '@benpsnyder/analogjs-esm-router/tokens';
 
 import { provideServerContext } from './provide-server-context';
 import {

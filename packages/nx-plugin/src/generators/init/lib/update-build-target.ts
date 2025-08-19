@@ -38,11 +38,15 @@ export function updateBuildTarget(
 
     const projectConfig = projects.get(schema.project);
 
+    if (!projectConfig) {
+      throw new Error(`Project ${schema.project} not found`);
+    }
+
     updateJson(tree, angularJsonPath, (json) => {
       json.projects[schema.project].root = projectConfig.root;
       json.projects[schema.project].sourceRoot = projectConfig.sourceRoot;
       json.projects[schema.project].architect.build = {
-        builder: '@analogjs/platform:vite',
+        builder: '@benpsnyder/analogjs-esm-platform:vite',
         ...commonConfig,
         options: {
           configFile: `${joinPathFragments(
@@ -65,8 +69,16 @@ export function updateBuildTarget(
 
     const projectConfig = projects.get(schema.project);
 
+    if (!projectConfig) {
+      throw new Error(`Project ${schema.project} not found`);
+    }
+
+    if (!projectConfig.targets) {
+      projectConfig.targets = {};
+    }
+
     projectConfig.targets.build = {
-      executor: '@analogjs/platform:vite',
+      executor: '@benpsnyder/analogjs-esm-platform:vite',
       ...commonConfig,
       options: {
         configFile: `${joinPathFragments(

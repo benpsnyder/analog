@@ -17,7 +17,7 @@ import {
 } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { injectBaseURL } from '@analogjs/router/tokens';
+import { injectBaseURL } from '@benpsnyder/analogjs-esm-router/tokens';
 import { catchError, map, of, throwError } from 'rxjs';
 
 import { makeCacheKey } from './cache-key';

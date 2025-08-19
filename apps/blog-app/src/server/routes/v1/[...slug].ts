@@ -1,6 +1,6 @@
 import { defineEventHandler, getQuery, getRequestURL } from 'h3';
 
-import { ImageResponse } from '@analogjs/content/og';
+import { ImageResponse } from '@benpsnyder/analogjs-esm-content/og';
 
 export default defineEventHandler(async (event) => {
   const fontFile = await fetch(
@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
             <span>${query['title'] ? `${query['title']}` : 'Hello World'}</span>
           </h2>
         </div>
-      </div>    
+      </div>
   `;
 
   return new ImageResponse(template, {

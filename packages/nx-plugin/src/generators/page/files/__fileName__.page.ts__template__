@@ -1,4 +1,4 @@
-<% if(redirectPage || metadata ) { %>import { RouteMeta } from '@analogjs/router'; <% } %>
+<% if(redirectPage || metadata ) { %>import { RouteMeta } from '@benpsnyder/analogjs-esm-router'; <% } %>
 <% if(!redirectPage) { %> import { Component } from '@angular/core'; <% } %>
 
 <% if(!redirectPage) { %>

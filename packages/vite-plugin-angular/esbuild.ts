@@ -1,4 +1,4 @@
-import analog from '@analogjs/vite-plugin-angular';
+import analog from '@benpsnyder/analogjs-esm-vite-plugin-angular';
 import type * as esbuild from 'esbuild';
 import { PluginOptions } from './src';
 

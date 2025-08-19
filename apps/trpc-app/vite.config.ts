@@ -1,6 +1,6 @@
 /// <reference types="vitest" />
 
-import analog from '@analogjs/platform';
+import analog from '@benpsnyder/analogjs-esm-platform';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig, Plugin } from 'vite';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
       include: ['@angular/common', '@angular/forms', 'isomorphic-fetch'],
     },
     ssr: {
-      noExternal: ['@analogjs/trpc', '@trpc/server'],
+      noExternal: ['@benpsnyder/analogjs-esm-trpc', '@trpc/server'],
     },
     build: {
       outDir: '../../dist/apps/trpc-app/client',

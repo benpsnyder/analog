@@ -1,5 +1,5 @@
 import { AppRouter } from './server/trpc/routers';
-import { createTrpcClient } from '@analogjs/trpc';
+import { createTrpcClient } from '@benpsnyder/analogjs-esm-trpc';
 import { inject } from '@angular/core';
 import { SuperJSON } from 'superjson';
 

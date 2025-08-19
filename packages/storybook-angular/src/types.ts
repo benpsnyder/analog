@@ -4,7 +4,8 @@ import { StorybookConfig as StorybookConfigBase } from '@storybook/angular';
 
 import { BuilderOptions, StorybookConfigVite } from '@storybook/builder-vite';
 
-type FrameworkName = CompatibleString<'@analogjs/storybook-angular'>;
+type FrameworkName =
+  CompatibleString<'@benpsnyder/analogjs-esm-storybook-angular'>;
 type BuilderName = CompatibleString<'@storybook/builder-vite'>;
 
 export type FrameworkOptions = {

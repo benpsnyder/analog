@@ -1,5 +1,5 @@
 {
-  "name": "@analogjs/my-package",
+  "name": "@benpsnyder/analogjs-esm-my-package",
   "type": "module",
   "private": true,
   "peerDependencies": {
