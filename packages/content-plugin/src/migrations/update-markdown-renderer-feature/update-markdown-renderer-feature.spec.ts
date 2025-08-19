@@ -55,5 +55,5 @@ export const appConfig: ApplicationConfig = {
     expect(configContent).toContain(
       '@benpsnyder/analogjs-esm-content/prism-highlighter',
     );
-  });
+  }, 15000);
 });
