@@ -20,7 +20,15 @@
     "contributors:generate": "all-contributors generate",
     "prettify": "prettier --write .",
     "prettier:check": "prettier --check .",
-    "build:test": "nx build ng-app --skip-nx-cache"
+    "build:test": "nx build ng-app --skip-nx-cache",
+    "jsr:dry-run": "bun scripts/publish.ts --jsr --dry-run",
+    "jsr:publish": "bun scripts/publish.ts --jsr",
+    "jsr:setup": "bun scripts/setup-jsr-configs.ts",
+    "npm:dry-run": "bun scripts/publish.ts --npm --dry-run",
+    "npm:publish": "bun scripts/publish.ts --npm",
+    "publish:dry-run": "bun scripts/publish.ts --both --dry-run",
+    "publish:both": "bun scripts/publish.ts --both",
+    "sync:upstream": "./scripts/sync-from-upstream.sh"
   },
   "engines": {
     "node": "^18.13.0 || ^20.0.0 || ^22.0.0",
@@ -34,12 +42,12 @@
   ],
   "author": "Brandon Roberts <robertsbt@gmail.com>",
   "bugs": {
-    "url": "https://github.com/analogjs/analog/issues"
+    "url": "https://github.com/benpsnyder/analog/issues"
   },
   "homepage": "https://analogjs.org",
   "repository": {
     "type": "git",
-    "url": "https://github.com/analogjs/analog.git"
+    "url": "https://github.com/benpsnyder/analog.git"
   },
   "private": true,
   "dependencies": {
@@ -73,8 +81,8 @@
     "marked-highlight": "^2.2.2",
     "mermaid": "^11.9.0",
     "radix3": "^1.1.2",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
     "rxjs": "7.8.2",
     "semver": "^7.7.2",
     "superjson": "^2.2.2",
@@ -130,8 +138,8 @@
     "@types/marked": "^6.0.0",
     "@types/node": "24.3.0",
     "@types/prismjs": "^1.26.5",
-    "@types/react": "^18.3.23",
-    "@types/react-dom": "^18.3.7",
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
     "@types/semver": "^7.7.0",
     "@typescript-eslint/eslint-plugin": "7.18.0",
     "@typescript-eslint/parser": "7.18.0",

@@ -24,8 +24,8 @@ import {
 } from './nx_18_X/versions';
 
 const dependencyKeys = [
-  '@analogjs/content',
-  '@analogjs/router',
+  '@benpsnyder/analogjs-esm-content',
+  '@benpsnyder/analogjs-esm-router',
   '@angular/platform-server',
   'front-matter',
   'marked',
@@ -57,8 +57,8 @@ export const getAnalogDependencies = (
   if (lt(escapedNxVersion, '18.0.0')) {
     return {
       '@angular/platform-server': `^${angularVersion}`,
-      '@analogjs/content': V17_X_ANALOG_JS_CONTENT,
-      '@analogjs/router': V17_X_ANALOG_JS_ROUTER,
+      '@benpsnyder/analogjs-esm-content': V17_X_ANALOG_JS_CONTENT,
+      '@benpsnyder/analogjs-esm-router': V17_X_ANALOG_JS_ROUTER,
       'front-matter': V17_X_FRONT_MATTER,
       marked: V17_X_MARKED,
       'marked-gfm-heading-id': V17_X_MARKED_GFM_HEADING_ID,
@@ -72,8 +72,8 @@ export const getAnalogDependencies = (
   // return latest 18.X deps for versions >= 18.0.0
   return {
     '@angular/platform-server': `^${angularVersion}`,
-    '@analogjs/content': V18_X_ANALOG_JS_CONTENT,
-    '@analogjs/router': V18_X_ANALOG_JS_ROUTER,
+    '@benpsnyder/analogjs-esm-content': V18_X_ANALOG_JS_CONTENT,
+    '@benpsnyder/analogjs-esm-router': V18_X_ANALOG_JS_ROUTER,
     'front-matter': V18_X_FRONT_MATTER,
     marked: V18_X_MARKED,
     'marked-gfm-heading-id': V18_X_MARKED_GFM_HEADING_ID,

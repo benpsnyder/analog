@@ -1,5 +1,5 @@
-import { injectContentFiles } from '@analogjs/content';
-import { MetaTag } from '@analogjs/router';
+import { injectContentFiles } from '@benpsnyder/analogjs-esm-content';
+import { MetaTag } from '@benpsnyder/analogjs-esm-router';
 import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
 
 import { PostAttributes } from './models';

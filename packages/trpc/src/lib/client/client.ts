@@ -14,13 +14,73 @@ import {
   tRPC_CACHE_STATE,
 } from './cache-state';
 import { createTRPCRxJSProxyClient } from './trpc-rxjs-proxy';
+/**
+ * Types copied from @trpc/client/dist/internals/types.d.ts for JSR compatibility
+ * These types define the minimal fetch-like interface required by tRPC internally.
+ *
+ * @see https://github.com/trpc/trpc/blob/main/packages/client/src/internals/types.ts
+ */
 
-// Type definition for fetch function used by tRPC
-// https://raw.githubusercontent.com/trpc/trpc/7c93a1f6ef298bd2997d8bcf2698843e6537f125/packages/client/src/internals/types.ts
-export type FetchEsque = (
+/**
+ * A subset of the standard RequestInit properties needed by tRPC internally.
+ * @see RequestInit from lib.dom.d.ts
+ * @remarks
+ * If you need a property that you know exists but doesn't exist on this
+ * interface, go ahead and add it.
+ */
+interface RequestInitEsque {
+  /**
+   * Sets the request's body.
+   */
+  body?: FormData | ReadableStream | string | null;
+  /**
+   * Sets the request's associated headers.
+   */
+  headers?: [string, string][] | Record<string, string>;
+  /**
+   * The request's HTTP-style method.
+   */
+  method?: string;
+  /**
+   * Sets the request's signal.
+   */
+  signal?: AbortSignal | null;
+}
+
+/**
+ * A subset of the standard Response properties needed by tRPC internally.
+ * @see Response from lib.dom.d.ts
+ */
+interface ResponseEsque {
+  readonly body?: NodeJS.ReadableStream | WebReadableStreamEsque | null;
+  /**
+   * @remarks
+   * The built-in Response::json() method returns Promise<any>, but
+   * that's not as type-safe as unknown. We use unknown because we're
+   * more type-safe. You do want more type safety, right? 😉
+   */
+  json(): Promise<unknown>;
+}
+
+/**
+ * A subset of the standard ReadableStream properties needed by tRPC internally.
+ * @see ReadableStream from lib.dom.d.ts
+ */
+type WebReadableStreamEsque = {
+  getReader: () => ReadableStreamDefaultReader<Uint8Array>;
+};
+
+/**
+ * A subset of the standard fetch function type needed by tRPC internally.
+ * @see fetch from lib.dom.d.ts
+ * @remarks
+ * If you need a property that you know exists but doesn't exist on this
+ * interface, go ahead and add it.
+ */
+type FetchEsque = (
   input: RequestInfo | URL | string,
-  init?: RequestInit,
-) => Promise<Response>;
+  init?: RequestInit | RequestInitEsque,
+) => Promise<ResponseEsque>;
 
 export type TrpcOptions<T extends AnyRouter> = {
   url: string;
@@ -32,7 +92,7 @@ export type TrpcClient<AppRouter extends AnyRouter> = ReturnType<
   typeof createTRPCRxJSProxyClient<AppRouter>
 >;
 const tRPC_INJECTION_TOKEN = new InjectionToken<unknown>(
-  '@analogjs/trpc proxy client',
+  '@benpsnyder/analogjs-esm-trpc proxy client',
 );
 
 function customFetch(

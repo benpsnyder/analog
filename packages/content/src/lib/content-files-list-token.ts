@@ -8,7 +8,7 @@ function getSlug(filename: string) {
 }
 
 export const CONTENT_FILES_LIST_TOKEN = new InjectionToken<ContentFile[]>(
-  '@analogjs/content Content Files List',
+  '@benpsnyder/analogjs-esm-content Content Files List',
   {
     providedIn: 'root',
     factory() {

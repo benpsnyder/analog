@@ -1,5 +1,5 @@
 {
-  "name": "@analogjs/astro-angular",
+  "name": "@benpsnyder/analogjs-esm-astro-angular",
   "version": "2.0.0-alpha.16",
   "description": "Use Angular components within Astro",
   "type": "module",
@@ -20,19 +20,19 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/analogjs/analog/issues"
+    "url": "https://github.com/benpsnyder/analog/issues"
   },
   "homepage": "https://analogjs.org",
   "repository": {
     "type": "git",
-    "url": "https://github.com/analogjs/analog.git"
+    "url": "https://github.com/benpsnyder/analog.git"
   },
   "funding": {
     "type": "github",
     "url": "https://github.com/sponsors/brandonroberts"
   },
   "dependencies": {
-    "@analogjs/vite-plugin-angular": "^2.0.0-alpha.16"
+    "@benpsnyder/analogjs-esm-vite-plugin-angular": "^2.0.0-alpha.16"
   },
   "peerDependencies": {
     "@angular-devkit/build-angular": ">=16.0.0",
@@ -51,13 +51,13 @@
   },
   "ng-update": {
     "packageGroup": [
-      "@analogjs/platform",
-      "@analogjs/content",
-      "@analogjs/router",
-      "@analogjs/storybook-angular",
-      "@analogjs/vite-plugin-angular",
-      "@analogjs/vite-plugin-nitro",
-      "@analogjs/vitest-angular"
+      "@benpsnyder/analogjs-esm-platform",
+      "@benpsnyder/analogjs-esm-content",
+      "@benpsnyder/analogjs-esm-router",
+      "@benpsnyder/analogjs-esm-storybook-angular",
+      "@benpsnyder/analogjs-esm-vite-plugin-angular",
+      "@benpsnyder/analogjs-esm-vite-plugin-nitro",
+      "@benpsnyder/analogjs-esm-vitest-angular"
     ],
     "migrations": "./migrations/migration.json"
   }

@@ -1,6 +1,6 @@
 /// <reference types="vitest" />
 
-import analog from '@analogjs/platform';
+import analog from '@benpsnyder/analogjs-esm-platform';
 import { defineConfig, Plugin } from 'vite';
 import tsConfigPaths from 'vite-tsconfig-paths';
 
@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => {
       host: '127.0.0.1'
     },
     ssr: {
-      noExternal: '@analogjs/trpc/**',
+      noExternal: '@benpsnyder/analogjs-esm-trpc/**',
     },
     <% } %>
     optimizeDeps: {

@@ -38,7 +38,8 @@ export default async function update(host: Tree) {
 
         if (provideContentNode) {
           sourceFile.addImportDeclaration({
-            moduleSpecifier: '@analogjs/content/prism-highlighter',
+            moduleSpecifier:
+              '@benpsnyder/analogjs-esm-content/prism-highlighter',
             namedImports: ['withPrismHighlighter'],
           });
 

@@ -9,7 +9,9 @@
     "target": "ES2022",
     "useDefineForClassFields": false,
     "paths": {
-      "@analogjs/content": ["./node_modules/@analogjs/content"]
+      "@benpsnyder/analogjs-esm-content": [
+        "./node_modules/@benpsnyder/analogjs-esm-content"
+      ]
     }
   },
   "exclude": ["vite.config.ts", "**/*.test.ts", "**/*.spec.ts"],

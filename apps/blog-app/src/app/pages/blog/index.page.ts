@@ -1,4 +1,4 @@
-import { injectContentFiles } from '@analogjs/content';
+import { injectContentFiles } from '@benpsnyder/analogjs-esm-content';
 import { Component } from '@angular/core';
 import { PostAttributes } from './models';
 import { RouterLink } from '@angular/router';

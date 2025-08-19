@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 
-import { FormAction } from '@analogjs/router';
+import { FormAction } from '@benpsnyder/analogjs-esm-router';
 
 import { type NewsletterSubmitResponse } from './newsletter.server';
 

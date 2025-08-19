@@ -7,7 +7,7 @@ describe('analog-preset-e2e', () => {
     const tmpDir = `${process.cwd()}/${project}`;
 
     await runCommandAsync(
-      `npx create-nx-workspace@latest ${project} --preset @analogjs/platform --analogAppName analog-app --no-nx-cloud`,
+      `npx create-nx-workspace@latest ${project} --preset @benpsnyder/analogjs-esm-platform --analogAppName analog-app --no-nx-cloud`,
       { cwd: process.cwd() },
     );
 

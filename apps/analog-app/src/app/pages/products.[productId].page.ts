@@ -1,4 +1,4 @@
-import { injectActivatedRoute } from '@analogjs/router';
+import { injectActivatedRoute } from '@benpsnyder/analogjs-esm-router';
 import { CurrencyPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
