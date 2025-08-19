@@ -4,8 +4,8 @@
   "projectType": "application",
   "sourceRoot": "apps/analog-app/src",
   "prefix": "analogjs",
-  "implicitDependencies": ["vitest-angular", "storybook-angular"],
   "tags": [],
+  "implicitDependencies": ["vitest-angular", "storybook-angular"],
   "targets": {
     "build": {
       "executor": "@nx/vite:build",
@@ -70,7 +70,7 @@
       "dependsOn": ["^build"]
     },
     "storybook": {
-      "executor": "@analogjs/storybook-angular:start-storybook",
+      "executor": "@benpsnyder/analogjs-esm-storybook-angular:start-storybook",
       "dependsOn": ["^build"],
       "options": {
         "configDir": "apps/analog-app/.storybook",
@@ -80,7 +80,7 @@
       }
     },
     "build-storybook": {
-      "executor": "@analogjs/storybook-angular:build-storybook",
+      "executor": "@benpsnyder/analogjs-esm-storybook-angular:build-storybook",
       "options": {
         "configDir": "apps/analog-app/.storybook",
         "compodoc": false,

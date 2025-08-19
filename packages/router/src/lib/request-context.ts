@@ -8,7 +8,10 @@ import {
 
 import { from, of } from 'rxjs';
 
-import { injectBaseURL, injectAPIPrefix } from '@analogjs/router/tokens';
+import {
+  injectBaseURL,
+  injectAPIPrefix,
+} from '@benpsnyder/analogjs-esm-router/tokens';
 
 import { makeCacheKey } from './cache-key';
 

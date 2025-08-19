@@ -52,8 +52,9 @@ describe('setup-vitest generator', () => {
 
     const packageJson = JSON.parse(tree.read('package.json', 'utf-8'));
     expect(packageJson.devDependencies).toMatchObject({
-      '@analogjs/vite-plugin-angular': V19_X_ANALOG_JS_VITE_PLUGIN_ANGULAR,
-      '@analogjs/vitest-angular': V19_X_ANALOG_JS_VITEST_ANGULAR,
+      '@benpsnyder/analogjs-esm-vite-plugin-angular':
+        V19_X_ANALOG_JS_VITE_PLUGIN_ANGULAR,
+      '@benpsnyder/analogjs-esm-vitest-angular': V19_X_ANALOG_JS_VITEST_ANGULAR,
       vitest: V19_X_VITEST,
       jsdom: V19_X_JSDOM,
       vite: V19_X_VITE,
@@ -72,7 +73,7 @@ describe('setup-vitest generator', () => {
 
     expect(projectConfig.targets.test).toBeDefined();
     expect(projectConfig.targets.test.executor).toBe(
-      '@analogjs/vitest-angular:test',
+      '@benpsnyder/analogjs-esm-vitest-angular:test',
     );
   });
 
@@ -87,7 +88,7 @@ describe('setup-vitest generator', () => {
       [
         '/// <reference types="vitest" />',
         '',
-        `import angular from '@analogjs/vite-plugin-angular';`,
+        `import angular from '@benpsnyder/analogjs-esm-vite-plugin-angular';`,
         '',
         `import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';`,
         '',
@@ -144,6 +145,7 @@ describe('setup-vitest generator', () => {
       dependencies: {
         '@angular/core': '19.0.0',
         '@nx/angular': '20.5.0',
+        nx: '20.5.0',
       },
       devDependencies: {},
     });
@@ -167,7 +169,7 @@ describe('setup-vitest generator', () => {
     const setupContent = tree.read('test-app/src/test-setup.ts', 'utf-8');
     expect(setupContent).toEqual(
       [
-        `import '@analogjs/vitest-angular/setup-zone';`,
+        `import '@benpsnyder/analogjs-esm-vitest-angular/setup-zone';`,
         '',
         'import {',
         '  BrowserDynamicTestingModule,',

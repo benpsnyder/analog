@@ -1,20 +1,18 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "module": "es2020",
     "outDir": "../../dist/out-tsc",
     "inlineSourceMap": true,
     "sourceMap": false,
     "declaration": true,
     "types": [],
-    "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "paths": {
-      "@analogjs/vite-plugin-angular": [
-        "./node_modules/@analogjs/vite-plugin-angular"
+      "@benpsnyder/analogjs-esm-vite-plugin-angular": [
+        "./node_modules/@benpsnyder/analogjs-esm-vite-plugin-angular"
       ],
-      "@analogjs/vite-plugin-nitro": [
-        "./node_modules/@analogjs/vite-plugin-nitro"
+      "@benpsnyder/analogjs-esm-vite-plugin-nitro": [
+        "./node_modules/@benpsnyder/analogjs-esm-vite-plugin-nitro"
       ]
     }
   },

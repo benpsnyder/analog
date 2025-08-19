@@ -9,7 +9,7 @@
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "node_modules/@analogjs/vitest-angular",
+        "outputPath": "node_modules/@benpsnyder/analogjs-esm-vitest-angular",
         "main": "packages/vitest-angular/src/index.ts",
         "tsConfig": "packages/vitest-angular/tsconfig.lib.json",
         "assets": [

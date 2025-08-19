@@ -8,7 +8,7 @@
       "executor": "@nx/js:tsc",
 
       "options": {
-        "outputPath": "node_modules/@analogjs/storybook-angular",
+        "outputPath": "node_modules/@benpsnyder/analogjs-esm-storybook-angular",
         "main": "packages/storybook-angular/src/index.ts",
         "tsConfig": "packages/storybook-angular/tsconfig.lib.json",
         "clean": true,

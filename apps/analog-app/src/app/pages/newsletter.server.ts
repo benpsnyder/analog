@@ -3,7 +3,7 @@ import {
   redirect,
   json,
   fail,
-} from '@analogjs/router/server/actions';
+} from '@benpsnyder/analogjs-esm-router/server/actions';
 import { readFormData } from 'h3';
 
 export type NewsletterSubmitResponse = {

@@ -32,8 +32,8 @@ import {
 } from './ng_19_X/versions';
 
 const devDependencyKeys = [
-  '@analogjs/platform',
-  '@analogjs/vite-plugin-angular',
+  '@benpsnyder/analogjs-esm-platform',
+  '@benpsnyder/analogjs-esm-vite-plugin-angular',
   'jsdom',
   'vite-tsconfig-paths',
   'vitest',
@@ -69,9 +69,10 @@ const getDevDependencies = (
   // install 17.x deps for versions <18.0.0
   if (lt(escapedAngularVersion, '18.0.0')) {
     return {
-      '@analogjs/platform': V17_X_ANALOG_JS_PLATFORM,
-      '@analogjs/vite-plugin-angular': V17_X_ANALOG_JS_VITE_PLUGIN_ANGULAR,
-      '@analogjs/vitest-angular': V17_X_ANALOG_JS_VITEST_ANGULAR,
+      '@benpsnyder/analogjs-esm-platform': V17_X_ANALOG_JS_PLATFORM,
+      '@benpsnyder/analogjs-esm-vite-plugin-angular':
+        V17_X_ANALOG_JS_VITE_PLUGIN_ANGULAR,
+      '@benpsnyder/analogjs-esm-vitest-angular': V17_X_ANALOG_JS_VITEST_ANGULAR,
       '@nx/vite': V17_X_NX_VITE,
       jsdom: V17_X_JSDOM,
       'vite-tsconfig-paths': V17_X_VITE_TSCONFIG_PATHS,
@@ -83,9 +84,10 @@ const getDevDependencies = (
   // install 18.x deps for versions <19.0.0
   if (lt(escapedAngularVersion, '19.0.0')) {
     return {
-      '@analogjs/platform': V18_X_ANALOG_JS_PLATFORM,
-      '@analogjs/vite-plugin-angular': V18_X_ANALOG_JS_VITE_PLUGIN_ANGULAR,
-      '@analogjs/vitest-angular': V18_X_ANALOG_JS_VITEST_ANGULAR,
+      '@benpsnyder/analogjs-esm-platform': V18_X_ANALOG_JS_PLATFORM,
+      '@benpsnyder/analogjs-esm-vite-plugin-angular':
+        V18_X_ANALOG_JS_VITE_PLUGIN_ANGULAR,
+      '@benpsnyder/analogjs-esm-vitest-angular': V18_X_ANALOG_JS_VITEST_ANGULAR,
       '@nx/vite': V18_X_NX_VITE,
       jsdom: V18_X_JSDOM,
       'vite-tsconfig-paths': V18_X_VITE_TSCONFIG_PATHS,
@@ -96,9 +98,10 @@ const getDevDependencies = (
 
   // return latest 19.x deps for versions >=19.0.0
   return {
-    '@analogjs/platform': V19_X_ANALOG_JS_PLATFORM,
-    '@analogjs/vite-plugin-angular': V19_X_ANALOG_JS_VITE_PLUGIN_ANGULAR,
-    '@analogjs/vitest-angular': V19_X_ANALOG_JS_VITEST_ANGULAR,
+    '@benpsnyder/analogjs-esm-platform': V19_X_ANALOG_JS_PLATFORM,
+    '@benpsnyder/analogjs-esm-vite-plugin-angular':
+      V19_X_ANALOG_JS_VITE_PLUGIN_ANGULAR,
+    '@benpsnyder/analogjs-esm-vitest-angular': V19_X_ANALOG_JS_VITEST_ANGULAR,
     '@nx/vite': V19_X_NX_VITE,
     jsdom: V19_X_JSDOM,
     'vite-tsconfig-paths': V19_X_VITE_TSCONFIG_PATHS,

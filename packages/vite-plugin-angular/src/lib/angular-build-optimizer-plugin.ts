@@ -20,7 +20,7 @@ export function buildOptimizerPlugin({
   let isProd = false;
 
   return {
-    name: '@analogjs/vite-plugin-angular-optimizer',
+    name: '@benpsnyder/analogjs-esm-vite-plugin-angular-optimizer',
     apply: 'build',
     config(userConfig) {
       isProd =

@@ -1,7 +1,18 @@
-import viteAngular, { PluginOptions } from '@analogjs/vite-plugin-angular';
+import viteAngular, {
+  PluginOptions,
+} from '@benpsnyder/analogjs-esm-vite-plugin-angular';
 import { enableProdMode } from '@angular/core';
 import type { AstroIntegration, AstroRenderer, ViteUserConfig } from 'astro';
-import type { DeepPartial } from 'astro/dist/type-utils';
+
+// Define DeepPartial locally using Astro's implementation instead of importing from astro/dist/type-utils
+// Source: https://raw.githubusercontent.com/withastro/astro/92881331d1138ae146bbc4b0bfb9c675ca3f3d55/packages/astro/src/type-utils.ts
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends (infer U)[]
+    ? DeepPartial<U>[]
+    : T[P] extends object | undefined
+      ? DeepPartial<T[P]>
+      : T[P];
+};
 
 interface AngularOptions {
   vite?: PluginOptions;
@@ -9,9 +20,9 @@ interface AngularOptions {
 
 function getRenderer(): AstroRenderer {
   return {
-    name: '@analogjs/astro-angular',
-    clientEntrypoint: '@analogjs/astro-angular/client.js',
-    serverEntrypoint: '@analogjs/astro-angular/server.js',
+    name: '@benpsnyder/analogjs-esm-astro-angular',
+    clientEntrypoint: '@benpsnyder/analogjs-esm-astro-angular/client.js',
+    serverEntrypoint: '@benpsnyder/analogjs-esm-astro-angular/server.js',
   };
 }
 
@@ -24,18 +35,18 @@ function getViteConfiguration(vite?: PluginOptions) {
       include: [
         '@angular/platform-browser',
         '@angular/core',
-        '@analogjs/astro-angular/client.js',
+        '@benpsnyder/analogjs-esm-astro-angular/client.js',
       ],
       exclude: [
         '@angular/platform-server',
-        '@analogjs/astro-angular/server.js',
+        '@benpsnyder/analogjs-esm-astro-angular/server.js',
       ],
     },
 
     plugins: [
       viteAngular(vite),
       {
-        name: '@analogjs/astro-angular-platform-server',
+        name: '@benpsnyder/analogjs-esm-astro-angular-platform-server',
         transform(code: string, id: string) {
           if (id.includes('platform-server')) {
             code = code.replace(/global\./g, 'globalThis.');
@@ -53,7 +64,7 @@ function getViteConfiguration(vite?: PluginOptions) {
       },
     ],
     ssr: {
-      noExternal: ['@angular/**', '@analogjs/**'],
+      noExternal: ['@angular/**', '@benpsnyder/analogjs-esm-**'],
     },
   };
 }
@@ -62,7 +73,7 @@ export default function (options?: AngularOptions): AstroIntegration {
   process.env['ANALOG_ASTRO'] = 'true';
 
   return {
-    name: '@analogjs/astro-angular',
+    name: '@benpsnyder/analogjs-esm-astro-angular',
     hooks: {
       'astro:config:setup': ({
         addRenderer,

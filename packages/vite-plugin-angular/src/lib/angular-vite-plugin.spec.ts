@@ -3,7 +3,9 @@ import { angular, isTestWatchMode } from './angular-vite-plugin';
 
 describe('angularVitePlugin', () => {
   it('should work', () => {
-    expect(angular()[0].name).toEqual('@analogjs/vite-plugin-angular');
+    expect(angular()[0].name).toEqual(
+      '@benpsnyder/analogjs-esm-vite-plugin-angular',
+    );
   });
 });
 

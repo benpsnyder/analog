@@ -7,7 +7,7 @@ import {
   RESPONSE,
   ServerRequest,
   ServerResponse,
-} from '@analogjs/router/tokens';
+} from '@benpsnyder/analogjs-esm-router/tokens';
 
 export function provideServerContext({
   req,

@@ -24,16 +24,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/analogjs/analog.git"
+    "url": "git+https://github.com/benpsnyder/analog.git"
   },
   "funding": {
     "type": "github",
     "url": "https://github.com/sponsors/brandonroberts"
   },
   "bugs": {
-    "url": "https://github.com/analogjs/analog/issues"
+    "url": "https://github.com/benpsnyder/analog/issues"
   },
-  "homepage": "https://github.com/analogjs/analog/tree/main#readme",
+  "homepage": "https://github.com/benpsnyder/analog/tree/main#readme",
   "dependencies": {
     "kolorist": "^1.6.0",
     "minimist": "^1.2.7",

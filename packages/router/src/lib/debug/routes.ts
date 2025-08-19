@@ -8,7 +8,7 @@ import {
 } from '../routes';
 
 export const DEBUG_ROUTES = new InjectionToken(
-  '@analogjs/router debug routes',
+  '@benpsnyder/analogjs-esm-router debug routes',
   {
     providedIn: 'root',
     factory() {

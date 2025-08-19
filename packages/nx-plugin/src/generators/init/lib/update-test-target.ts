@@ -24,7 +24,7 @@ export function updateTestTarget(
       angularJsonPath,
       (json) => {
         json.projects[schema.project].architect.test = {
-          builder: '@analogjs/vitest-angular:test',
+          builder: '@benpsnyder/analogjs-esm-vitest-angular:test',
           ...commonConfig,
         };
 
@@ -37,8 +37,16 @@ export function updateTestTarget(
 
     const projectConfig = projects.get(schema.project);
 
+    if (!projectConfig) {
+      throw new Error(`Project ${schema.project} not found`);
+    }
+
+    if (!projectConfig.targets) {
+      projectConfig.targets = {};
+    }
+
     projectConfig.targets.test = {
-      executor: '@analogjs/vitest-angular:test',
+      executor: '@benpsnyder/analogjs-esm-vitest-angular:test',
       ...commonConfig,
     };
 

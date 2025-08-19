@@ -169,7 +169,7 @@ export function angular(options?: PluginOptions): Plugin[] {
     }
 
     return {
-      name: '@analogjs/vite-plugin-angular',
+      name: '@benpsnyder/analogjs-esm-vite-plugin-angular',
       async config(config, { command }) {
         watchMode = command === 'serve';
         isProd =
@@ -259,7 +259,7 @@ export function angular(options?: PluginOptions): Plugin[] {
             pluginOptions.supportAnalogFormat &&
             ['ag', 'analog', 'agx'].some((ext) => fileId.endsWith(ext))
           ) {
-            fileId += '.ts';
+            fileId += '';
           }
 
           await performCompilation(resolvedConfig, [fileId]);

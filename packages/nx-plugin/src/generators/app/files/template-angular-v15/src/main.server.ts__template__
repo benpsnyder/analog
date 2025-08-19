@@ -1,7 +1,7 @@
 import 'zone.js/node';
 import { enableProdMode } from '@angular/core';
 import { renderApplication } from '@angular/platform-server';
-import { provideFileRouter } from '@analogjs/router';
+import { provideFileRouter } from '@benpsnyder/analogjs-esm-router';
 import { withEnabledBlockingInitialNavigation } from '@angular/router';
 
 import { AppComponent } from './app/app.component';

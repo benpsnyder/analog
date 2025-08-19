@@ -13,12 +13,12 @@ export async function addAnalogDependencies(
 ) {
   const dependencies = getAnalogDependencies(nxVersion, angularVersion);
   const devDependencies = getAnalogDevDependencies(nxVersion);
-  // ensure previous @analogjs/platform version is removed, whether installed
+  // ensure previous @benpsnyder/analogjs-esm-platform version is removed, whether installed
   // as a dependency or devDependency, before adding analog dependencies.
   removeDependenciesFromPackageJson(
     tree,
-    ['@analogjs/platform'],
-    ['@analogjs/platform'],
+    ['@benpsnyder/analogjs-esm-platform'],
+    ['@benpsnyder/analogjs-esm-platform'],
   );
   addDependenciesToPackageJson(tree, dependencies, devDependencies);
 }

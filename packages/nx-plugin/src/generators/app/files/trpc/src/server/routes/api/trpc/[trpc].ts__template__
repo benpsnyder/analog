@@ -1,4 +1,4 @@
-import { createTrpcNitroHandler } from '@analogjs/trpc/server';
+import { createTrpcNitroHandler } from '@benpsnyder/analogjs-esm-trpc/server';
 
 import { appRouter } from '../../../trpc/routers';
 import { createContext } from '../../../trpc/context';
