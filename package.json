@@ -178,7 +178,7 @@
     "marked-shiki": "^1.2.1",
     "minimist": "^1.2.8",
     "ng-packagr": "20.1.0",
-    "nitropack": "^2.12.4",
+    "nitro": "npm:nitro-nightly@latest",
     "nx": "21.3.11",
     "playwright": "^1.54.2",
     "postcss": "^8.5.6",
@@ -220,7 +220,9 @@
       "cypress"
     ],
     "overrides": {
-      "vite": "npm:rolldown-vite@7.1.2"
+      "vite": "npm:rolldown-vite@7.1.2",
+      "h3": "2.0.0-beta.2",
+      "nitro": "npm:nitro-nightly@latest"
     },
     "onlyBuiltDependencies": [
       "@compodoc/compodoc",

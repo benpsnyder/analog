@@ -45,7 +45,7 @@ export interface OnErrorPayload<TRouter extends AnyRouter> {
   error: TRPCError;
   type: ProcedureType | 'unknown';
   path: string | undefined;
-  req: H3Event['node']['req'];
+  req: H3Event['req'];
   input: unknown;
   ctx: undefined | inferRouterContext<TRouter>;
 }
@@ -84,9 +84,10 @@ export function createTrpcNitroHandler<TRouter extends AnyRouter>({
   responseMeta,
   onError,
   batching,
-}: ResolveHTTPRequestOptions<TRouter>) {
-  return defineEventHandler(async (event) => {
-    const { req, res } = event.node;
+}: ResolveHTTPRequestOptions<TRouter>): ReturnType<typeof eventHandler> {
+  return eventHandler(async (event) => {
+    const { req } = event;
+    const res = event._res;
 
     // Get the full URL using h3's getRequestURL
     const fullUrl = getRequestURL(event);

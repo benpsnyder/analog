@@ -1,5 +1,11 @@
-import { NitroConfig, copyPublicAssets, prerender } from 'nitropack';
-import { createNitro, build, prepare } from 'nitropack';
+import {
+  copyPublicAssets,
+  prerender,
+  createNitro,
+  build,
+  prepare,
+} from 'nitro';
+import type { NitroConfig } from 'nitro/types';
 import { existsSync, unlinkSync } from 'node:fs';
 
 import { Options } from './options.js';
@@ -25,7 +31,7 @@ export async function buildServer(
   if (
     options?.ssr &&
     nitroConfig?.prerender?.routes &&
-    (nitroConfig?.prerender?.routes.find((route) => route === '/') ||
+    (nitroConfig?.prerender?.routes.find((route: any) => route === '/') ||
       nitroConfig?.prerender?.routes?.length === 0)
   ) {
     const indexFileExts = ['', '.br', '.gz'];
