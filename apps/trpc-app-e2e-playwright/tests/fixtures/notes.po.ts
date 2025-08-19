@@ -13,7 +13,7 @@ export class NotesPage {
 
   async addNote() {
     await this.waitForTrpcResponse(this.page.getByTestId('addNoteBtn').click());
-    await this.page.waitForSelector('.note');
+    await this.page.waitForSelector('.note', { timeout: 15000 });
   }
 
   async removeNote(index: number) {
@@ -32,9 +32,12 @@ export class NotesPage {
 
   private async waitForTrpcResponse(promise: Promise<void>) {
     await Promise.all([
-      this.page.waitForResponse((response) => {
-        return response.url().includes('trpc') && response.status() === 200;
-      }),
+      this.page.waitForResponse(
+        (response) => {
+          return response.url().includes('trpc') && response.status() === 200;
+        },
+        { timeout: 15000 },
+      ),
       promise,
     ]);
   }

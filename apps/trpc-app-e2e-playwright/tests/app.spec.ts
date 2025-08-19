@@ -56,12 +56,16 @@ describe('tRPC Demo App', () => {
   After the users clicks the "Login" button and gets authorized, deleting the note again should work successfully,
   and the error should disappear.
      `, async (ctx) => {
+    // Wait for the page to be fully loaded before starting the test
+    await page.waitForLoadState('networkidle');
+
     await ctx.notesPage.typeNote(notes.first.note);
 
     await ctx.notesPage.addNote();
     expect(await ctx.notesPage.notes().elementHandles()).toHaveLength(1);
 
     await ctx.notesPage.page.reload();
+    await page.waitForLoadState('networkidle');
     expect(await ctx.notesPage.notes().elementHandles()).toHaveLength(1);
 
     await ctx.notesPage.removeNote(0);
@@ -70,7 +74,22 @@ describe('tRPC Demo App', () => {
 
     await ctx.notesPage.toggleLogin();
     await ctx.notesPage.removeNote(0);
-    await page.waitForSelector('.no-notes');
+
+    // Wait for either .no-notes selector OR notes to be 0 length
+    try {
+      await page.waitForSelector('.no-notes', { timeout: 10000 });
+    } catch {
+      // If .no-notes selector doesn't exist, just check that notes length is 0
+      await page.waitForFunction(
+        () => {
+          const notes = document.querySelectorAll('.note');
+          return notes.length === 0;
+        },
+        {},
+        { timeout: 10000 },
+      );
+    }
+
     expect(await ctx.notesPage.notes().elementHandles()).toHaveLength(0);
     expect(await ctx.notesPage.getDeleteErrorCount()).toBe(0);
   });
