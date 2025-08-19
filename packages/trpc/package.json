@@ -1,6 +1,6 @@
 {
   "name": "@benpsnyder/analogjs-esm-trpc",
-  "version": "2.0.0-alpha.16",
+  "version": "2.0.0-alpha.16.1",
   "description": "Angular/Nitro-based tRPC integration",
   "type": "module",
   "author": "Brandon Roberts <robertsbt@gmail.com>",

@@ -1,6 +1,6 @@
 {
   "name": "@benpsnyder/analogjs-esm-vite-plugin-nitro",
-  "version": "2.0.0-alpha.16",
+  "version": "2.0.0-alpha.16.1",
   "description": "A Vite plugin for adding a nitro API server",
   "type": "module",
   "author": "Brandon Roberts <robertsbt@gmail.com>",

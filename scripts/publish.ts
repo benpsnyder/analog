@@ -366,7 +366,7 @@ function publishToNPM(
     let tag = 'latest';
 
     if (isPrerelease) {
-      // Extract prerelease tag (e.g., "test" from "2.0.0-alpha.16")
+      // Extract prerelease tag (e.g., "test" from "2.0.0-alpha.16.1")
       const prereleaseMatch = config.version.match(/-([^.]+)/);
       tag = prereleaseMatch ? prereleaseMatch[1] : 'next';
     }

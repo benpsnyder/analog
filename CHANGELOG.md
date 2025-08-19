@@ -1,4 +1,4 @@
-# [2.0.0-alpha.16](https://github.com/analogjs/analog/compare/v2.0.0-alpha.15...v2.0.0-alpha.16) (2025-08-16)
+# [2.0.0-alpha.16.1](https://github.com/analogjs/analog/compare/v2.0.0-alpha.15...v2.0.0-alpha.16.1) (2025-08-16)
 
 ### Bug Fixes
 

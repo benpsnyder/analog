@@ -1,6 +1,6 @@
 {
   "name": "@benpsnyder/analogjs-esm-astro-angular",
-  "version": "2.0.0-alpha.16",
+  "version": "2.0.0-alpha.16.1",
   "description": "Use Angular components within Astro",
   "type": "module",
   "author": "Brandon Roberts <robertsbt@gmail.com>",
@@ -32,7 +32,7 @@
     "url": "https://github.com/sponsors/brandonroberts"
   },
   "dependencies": {
-    "@benpsnyder/analogjs-esm-vite-plugin-angular": "^2.0.0-alpha.16"
+    "@benpsnyder/analogjs-esm-vite-plugin-angular": "^2.0.0-alpha.16.1"
   },
   "peerDependencies": {
     "@angular-devkit/build-angular": ">=16.0.0",

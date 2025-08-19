@@ -15,8 +15,8 @@
   },
   "private": true,
   "dependencies": {
-    "@benpsnyder/analogjs-esm-content": "^2.0.0-alpha.16",
-    "@benpsnyder/analogjs-esm-router": "^2.0.0-alpha.16",
+    "@benpsnyder/analogjs-esm-content": "^2.0.0-alpha.16.1",
+    "@benpsnyder/analogjs-esm-router": "^2.0.0-alpha.16.1",
     "@angular/animations": "^18.0.0",
     "@angular/build": "^18.0.0",
     "@angular/common": "^18.0.0",
@@ -38,9 +38,9 @@
     "zone.js": "~0.14.3"
   },
   "devDependencies": {
-    "@benpsnyder/analogjs-esm-platform": "^2.0.0-alpha.16",
-    "@benpsnyder/analogjs-esm-vite-plugin-angular": "^2.0.0-alpha.16",
-    "@benpsnyder/analogjs-esm-vitest-angular": "^2.0.0-alpha.16",
+    "@benpsnyder/analogjs-esm-platform": "^2.0.0-alpha.16.1",
+    "@benpsnyder/analogjs-esm-vite-plugin-angular": "^2.0.0-alpha.16.1",
+    "@benpsnyder/analogjs-esm-vitest-angular": "^2.0.0-alpha.16.1",
     "@angular/cli": "^18.0.0",
     "@angular/compiler-cli": "^18.0.0",
     "jsdom": "^22.0.0",
