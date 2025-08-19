@@ -46,6 +46,8 @@ import {
   MarkdownTemplateTransform,
 } from './authoring/markdown-transform.js';
 import { routerPlugin } from './router-plugin.js';
+import { routeTreePlugin } from './route-tree-plugin.js';
+import { jsonLdSSRPlugin } from './json-ld-ssr-plugin.js';
 import { pendingTasksPlugin } from './angular-pending-tasks.plugin.js';
 import { EmitFileResult } from './models.js';
 import { liveReloadPlugin } from './live-reload-plugin.js';
@@ -72,6 +74,97 @@ export interface PluginOptions {
           include: string[];
         };
     markdownTemplateTransforms?: MarkdownTemplateTransform[];
+    /**
+     * Enable experimental route tree generation (TanStack Router style)
+     */
+    /**
+     * Route Tree Generator Configuration
+     *
+     * Enables automatic generation of type-safe route trees from file-based routing.
+     * This feature provides TypeScript definitions, JSON-LD structured data injection,
+     * and navigation utilities for AnalogJS applications.
+     *
+     * ## Basic Usage
+     * ```typescript
+     * experimental: {
+     *   routeTree: true  // Enable with defaults
+     * }
+     * ```
+     *
+     * ## Advanced Configuration
+     * ```typescript
+     * experimental: {
+     *   routeTree: {
+     *     lazyLoading: true,
+     *     angularRoutes: true,
+     *     // Debug flags for troubleshooting
+     *     debugDisableRouteTreeGeneration: false,
+     *     debugDisableJsonLdSSR: false,
+     *     debugVerbose: true
+     *   }
+     * }
+     * ```
+     *
+     * ## Troubleshooting SSR Issues
+     *
+     * If you encounter "No default export found" errors or middleware loading issues:
+     *
+     * 1. **Test Route Tree Generation**: Set `debugDisableRouteTreeGeneration: true`
+     * 2. **Test JSON-LD Plugin**: Set `debugDisableJsonLdSSR: true`
+     * 3. **Enable Debug Logs**: Set `debugVerbose: true`
+     *
+     * These flags help isolate which component is causing SSR conflicts.
+     *
+     * @see {@link https://analogjs.org/docs/features/routing/route-tree} Route Tree Documentation
+     */
+    routeTree?:
+      | boolean
+      | {
+          /** Directory containing page files */
+          pagesDirectory?: string;
+          /** Output file for the generated route tree */
+          generatedRouteTree?: string;
+          /** Additional page directories to scan */
+          additionalPagesDirs?: string[];
+          /** Quote style for generated code */
+          quoteStyle?: 'single' | 'double';
+          /** Whether to use semicolons */
+          semicolons?: boolean;
+
+          /** Generate lazy loading routes instead of eager imports */
+          lazyLoading?: boolean;
+          /** Generate Angular Router compatible routes */
+          angularRoutes?: boolean;
+          /**
+           * DEBUG: Disable route tree generation but keep other features
+           *
+           * Use this flag to isolate SSR conflicts. When set to true,
+           * the route tree plugin will not generate any files, allowing
+           * you to test if route tree generation is causing SSR issues.
+           *
+           * @default false
+           */
+          debugDisableRouteTreeGeneration?: boolean;
+          /**
+           * DEBUG: Disable JSON-LD SSR plugin
+           *
+           * Use this flag to isolate JSON-LD SSR injection issues.
+           * When set to true, the JSON-LD SSR plugin will not be loaded.
+           *
+           * @default false
+           */
+          debugDisableJsonLdSSR?: boolean;
+          /**
+           * DEBUG: Enable verbose logging for debugging
+           *
+           * Enables detailed debug logs from both the route tree plugin
+           * and JSON-LD SSR plugin to help troubleshoot generation and
+           * SSR conflicts. When disabled, plugins run silently.
+           *
+           * @default false
+           */
+          debugVerbose?: boolean;
+        };
   };
   supportedBrowsers?: string[];
   transformFilter?: (code: string, id: string) => boolean;
@@ -126,6 +219,14 @@ export function angular(options?: PluginOptions): Plugin[] {
     additionalContentDirs: options?.additionalContentDirs ?? [],
     liveReload: options?.liveReload ?? false,
     disableTypeChecking: options?.disableTypeChecking ?? true,
+    experimental: {
+      supportAnalogFormat: options?.experimental?.supportAnalogFormat ?? false,
+      markdownTemplateTransforms: options?.experimental
+        ?.markdownTemplateTransforms?.length
+        ? options.experimental.markdownTemplateTransforms
+        : defaultMarkdownTemplateTransforms,
+      routeTree: options?.experimental?.routeTree ?? false,
+    },
   };
 
   let resolvedConfig: ResolvedConfig;
@@ -614,6 +715,33 @@ export function angular(options?: PluginOptions): Plugin[] {
       jit,
     }),
     (isStorybook && angularStorybookPlugin()) as Plugin,
+    (pluginOptions.experimental?.routeTree &&
+      !(
+        typeof pluginOptions.experimental.routeTree === 'object' &&
+        pluginOptions.experimental.routeTree.debugDisableRouteTreeGeneration
+      ) &&
+      routeTreePlugin({
+        workspaceRoot: pluginOptions.workspaceRoot,
+        ...(typeof pluginOptions.experimental.routeTree === 'object'
+          ? pluginOptions.experimental.routeTree
+          : {}),
+      })) as Plugin,
+    (pluginOptions.experimental?.routeTree &&
+      !(
+        typeof pluginOptions.experimental.routeTree === 'object' &&
+        pluginOptions.experimental.routeTree.debugDisableJsonLdSSR
+      ) &&
+      jsonLdSSRPlugin({
+        workspaceRoot: pluginOptions.workspaceRoot,
+        routeTreePath:
+          typeof pluginOptions.experimental.routeTree === 'object'
+            ? pluginOptions.experimental.routeTree.generatedRouteTree
+            : undefined,
+        debugVerbose:
+          typeof pluginOptions.experimental.routeTree === 'object'
+            ? pluginOptions.experimental.routeTree.debugVerbose
+            : false,
+      })) as Plugin,
     routerPlugin(),
     pendingTasksPlugin(),
     nxFolderPlugin(),
