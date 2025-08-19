@@ -1,34 +1,21 @@
 import type { AngularRenderer } from '@storybook/angular';
-import { setProjectAnnotations as originalSetProjectAnnotations } from '@storybook/angular/dist/client/index.mjs';
-import {
+import { setProjectAnnotations as originalSetProjectAnnotations } from '@storybook/angular/dist/client/index.js';
+import type {
   NamedOrDefaultProjectAnnotations,
   NormalizedProjectAnnotations,
-  RenderContext,
 } from 'storybook/internal/types';
-import * as configAnnotations from '@storybook/angular/dist/client/config.mjs';
-
-export const render = configAnnotations.render;
-
-export async function renderToCanvas(
-  context: RenderContext<AngularRenderer>,
-  element: HTMLElement,
-) {
-  element.id = context.id;
-  await configAnnotations.renderToCanvas(context, element);
-}
-
-const renderAnnotations = {
-  render,
-  renderToCanvas,
-};
 
 export function setProjectAnnotations(
   projectAnnotations:
-    | NamedOrDefaultProjectAnnotations<any>
-    | NamedOrDefaultProjectAnnotations<any>[],
+    | NamedOrDefaultProjectAnnotations<AngularRenderer>
+    | NamedOrDefaultProjectAnnotations<AngularRenderer>[],
 ): NormalizedProjectAnnotations<AngularRenderer> {
-  return originalSetProjectAnnotations([
-    renderAnnotations,
-    projectAnnotations,
-  ]) as NormalizedProjectAnnotations<AngularRenderer>;
+  // Ensure projectAnnotations is always an array for consistent handling
+  const annotationsArray = Array.isArray(projectAnnotations)
+    ? projectAnnotations
+    : [projectAnnotations];
+
+  return originalSetProjectAnnotations(
+    annotationsArray,
+  ) as NormalizedProjectAnnotations<AngularRenderer>;
 }
