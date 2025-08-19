@@ -2,12 +2,14 @@ import { InjectionToken, Provider, signal, TransferState } from '@angular/core';
 import 'isomorphic-fetch';
 import {
   httpBatchLink,
-  HttpBatchLinkOptions,
+  HTTPBatchLinkOptions,
   CreateTRPCClientOptions,
   HTTPHeaders,
+  TRPCLink,
 } from '@trpc/client';
 import { AnyRouter } from '@trpc/server';
 import { transferStateLink } from './links/transfer-state-link';
+import { transformerLink } from './links/transformer-link';
 import {
   provideTrpcCacheState,
   provideTrpcCacheStateStatusManager,
@@ -85,7 +87,11 @@ type FetchEsque = (
 export type TrpcOptions<T extends AnyRouter> = {
   url: string;
   options?: Partial<CreateTRPCClientOptions<T>>;
-  batchLinkOptions?: Omit<HttpBatchLinkOptions, 'url' | 'headers'>;
+  batchLinkOptions?: Omit<
+    HTTPBatchLinkOptions<T['_def']['_config']['$types']>,
+    'url' | 'headers'
+  >;
+  transformer?: any; // Transformer at top level for better DX
 };
 
 export type TrpcClient<AppRouter extends AnyRouter> = ReturnType<
@@ -133,6 +139,7 @@ export const createTrpcClient = <AppRouter extends AnyRouter>({
   url,
   options,
   batchLinkOptions,
+  transformer,
 }: TrpcOptions<AppRouter>) => {
   const TrpcHeaders = signal<HTTPHeaders>({});
   const provideTrpcClient = (): Provider[] => [
@@ -141,22 +148,23 @@ export const createTrpcClient = <AppRouter extends AnyRouter>({
     {
       provide: tRPC_INJECTION_TOKEN,
       useFactory: () => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore TODO: figure out why TS is complaining
+        const links: TRPCLink<AppRouter>[] = [
+          ...(options?.links ?? []),
+          ...(transformer ? [transformerLink(transformer)] : []),
+          transferStateLink(),
+          httpBatchLink<AppRouter>({
+            ...(batchLinkOptions ?? {}),
+            headers() {
+              return TrpcHeaders();
+            },
+            fetch: customFetch as any,
+            url: url ?? '',
+            // Remove this line: ...(transformer && { transformer }),
+          } as HTTPBatchLinkOptions<AppRouter['_def']['_config']['$types']>),
+        ];
+
         return createTRPCRxJSProxyClient<AppRouter>({
-          transformer: options?.transformer,
-          links: [
-            ...(options?.links ?? []),
-            transferStateLink(),
-            httpBatchLink({
-              ...(batchLinkOptions ?? {}),
-              headers() {
-                return TrpcHeaders();
-              },
-              fetch: customFetch as FetchEsque,
-              url: url ?? '',
-            }),
-          ],
+          links,
         });
       },
       deps: [tRPC_CACHE_STATE, TransferState],

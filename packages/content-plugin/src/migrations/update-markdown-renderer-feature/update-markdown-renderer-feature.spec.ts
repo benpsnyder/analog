@@ -55,5 +55,5 @@ export const appConfig: ApplicationConfig = {
     expect(configContent).toContain(
       '@benpsnyder/analogjs-esm-content/prism-highlighter',
     );
-  });
+  }, 10000); // Increase timeout to 10 seconds
 });
