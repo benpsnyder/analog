@@ -237,6 +237,9 @@ importers:
       '@storybook/addon-links':
         specifier: 9.0.18
         version: 9.0.18(react@19.1.1)(storybook@9.1.2(@testing-library/dom@10.4.0)(prettier@3.6.2)(rolldown-vite@7.1.2(@types/node@24.3.0)(esbuild@0.25.9)(jiti@2.5.1)(less@4.3.0)(sass-embedded@1.86.0)(sass@1.88.0)(stylus@0.64.0)(terser@5.43.1)(tsx@4.20.4)(yaml@2.8.1)))
+      '@storybook/addon-vitest':
+        specifier: 9.0.18
+        version: 9.0.18(@vitest/runner@3.2.4)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(storybook@9.1.2(@testing-library/dom@10.4.0)(prettier@3.6.2)(rolldown-vite@7.1.2(@types/node@24.3.0)(esbuild@0.25.9)(jiti@2.5.1)(less@4.3.0)(sass-embedded@1.86.0)(sass@1.88.0)(stylus@0.64.0)(terser@5.43.1)(tsx@4.20.4)(yaml@2.8.1)))(vitest@3.2.4)
       '@storybook/angular':
         specifier: 9.0.18
         version: 9.0.18(0a0f49eb6075433810dab898856e28bf)
@@ -450,6 +453,9 @@ importers:
       tailwindcss:
         specifier: ^3.1.0
         version: 3.4.13(ts-node@10.9.2(@swc/core@1.13.3(@swc/helpers@0.5.17))(@types/node@24.3.0)(typescript@5.8.3))
+      tinyglobby:
+        specifier: ^0.2.14
+        version: 0.2.14
       ts-dedent:
         specifier: ^2.2.0
         version: 2.2.0
@@ -5468,6 +5474,21 @@ packages:
       storybook: ^9.0.18
     peerDependenciesMeta:
       react:
+        optional: true
+
+  '@storybook/addon-vitest@9.0.18':
+    resolution: {integrity: sha512-uPLh9H7kRho+raxyIBCm8Ymd3j0VPuWIQ1HSAkdx8itmNafNqs4HE67Z8Cfl259YzdWU/j5BhZqoiT62BCbIDw==}
+    peerDependencies:
+      '@vitest/browser': ^3.0.0
+      '@vitest/runner': ^3.0.0
+      storybook: ^9.0.18
+      vitest: ^3.0.0
+    peerDependenciesMeta:
+      '@vitest/browser':
+        optional: true
+      '@vitest/runner':
+        optional: true
+      vitest:
         optional: true
 
   '@storybook/angular@9.0.18':
@@ -23972,6 +23993,20 @@ snapshots:
       storybook: 9.1.2(@testing-library/dom@10.4.0)(prettier@3.6.2)(rolldown-vite@7.1.2(@types/node@24.3.0)(esbuild@0.25.9)(jiti@2.5.1)(less@4.3.0)(sass-embedded@1.86.0)(sass@1.88.0)(stylus@0.64.0)(terser@5.43.1)(tsx@4.20.4)(yaml@2.8.1))
     optionalDependencies:
       react: 19.1.1
+
+  '@storybook/addon-vitest@9.0.18(@vitest/runner@3.2.4)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(storybook@9.1.2(@testing-library/dom@10.4.0)(prettier@3.6.2)(rolldown-vite@7.1.2(@types/node@24.3.0)(esbuild@0.25.9)(jiti@2.5.1)(less@4.3.0)(sass-embedded@1.86.0)(sass@1.88.0)(stylus@0.64.0)(terser@5.43.1)(tsx@4.20.4)(yaml@2.8.1)))(vitest@3.2.4)':
+    dependencies:
+      '@storybook/global': 5.0.0
+      '@storybook/icons': 1.4.0(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      prompts: 2.4.2
+      storybook: 9.1.2(@testing-library/dom@10.4.0)(prettier@3.6.2)(rolldown-vite@7.1.2(@types/node@24.3.0)(esbuild@0.25.9)(jiti@2.5.1)(less@4.3.0)(sass-embedded@1.86.0)(sass@1.88.0)(stylus@0.64.0)(terser@5.43.1)(tsx@4.20.4)(yaml@2.8.1))
+      ts-dedent: 2.2.0
+    optionalDependencies:
+      '@vitest/runner': 3.2.4
+      vitest: 3.2.4(@types/node@24.3.0)(@vitest/ui@3.2.4)(esbuild@0.25.9)(happy-dom@18.0.1)(jiti@2.5.1)(jsdom@26.1.0)(less@4.3.0)(sass-embedded@1.86.0)(sass@1.88.0)(stylus@0.64.0)(terser@5.43.1)(tsx@4.20.4)(yaml@2.8.1)
+    transitivePeerDependencies:
+      - react
+      - react-dom
 
   '@storybook/angular@9.0.18(0a0f49eb6075433810dab898856e28bf)':
     dependencies:

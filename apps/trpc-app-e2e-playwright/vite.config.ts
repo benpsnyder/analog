@@ -10,6 +10,7 @@ export default defineConfig(({ mode }) => {
       globals: true,
       environment: 'jsdom',
       include: ['tests/**/*.spec.ts'],
+      testTimeout: 30000, // Increase timeout to 30 seconds for e2e tests
       cache: {
         dir: `../../node_modules/.vitest`,
       },

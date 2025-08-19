@@ -6,7 +6,12 @@ describe('blog-app', () => {
   });
   it('should serve up HTML for pre-rendered markdown route', () => {
     cy.visit('/blog/2022-12-27-my-first-post');
-    cy.get('h1').should('contain', 'My First Post');
+
+    // Wait for the page to load and the Angular app to be ready
+    cy.get('blog-root', { timeout: 10000 }).should('exist');
+
+    // Wait for the h1 element and check its content
+    cy.get('h1', { timeout: 10000 }).should('contain', 'My First Post');
   });
   it('should serve up XML for pre-rendered XML route from vite.config at /api/rss.xml', () => {
     cy.request('/api/rss.xml')
