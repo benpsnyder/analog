@@ -96,7 +96,9 @@ async function* vitestApplicationBuilder(
       tsConfig: path.relative(workspaceRoot, options.tsConfig),
       watch: options.watch === true,
       entryPoints,
-      allowedCommonJsDependencies: ['@analogjs/vitest-angular/setup-zone'],
+      allowedCommonJsDependencies: [
+        '@benpsnyder/analogjs-esm-vitest-angular/setup-zone',
+      ],
       sourceMap: {
         scripts: true,
         styles: false,

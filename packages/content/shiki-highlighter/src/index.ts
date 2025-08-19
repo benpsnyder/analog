@@ -1,4 +1,7 @@
-import { ContentRenderer, NoopContentRenderer } from '@analogjs/content';
+import {
+  ContentRenderer,
+  NoopContentRenderer,
+} from '@benpsnyder/analogjs-esm-content';
 import { Provider } from '@angular/core';
 import type {
   BundledLanguage,

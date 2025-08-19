@@ -14,19 +14,23 @@ export function toMarkdownModule(
 ): () => Promise<RouteExport> {
   return async () => {
     const createLoader = () =>
-      Promise.all([import('@analogjs/content'), markdownFileFactory()]);
+      Promise.all([
+        import('@benpsnyder/analogjs-esm-content'),
+        markdownFileFactory(),
+      ]);
 
     const [
       { parseRawContentFile, MarkdownRouteComponent, ContentRenderer },
       markdownFile,
-    ]: [typeof import('@analogjs/content'), string] = await (isNgZoneEnabled
-      ? // We are not able to use `runOutsideAngular` because we are not inside
-        // an injection context to retrieve the `NgZone` instance.
-        // The `Zone.root.run` is required when the code is running in the
-        // browser since asynchronous tasks being scheduled in the current context
-        // are a reason for unnecessary change detection cycles.
-        Zone.root.run(createLoader)
-      : createLoader());
+    ]: [typeof import('@benpsnyder/analogjs-esm-content'), string] =
+      await (isNgZoneEnabled
+        ? // We are not able to use `runOutsideAngular` because we are not inside
+          // an injection context to retrieve the `NgZone` instance.
+          // The `Zone.root.run` is required when the code is running in the
+          // browser since asynchronous tasks being scheduled in the current context
+          // are a reason for unnecessary change detection cycles.
+          Zone.root.run(createLoader)
+        : createLoader());
 
     const { content, attributes } = parseRawContentFile(markdownFile);
     const { title, meta } = attributes;

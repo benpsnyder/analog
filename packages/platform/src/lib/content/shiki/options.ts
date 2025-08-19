@@ -1,9 +1,9 @@
-import {
+import type {
   ShikiHighlighterOptions,
   ShikiHighlightOptions,
 } from './shiki-highlighter.js';
 
-import { BundledLanguage } from 'shiki/langs';
+import type { BundledLanguage } from 'shiki';
 
 export interface WithShikiHighlighterOptions {
   highlighter?: Partial<ShikiHighlighterOptions> & {

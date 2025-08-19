@@ -1,6 +1,6 @@
 import { Plugin } from 'vite';
-import viteNitroPlugin from '@analogjs/vite-plugin-nitro';
-import angular from '@analogjs/vite-plugin-angular';
+import viteNitroPlugin from '@benpsnyder/analogjs-esm-vite-plugin-nitro';
+import angular from '@benpsnyder/analogjs-esm-vite-plugin-angular';
 
 import { Options } from './options.js';
 import { routerPlugin } from './router-plugin.js';

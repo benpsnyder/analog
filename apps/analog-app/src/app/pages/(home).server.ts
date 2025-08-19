@@ -1,5 +1,5 @@
 import { setCookie } from 'h3';
-import { PageServerLoad } from '@analogjs/router';
+import { PageServerLoad } from '@benpsnyder/analogjs-esm-router';
 
 import { Product } from '../products';
 

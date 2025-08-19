@@ -8,7 +8,7 @@ import { Plugin, transformWithEsbuild, UserConfig } from 'vite';
  */
 export function angularVitestPlugin(): Plugin {
   return {
-    name: '@analogjs/vitest-angular-esm-plugin',
+    name: '@benpsnyder/analogjs-esm-vitest-angular-esm-plugin',
     apply: 'serve',
     enforce: 'post',
     config(userConfig) {
@@ -56,7 +56,7 @@ export function angularVitestPlugin(): Plugin {
  */
 export function angularVitestEsbuildPlugin(): Plugin {
   return {
-    name: '@analogjs/vitest-angular-esbuild-plugin',
+    name: '@benpsnyder/analogjs-esm-vitest-angular-esbuild-plugin',
     enforce: 'pre',
     config(userConfig: UserConfig) {
       return {
@@ -74,7 +74,7 @@ export function angularVitestEsbuildPlugin(): Plugin {
  */
 export function angularVitestSourcemapPlugin(): Plugin {
   return {
-    name: '@analogjs/vitest-angular-sourcemap-plugin',
+    name: '@benpsnyder/analogjs-esm-vitest-angular-sourcemap-plugin',
     async transform(code: string, id: string) {
       if (!/\.ts/.test(id)) {
         return;

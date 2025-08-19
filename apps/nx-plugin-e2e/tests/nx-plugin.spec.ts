@@ -17,7 +17,10 @@ describe.skip('nx-plugin e2e', () => {
   // on a unique project in the workspace, such that they
   // are not dependent on one another.
   beforeAll(async () => {
-    ensureNxProject('@analogjs/platform', 'node_modules/@analogjs/platform');
+    ensureNxProject(
+      '@benpsnyder/analogjs-esm-platform',
+      'node_modules/@benpsnyder/analogjs-esm-platform',
+    );
   });
 
   afterAll(async () => {
@@ -29,7 +32,7 @@ describe.skip('nx-plugin e2e', () => {
   it('should create hello-world', async () => {
     const project = uniq('app');
     await runNxCommandAsync(
-      `generate @analogjs/platform:application ${project} --addTailwind=true --addTRPC=true`,
+      `generate @benpsnyder/analogjs-esm-platform:application ${project} --addTailwind=true --addTRPC=true`,
     );
     copyNodeModules(['@analogjs']);
 

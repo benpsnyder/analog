@@ -7,9 +7,8 @@
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
-
       "options": {
-        "outputPath": "node_modules/@analogjs/astro-angular",
+        "outputPath": "node_modules/@benpsnyder/analogjs-esm-astro-angular",
         "main": "packages/astro-angular/src/index.ts",
         "tsConfig": "packages/astro-angular/tsconfig.lib.json",
         "assets": [

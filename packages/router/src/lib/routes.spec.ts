@@ -613,7 +613,7 @@ describe('routes', () => {
     });
 
     it('should log a warning when default export is falsy', async () => {
-      const fileName = '/app/routes/index.ts';
+      const fileName = '/app/routes/index';
       const files: Files = {
         [fileName]: () => Promise.resolve({} as unknown as RouteExport),
       };
@@ -631,7 +631,7 @@ describe('routes', () => {
     });
 
     it('should not log a warning default export is falsy with a redirect', async () => {
-      const fileName = '/app/routes/index.ts';
+      const fileName = '/app/routes/index';
       const files: Files = {
         [fileName]: () =>
           Promise.resolve({

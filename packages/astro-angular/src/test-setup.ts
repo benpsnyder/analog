@@ -1,1 +1,1 @@
-import '@analogjs/vite-plugin-angular/setup-vitest';
+import '@benpsnyder/analogjs-esm-vite-plugin-angular/setup-vitest';

@@ -8,12 +8,14 @@
   "targets": {
     "build": {
       "executor": "nx:run-commands",
-      "outputs": ["{workspaceRoot}/node_modules/@analogjs/content"],
+      "outputs": [
+        "{workspaceRoot}/node_modules/@benpsnyder/analogjs-esm-content"
+      ],
       "options": {
         "commands": [
           "nx build-package content",
           "nx build content-plugin",
-          "npx rimraf node_modules/@analogjs/content/.npmignore"
+          "npx rimraf node_modules/@benpsnyder/analogjs-esm-content/.npmignore"
         ],
         "parallel": false
       },
@@ -21,7 +23,9 @@
     },
     "build-package": {
       "executor": "@angular-devkit/build-angular:ng-packagr",
-      "outputs": ["{workspaceRoot}/node_modules/@analogjs/content"],
+      "outputs": [
+        "{workspaceRoot}/node_modules/@benpsnyder/analogjs-esm-content"
+      ],
       "options": {
         "project": "packages/content/ng-package.json"
       },

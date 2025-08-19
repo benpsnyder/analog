@@ -10,7 +10,7 @@
       "executor": "@nx/js:tsc",
       "dependsOn": ["^build"],
       "options": {
-        "outputPath": "node_modules/@analogjs/platform",
+        "outputPath": "node_modules/@benpsnyder/analogjs-esm-platform",
         "main": "packages/platform/src/index.ts",
         "tsConfig": "packages/platform/tsconfig.lib.json",
         "assets": [
@@ -31,7 +31,9 @@
     },
     "build": {
       "executor": "nx:run-commands",
-      "outputs": ["{workspaceRoot}/node_modules/@analogjs/platform"],
+      "outputs": [
+        "{workspaceRoot}/node_modules/@benpsnyder/analogjs-esm-platform"
+      ],
       "options": {
         "commands": ["nx build-package platform", "nx build nx-plugin"],
         "parallel": false

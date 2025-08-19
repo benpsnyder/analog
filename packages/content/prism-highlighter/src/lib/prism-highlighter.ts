@@ -1,4 +1,4 @@
-import { MarkedContentHighlighter } from '@analogjs/content';
+import { MarkedContentHighlighter } from '@benpsnyder/analogjs-esm-content';
 import { Injectable } from '@angular/core';
 import { markedHighlight } from 'marked-highlight';
 

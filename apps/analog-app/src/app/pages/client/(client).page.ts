@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { ServerOnly } from '@analogjs/router';
+import { ServerOnly } from '@benpsnyder/analogjs-esm-router';
 
 @Component({
   imports: [ServerOnly],

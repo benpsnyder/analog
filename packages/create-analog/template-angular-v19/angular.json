@@ -10,7 +10,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@analogjs/platform:vite",
+          "builder": "@benpsnyder/analogjs-esm-platform:vite",
           "options": {
             "configFile": "vite.config.ts",
             "main": "src/main.ts",
@@ -29,7 +29,7 @@
           }
         },
         "serve": {
-          "builder": "@analogjs/platform:vite-dev-server",
+          "builder": "@benpsnyder/analogjs-esm-platform:vite-dev-server",
           "defaultConfiguration": "development",
           "options": {
             "buildTarget": "my-app:build",
@@ -46,7 +46,7 @@
           }
         },
         "test": {
-          "builder": "@analogjs/vitest-angular:test"
+          "builder": "@benpsnyder/analogjs-esm-vitest-angular:test"
         }
       }
     }

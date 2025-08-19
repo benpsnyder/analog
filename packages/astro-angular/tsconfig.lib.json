@@ -7,8 +7,8 @@
     "inlineSources": true,
     "types": [],
     "paths": {
-      "@analogjs/vite-plugin-angular": [
-        "./node_modules/@analogjs/vite-plugin-angular"
+      "@benpsnyder/analogjs-esm-vite-plugin-angular": [
+        "./node_modules/@benpsnyder/analogjs-esm-vite-plugin-angular"
       ]
     }
   },
