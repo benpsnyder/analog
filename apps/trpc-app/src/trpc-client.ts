@@ -1,6 +1,6 @@
 import type { AppRouter } from './server/trpc/routers';
-import type { CreateTrpcProxyClient } from '@analogjs/trpc';
-import { createTrpcClient } from '@analogjs/trpc';
+import type { CreateTrpcProxyClient } from '@benpsnyder/analogjs-esm-trpc';
+import { createTrpcClient } from '@benpsnyder/analogjs-esm-trpc';
 import { inject } from '@angular/core';
 import superjson from 'superjson';
 

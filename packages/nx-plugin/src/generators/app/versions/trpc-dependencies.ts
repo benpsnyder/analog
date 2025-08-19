@@ -18,7 +18,7 @@ import {
 } from './nx_18_X/versions';
 
 const tRPCDependencyKeys = [
-  '@analogjs/trpc',
+  '@benpsnyder/analogjs-esm-trpc',
   '@trpc/client',
   '@trpc/server',
   'superjson',
@@ -32,6 +32,10 @@ export const getTrpcDependencies = (
 ): Record<TrpcDependency, string> => {
   const escapedNxVersion = clean(nxVersion);
 
+  if (!escapedNxVersion) {
+    throw new Error(`Invalid Nx version: ${nxVersion}`);
+  }
+
   // fail out for versions <17.0.0
   if (lt(escapedNxVersion, '17.0.0')) {
     throw new Error(
@@ -42,7 +46,7 @@ export const getTrpcDependencies = (
   // install 17.x deps for versions <18.0.0
   if (lt(escapedNxVersion, '18.0.0')) {
     return {
-      '@analogjs/trpc': V17_X_ANALOG_JS_TRPC,
+      '@benpsnyder/analogjs-esm-trpc': V17_X_ANALOG_JS_TRPC,
       '@trpc/client': V17_X_TRPC_CLIENT,
       '@trpc/server': V17_X_TRPC_SERVER,
       superjson: V17_X_SUPERJSON,
@@ -53,7 +57,7 @@ export const getTrpcDependencies = (
 
   // return latest deps for versions >= 18.0.0
   return {
-    '@analogjs/trpc': V18_X_ANALOG_JS_TRPC,
+    '@benpsnyder/analogjs-esm-trpc': V18_X_ANALOG_JS_TRPC,
     '@trpc/client': V18_X_TRPC_CLIENT,
     '@trpc/server': V18_X_TRPC_SERVER,
     superjson: V18_X_SUPERJSON,

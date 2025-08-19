@@ -1,10 +1,10 @@
-import type { StorybookConfig } from '@analogjs/storybook-angular';
+import type { StorybookConfig } from '@benpsnyder/analogjs-esm-storybook-angular';
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.@(mdx|stories.@(js|jsx|ts|tsx))'],
   addons: ['@storybook/addon-links', '@storybook/addon-docs'],
   framework: {
-    name: '@analogjs/storybook-angular',
+    name: '@benpsnyder/analogjs-esm-storybook-angular',
     options: {},
   },
 };

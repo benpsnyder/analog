@@ -1,4 +1,4 @@
-import type { PageServerLoad } from '@analogjs/router';
+import type { PageServerLoad } from '@benpsnyder/analogjs-esm-router';
 import { getQuery } from 'h3';
 
 export async function load({ event }: PageServerLoad) {

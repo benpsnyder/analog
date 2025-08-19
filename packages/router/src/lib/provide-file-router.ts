@@ -4,7 +4,7 @@ import {
   makeEnvironmentProviders,
 } from '@angular/core';
 import { provideRouter, RouterFeatures, ROUTES, Routes } from '@angular/router';
-import { API_PREFIX } from '@analogjs/router/tokens';
+import { API_PREFIX } from '@benpsnyder/analogjs-esm-router/tokens';
 import { ɵHTTP_ROOT_INTERCEPTOR_FNS as HTTP_ROOT_INTERCEPTOR_FNS } from '@angular/common/http';
 
 import { routes } from './routes';

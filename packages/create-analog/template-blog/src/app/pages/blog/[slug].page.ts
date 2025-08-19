@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
-import { injectContent, MarkdownComponent } from '@analogjs/content';
+import { injectContent, MarkdownComponent } from '@benpsnyder/analogjs-esm-content';
 
 import PostAttributes from '../../post-attributes';
 

@@ -1,4 +1,4 @@
-import { PageServerLoad } from '@analogjs/router';
+import { PageServerLoad } from '@benpsnyder/analogjs-esm-router';
 
 export const load = async ({ params, fetch }: PageServerLoad) => {
   return {

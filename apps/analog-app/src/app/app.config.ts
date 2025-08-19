@@ -13,7 +13,7 @@ import {
   withExtraRoutes,
   withDebugRoutes,
   requestContextInterceptor,
-} from '@analogjs/router';
+} from '@benpsnyder/analogjs-esm-router';
 import { withNavigationErrorHandler } from '@angular/router';
 
 const fallbackRoutes = [

@@ -27,8 +27,8 @@ describe('update-markdown-renderer-feature migration', () => {
       `import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { provideClientHydration } from '@angular/platform-browser';
-import { provideFileRouter } from '@analogjs/router';
-import { provideContent, withMarkdownRenderer } from '@analogjs/content';
+import { provideFileRouter } from '@benpsnyder/analogjs-esm-router';
+import { provideContent, withMarkdownRenderer } from '@benpsnyder/analogjs-esm-content';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -52,6 +52,8 @@ export const appConfig: ApplicationConfig = {
       'utf-8',
     );
     expect(configContent).toContain('withPrismHighlighter()');
-    expect(configContent).toContain('@analogjs/content/prism-highlighter');
+    expect(configContent).toContain(
+      '@benpsnyder/analogjs-esm-content/prism-highlighter',
+    );
   }, 10000); // Increase timeout to 10 seconds
 });

@@ -1,6 +1,8 @@
 /// <reference types="vitest" />
 
-import analog, { type PrerenderContentFile } from '@analogjs/platform';
+import analog, {
+  type PrerenderContentFile,
+} from '@benpsnyder/analogjs-esm-platform';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import { defineConfig } from 'vite';
 import fs from 'node:fs';

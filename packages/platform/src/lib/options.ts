@@ -1,11 +1,11 @@
-import type { PluginOptions } from '@analogjs/vite-plugin-angular';
+import type { PluginOptions } from '@benpsnyder/analogjs-esm-vite-plugin-angular';
 import type { NitroConfig, PrerenderRoute } from 'nitropack';
 import type {
   SitemapConfig,
   PrerenderContentDir,
   PrerenderContentFile,
   PrerenderRouteConfig,
-} from '@analogjs/vite-plugin-nitro';
+} from '@benpsnyder/analogjs-esm-vite-plugin-nitro';
 
 import { ContentPluginOptions } from './content-plugin.js';
 

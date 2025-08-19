@@ -9,7 +9,7 @@
       "executor": "@nx/js:tsc",
 
       "options": {
-        "outputPath": "node_modules/@analogjs/vite-plugin-nitro",
+        "outputPath": "node_modules/@benpsnyder/analogjs-esm-vite-plugin-nitro",
         "main": "packages/vite-plugin-nitro/src/index.ts",
         "tsConfig": "packages/vite-plugin-nitro/tsconfig.lib.json",
         "assets": [

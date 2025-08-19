@@ -63,7 +63,7 @@ export function nitro(options?: Options, nitroOptions?: NitroConfig): Plugin[] {
         })
       : false) as Plugin,
     {
-      name: '@analogjs/vite-plugin-nitro',
+      name: '@benpsnyder/analogjs-esm-vite-plugin-nitro',
       async config(userConfig, { mode, command }) {
         isServe = command === 'serve';
         isBuild = command === 'build';
@@ -342,7 +342,7 @@ export function nitro(options?: Options, nitroOptions?: NitroConfig): Plugin[] {
                * as it won't resolve the renderer.ts file correctly in node.
                */
               import { eventHandler, getResponseHeader } from 'h3';
-              
+
               // @ts-ignore
               import renderer from '${ssrEntry}';
               // @ts-ignore
@@ -354,7 +354,7 @@ export function nitro(options?: Options, nitroOptions?: NitroConfig): Plugin[] {
                 if (noSSR === 'true') {
                   return template;
                 }
-              
+
                 const html = await renderer(event.node.req.url, template, {
                   req: event.node.req,
                   res: event.node.res,
@@ -455,7 +455,7 @@ export function nitro(options?: Options, nitroOptions?: NitroConfig): Plugin[] {
               }
 
               console.log(
-                `\n\nThe '@analogjs/platform' server has been successfully built.`,
+                `\n\nThe '@benpsnyder/analogjs-esm-platform' server has been successfully built.`,
               );
             },
           },
@@ -538,13 +538,13 @@ export function nitro(options?: Options, nitroOptions?: NitroConfig): Plugin[] {
           await buildServer(options, nitroConfig);
 
           console.log(
-            `\n\nThe '@analogjs/platform' server has been successfully built.`,
+            `\n\nThe '@benpsnyder/analogjs-esm-platform' server has been successfully built.`,
           );
         }
       },
     },
     {
-      name: '@analogjs/vite-plugin-nitro-api-prefix',
+      name: '@benpsnyder/analogjs-esm-vite-plugin-nitro-api-prefix',
       config() {
         return {
           define: {

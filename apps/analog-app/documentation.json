@@ -18,7 +18,7 @@
         "deprecated": false,
         "deprecationMessage": "",
         "type": "StorybookConfig",
-        "defaultValue": "{\n  stories: ['../src/**/*.@(mdx|stories.@(js|jsx|ts|tsx))'],\n  addons: [],\n  framework: {\n    name: '@analogjs/storybook-angular',\n    options: {},\n  },\n}"
+        "defaultValue": "{\n  stories: ['../src/**/*.@(mdx|stories.@(js|jsx|ts|tsx))'],\n  addons: [],\n  framework: {\n    name: '@benpsnyder/analogjs-esm-storybook-angular',\n    options: {},\n  },\n}"
       },
       {
         "name": "Large",
@@ -188,7 +188,7 @@
           "deprecated": false,
           "deprecationMessage": "",
           "type": "StorybookConfig",
-          "defaultValue": "{\n  stories: ['../src/**/*.@(mdx|stories.@(js|jsx|ts|tsx))'],\n  addons: [],\n  framework: {\n    name: '@analogjs/storybook-angular',\n    options: {},\n  },\n}"
+          "defaultValue": "{\n  stories: ['../src/**/*.@(mdx|stories.@(js|jsx|ts|tsx))'],\n  addons: [],\n  framework: {\n    name: '@benpsnyder/analogjs-esm-storybook-angular',\n    options: {},\n  },\n}"
         }
       ],
       "apps/analog-app/src/stories/button.stories.ts": [

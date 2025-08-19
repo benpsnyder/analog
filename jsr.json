@@ -1,0 +1,24 @@
+{
+  "$schema": "https://jsr.io/schema/config-file.v1.json",
+  "name": "@benpsnyder",
+  "version": "2.0.0-alpha.16",
+  "exports": {},
+  "publish": {
+    "exclude": [
+      "**/*.spec.ts",
+      "**/*.test.ts",
+      "**/test-setup.ts",
+      "**/__tests__/**",
+      "**/coverage/**",
+      "**/dist/**",
+      "**/node_modules/**",
+      "**/*.map",
+      ".nx/**",
+      ".vscode/**",
+      ".git/**",
+      "apps/**",
+      "libs/**",
+      "tools/**"
+    ]
+  }
+}

@@ -38,7 +38,7 @@ export function updateServeTarget(
         json.projects[schema.project].root =
           json.projects[schema.project].root || '.';
         json.projects[schema.project].architect.serve = {
-          builder: '@analogjs/platform:vite-dev-server',
+          builder: '@benpsnyder/analogjs-esm-platform:vite-dev-server',
           ...commonConfig,
         };
 
@@ -51,8 +51,16 @@ export function updateServeTarget(
 
     const projectConfig = projects.get(schema.project);
 
+    if (!projectConfig) {
+      throw new Error(`Project ${schema.project} not found`);
+    }
+
+    if (!projectConfig.targets) {
+      projectConfig.targets = {};
+    }
+
     projectConfig.targets.serve = {
-      executor: '@analogjs/platform:vite-dev-server',
+      executor: '@benpsnyder/analogjs-esm-platform:vite-dev-server',
       ...commonConfig,
     };
     projectConfig.targets.build.outputs = [
