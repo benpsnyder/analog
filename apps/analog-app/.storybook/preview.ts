@@ -1,6 +1,9 @@
 import 'zone.js';
 
-import { applicationConfig, type Preview } from '@analogjs/storybook-angular';
+import {
+  applicationConfig,
+  type Preview,
+} from '@benpsnyder/analogjs-esm-storybook-angular';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 
 // compodoc configuration

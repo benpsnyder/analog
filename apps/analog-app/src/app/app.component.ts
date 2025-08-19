@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { TopBarComponent } from '@analogjs/top-bar';
+import { TopBarComponent } from '@benpsnyder/analogjs-esm-top-bar';
 
 @Component({
   selector: 'analogjs-root',

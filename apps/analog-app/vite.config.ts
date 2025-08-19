@@ -1,6 +1,6 @@
 /// <reference types="vitest" />
 
-import analog from '@analogjs/platform';
+import analog from '@benpsnyder/analogjs-esm-platform';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig, Plugin } from 'vite';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';

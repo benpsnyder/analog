@@ -26,6 +26,7 @@ import { addTrpc } from './lib/add-trpc';
 import { cleanupFiles } from './lib/cleanup-files';
 import { addAnalogProjectConfig } from './lib/add-analog-project-config';
 import { updateIndex } from './lib/update-index-html';
+import { addAnalogDependencies } from './lib/add-analog-dependencies';
 
 export interface NormalizedOptions
   extends AnalogNxApplicationGeneratorOptions,

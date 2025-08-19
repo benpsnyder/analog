@@ -1,13 +1,15 @@
 import { describe, expect } from 'vitest';
 import { platformPlugin } from './platform-plugin.js';
 
-vi.mock('@analogjs/vite-plugin-nitro');
+vi.mock('@benpsnyder/analogjs-esm-vite-plugin-nitro');
 vi.mock('./ssr/ssr-build-plugin');
 vi.mock('./ssr/dev-server-plugin');
 
 describe('platformPlugin', () => {
   const setup = async () => {
-    const viteNitroPluginImport = await import('@analogjs/vite-plugin-nitro');
+    const viteNitroPluginImport = await import(
+      '@benpsnyder/analogjs-esm-vite-plugin-nitro'
+    );
     const viteNitroPluginSpy = vi.fn(() => []);
     viteNitroPluginImport.default = viteNitroPluginSpy;
 

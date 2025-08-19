@@ -1,7 +1,7 @@
 /// <reference types="vitest" />
 
 import { defineConfig } from 'vite';
-import analog from '@analogjs/platform';__TAILWIND_IMPORT__
+import analog from '@benpsnyder/analogjs-esm-platform';__TAILWIND_IMPORT__
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({

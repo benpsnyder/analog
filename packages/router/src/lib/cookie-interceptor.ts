@@ -1,7 +1,7 @@
 import { isPlatformServer } from '@angular/common';
 import { HttpHandlerFn, HttpHeaders, HttpRequest } from '@angular/common/http';
 import { PLATFORM_ID, inject } from '@angular/core';
-import { injectRequest } from '@analogjs/router/tokens';
+import { injectRequest } from '@benpsnyder/analogjs-esm-router/tokens';
 
 export function cookieInterceptor(
   req: HttpRequest<unknown>,

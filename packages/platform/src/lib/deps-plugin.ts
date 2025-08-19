@@ -12,10 +12,10 @@ export function depsPlugin(options?: Options): Plugin[] {
       name: 'analogjs-deps-plugin',
       config() {
         return {
-          esbuild: { exclude: ['**/*.ts', '**/*.js'] },
+          rolldown: { exclude: ['**/*.ts', '**/*.js'] },
           ssr: {
             noExternal: [
-              '@analogjs/**',
+              '@benpsnyder/analogjs-esm-**',
               'firebase/**',
               'firebase-admin/**',
               'rxfire',
@@ -28,6 +28,7 @@ export function depsPlugin(options?: Options): Plugin[] {
             include: [
               '@angular/common',
               '@angular/common/http',
+              '@angular/compiler',
               ...(Number(VERSION.major) > 15
                 ? ['@angular/core/rxjs-interop']
                 : []),
@@ -35,8 +36,8 @@ export function depsPlugin(options?: Options): Plugin[] {
             ],
             exclude: [
               '@angular/platform-server',
-              '@analogjs/content',
-              '@analogjs/router',
+              '@benpsnyder/analogjs-esm-content',
+              '@benpsnyder/analogjs-esm-router',
               '@nx/angular',
               '@nx/vite',
               '@nx/devkit',

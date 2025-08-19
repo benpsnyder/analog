@@ -5,7 +5,7 @@ import { CONTENT_FILES_LIST_TOKEN } from './content-files-list-token';
 
 export const CONTENT_FILES_TOKEN = new InjectionToken<
   Record<string, () => Promise<string>>
->('@analogjs/content Content Files', {
+>('@benpsnyder/analogjs-esm-content Content Files', {
   providedIn: 'root',
   factory() {
     const contentFiles = getContentFiles();

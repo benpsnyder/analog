@@ -1,4 +1,4 @@
-import { RouteMeta, injectLoad } from '@analogjs/router';
+import { RouteMeta, injectLoad } from '@benpsnyder/analogjs-esm-router';
 import { Component } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLinkWithHref } from '@angular/router';

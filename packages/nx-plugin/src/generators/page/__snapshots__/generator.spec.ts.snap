@@ -13,7 +13,7 @@ export default class HomePage {}
 `;
 
 exports[`analog-page generator > should create analog page with metadata correctly > page 1`] = `
-"import { RouteMeta } from '@analogjs/router';
+"import { RouteMeta } from '@benpsnyder/analogjs-esm-router';
 import { Component } from '@angular/core';
 
 export const routeMeta: RouteMeta = {
@@ -30,7 +30,7 @@ export default class HomePage {}
 `;
 
 exports[`analog-page generator > should create analog page with redirect correctly > page 1`] = `
-"import { RouteMeta } from '@analogjs/router';
+"import { RouteMeta } from '@benpsnyder/analogjs-esm-router';
 
 export const routeMeta: RouteMeta = {
   redirectTo: '/home',

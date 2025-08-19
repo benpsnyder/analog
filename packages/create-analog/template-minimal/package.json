@@ -16,8 +16,8 @@
   },
   "private": true,
   "dependencies": {
-    "@analogjs/content": "^2.0.0-alpha.16",
-    "@analogjs/router": "^2.0.0-alpha.16",
+    "@benpsnyder/analogjs-esm-content": "^2.0.0-alpha.16",
+    "@benpsnyder/analogjs-esm-router": "^2.0.0-alpha.16",
     "@angular/animations": "^19.0.0",
     "@angular/common": "^19.0.0",
     "@angular/compiler": "^19.0.0",
@@ -38,21 +38,21 @@
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
-    "@analogjs/platform": "^2.0.0-alpha.16",
-    "@analogjs/vite-plugin-angular": "^2.0.0-alpha.16",
-    "@analogjs/vitest-angular": "^2.0.0-alpha.16",
+    "@benpsnyder/analogjs-esm-platform": "^2.0.0-alpha.16",
+    "@benpsnyder/analogjs-esm-vite-plugin-angular": "^2.0.0-alpha.16",
+    "@benpsnyder/analogjs-esm-vitest-angular": "^2.0.0-alpha.16",
     "@angular-devkit/build-angular": "^19.0.0",
     "@angular/build": "^19.0.0",
     "@angular/cli": "^19.0.0",
     "@angular/compiler-cli": "^19.0.0",
     "jsdom": "^22.0.0",
     "typescript": "~5.8.0",
-    "vite": "^7.0.0",
+    "vite": "npm:rolldown-vite@7.1.2",
     "vite-tsconfig-paths": "^4.2.0",
     "vitest": "^3.0.0"
   },
   "overrides": {
-    "@analogjs/platform": {
+    "@benpsnyder/analogjs-esm-platform": {
       "vite": "$vite"
     }
   }

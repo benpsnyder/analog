@@ -145,7 +145,7 @@ describe.skip('create-analog e2e', () => {
 
     // ensure highlighter is added
     expect(appConfigContent).toContain(
-      `import { withPrismHighlighter } from '@analogjs/content/prism-highlighter'`,
+      `import { withPrismHighlighter } from '@benpsnyder/analogjs-esm-content/prism-highlighter'`,
     );
 
     expect(() =>

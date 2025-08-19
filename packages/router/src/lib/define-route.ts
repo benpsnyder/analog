@@ -23,7 +23,7 @@ type RestrictedRoute = Omit<NgRoute, RouteOmitted>;
  *
  * ```
  * import { Component } from '@angular/core';
- * import { defineRouteMeta } from '@analogjs/router';
+ * import { defineRouteMeta } from '@benpsnyder/analogjs-esm-router';
  *
  *  export const routeMeta = defineRouteMeta({
  *    title: 'Welcome'

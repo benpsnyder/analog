@@ -10,7 +10,7 @@ import {
   renderApplication,
   ɵSERVER_CONTEXT as SERVER_CONTEXT,
 } from '@angular/platform-server';
-import { ServerContext } from '@analogjs/router/tokens';
+import { ServerContext } from '@benpsnyder/analogjs-esm-router/tokens';
 import { createEvent, readBody, getHeader } from 'h3';
 
 import { provideStaticProps } from './tokens';

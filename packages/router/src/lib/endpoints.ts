@@ -1,5 +1,5 @@
 export const ANALOG_META_KEY = Symbol(
-  '@analogjs/router Analog Route Metadata Key',
+  '@benpsnyder/analogjs-esm-router Analog Route Metadata Key',
 );
 
 /**

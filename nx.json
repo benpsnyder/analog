@@ -23,13 +23,18 @@
       "dependsOn": ["^build"]
     },
     "build-package": {
-      "cache": false
+      "cache": false,
+      "dependsOn": ["^build"]
     },
     "@nx/js:tsc": {
       "cache": false
     },
     "@nx/eslint:lint": {
-      "inputs": ["default", "{workspaceRoot}/.eslintrc.json"],
+      "inputs": [
+        "default",
+        "{workspaceRoot}/.eslintrc.json",
+        "{workspaceRoot}/eslint.config.mjs"
+      ],
       "cache": true
     },
     "@angular-devkit/build-angular:application": {
@@ -69,12 +74,17 @@
       "!{projectRoot}/tsconfig.spec.json",
       "!{projectRoot}/**/*.stories.@(js|jsx|ts|tsx|mdx)",
       "!{projectRoot}/.storybook/**/*",
-      "!{projectRoot}/tsconfig.storybook.json"
+      "!{projectRoot}/tsconfig.storybook.json",
+      "!{projectRoot}/eslint.config.mjs"
     ],
     "projectSpecificFiles": []
   },
   "nxCloudAccessToken": "NDRkYzdkYmMtNDI3NS00MDI0LWFkMGQtMmI0Zjc2MTY2YzU0fHJlYWQtb25seQ==",
   "defaultBase": "beta",
+  "tui": {
+    "autoExit": true,
+    "enabled": true
+  },
   "plugins": [
     {
       "plugin": "@nx/playwright/plugin",

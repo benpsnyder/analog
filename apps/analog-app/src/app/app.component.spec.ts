@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
-import { TopBarComponent } from '@analogjs/top-bar';
+import { TopBarComponent } from '@benpsnyder/analogjs-esm-top-bar';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
