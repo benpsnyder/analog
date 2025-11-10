@@ -1,0 +1,73 @@
+{
+  "name": "csrwithpostcsstw",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "app",
+  "sourceRoot": "apps/csrwithpostcsstw/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@analogjs/platform:vite",
+      "options": {
+        "configFile": "apps/csrwithpostcsstw/vite.config.ts",
+        "main": "apps/csrwithpostcsstw/src/main.ts",
+        "outputPath": "dist/apps/csrwithpostcsstw/client",
+        "tsConfig": "apps/csrwithpostcsstw/tsconfig.app.json"
+      },
+      "defaultConfiguration": "production",
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "sourcemap": false,
+          "mode": "production"
+        }
+      },
+      "outputs": ["{workspaceRoot}/dist/apps/csrwithpostcsstw"]
+    },
+    "serve": {
+      "executor": "@analogjs/platform:vite-dev-server",
+      "continuous": true,
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "csrwithpostcsstw:build",
+        "port": 4200
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "csrwithpostcsstw:build:development",
+          "hmr": true
+        },
+        "production": {
+          "buildTarget": "csrwithpostcsstw:build:production"
+        }
+      }
+    },
+    "extract-i18n": {
+      "executor": "@angular/build:extract-i18n",
+      "options": {
+        "buildTarget": "csrwithpostcsstw:build"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@analogjs/vitest-angular:test",
+      "options": {
+        "config": "vite.config.ts"
+      }
+    },
+    "serve-static": {
+      "continuous": true,
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "csrwithpostcsstw:build",
+        "port": 4200,
+        "staticFilePath": "dist/apps/csrwithpostcsstw/browser",
+        "spa": true
+      }
+    }
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "name": "ssrwithplugintw",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "app",
+  "sourceRoot": "apps/ssrwithplugintw/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@analogjs/platform:vite",
+      "options": {
+        "configFile": "apps/ssrwithplugintw/vite.config.ts",
+        "main": "apps/ssrwithplugintw/src/main.ts",
+        "outputPath": "dist/apps/ssrwithplugintw/client",
+        "tsConfig": "apps/ssrwithplugintw/tsconfig.app.json"
+      },
+      "defaultConfiguration": "production",
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "sourcemap": false,
+          "mode": "production"
+        }
+      },
+      "outputs": ["{workspaceRoot}/dist/apps/ssrwithplugintw"]
+    },
+    "serve": {
+      "executor": "@analogjs/platform:vite-dev-server",
+      "continuous": true,
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "ssrwithplugintw:build",
+        "port": 4200
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "ssrwithplugintw:build:development",
+          "hmr": true
+        },
+        "production": {
+          "buildTarget": "ssrwithplugintw:build:production"
+        }
+      }
+    },
+    "extract-i18n": {
+      "executor": "@angular/build:extract-i18n",
+      "options": {
+        "buildTarget": "ssrwithplugintw:build"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@analogjs/vitest-angular:test",
+      "options": {
+        "config": "vite.config.ts"
+      }
+    },
+    "serve-static": {
+      "continuous": true,
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "ssrwithplugintw:build",
+        "port": 4200,
+        "staticFilePath": "dist/apps/ssrwithplugintw/browser",
+        "spa": true
+      }
+    }
+  }
+}
