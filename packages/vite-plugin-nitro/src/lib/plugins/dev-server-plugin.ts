@@ -34,6 +34,7 @@ export function devServerPlugin(options: ServerOptions): Plugin {
       root = normalizePath(resolve(workspaceRoot, config.root || '.') || '.');
       isTest = isTest ? isTest : mode === 'test';
       return {
+        appType: 'custom', // Prevent Vite from adding HTML fallback, index, and 404 middlewares
         resolve: {
           alias: {
             '~analog/entry-server':
@@ -133,7 +134,8 @@ function remove_html_middlewares(server: ViteDevServer['middlewares']) {
   const html_middlewares = [
     'viteIndexHtmlMiddleware',
     'vite404Middleware',
-    'viteSpaFallbackMiddleware',
+    'viteSpaFallbackMiddleware', // Vite 5/6
+    'viteHtmlFallbackMiddleware', // Vite 7+
   ];
   for (let i = server.stack.length - 1; i > 0; i--) {
     const handle = server.stack[i].handle;

@@ -1,5 +1,6 @@
 import { build, createDevServer, createNitro } from 'nitro';
 import type { NitroConfig } from 'nitro/types';
+import { toNodeHandler } from 'h3';
 import type { Plugin, UserConfig, ViteDevServer } from 'vite';
 import { mergeConfig, normalizePath } from 'vite';
 import { dirname, join, relative, resolve } from 'node:path';
@@ -194,13 +195,8 @@ export function nitro(options?: Options, nitroOptions?: NitroConfig): Plugin[] {
           const prefix = useRuntimeConfig().prefix;
           const apiPrefix = \`\${prefix}/\${useRuntimeConfig().apiPrefix}\`;
 
-          console.log('[API Middleware] Request URL:', event.req.url);
-          console.log('[API Middleware] API Prefix:', apiPrefix);
-          console.log('[API Middleware] Starts with API prefix:', event.req.url?.startsWith(apiPrefix));
-
           if (event.req.url?.startsWith(apiPrefix)) {
             const reqUrl = event.req.url?.replace(apiPrefix, '');
-            console.log('[API Middleware] Proxying to:', reqUrl);
 
             if (
               event.req.method === 'GET' &&
@@ -219,16 +215,10 @@ export function nitro(options?: Options, nitroOptions?: NitroConfig): Plugin[] {
               } else {
                 headers = event.req.headers;
               }
-              console.log('[API Middleware] Fetching with headers:', headers);
-              const response = await globalThis.$fetch(reqUrl, { headers });
-              console.log('[API Middleware] Response type:', typeof response);
-              console.log('[API Middleware] Response:', JSON.stringify(response, null, 2));
-              return response;
+              return await globalThis.$fetch(reqUrl, { headers });
             }
 
-            // For proxy requests, we need to handle headers differently
-            // Skip proxy requests during prerendering to avoid header issues
-            console.log('[API Middleware] Proxy request to:', reqUrl);
+            // For non-GET or XML requests, use $fetch with appropriate headers
             let proxyHeaders;
             if (event.req.headers instanceof Headers) {
               const headerObj = {};
@@ -239,12 +229,9 @@ export function nitro(options?: Options, nitroOptions?: NitroConfig): Plugin[] {
             } else {
               proxyHeaders = event.req.headers;
             }
-            const response = await globalThis.$fetch(reqUrl, {
+            return await globalThis.$fetch(reqUrl, {
               headers: proxyHeaders
             });
-            console.log('[API Middleware] Proxy response type:', typeof response);
-            console.log('[API Middleware] Proxy response:', JSON.stringify(response, null, 2));
-            return response;
           }
         });`,
                 }),
@@ -519,65 +506,12 @@ export function nitro(options?: Options, nitroOptions?: NitroConfig): Plugin[] {
           });
           const server = createDevServer(nitro);
           await build(nitro);
-          const apiHandler = async (
-            req: IncomingMessage,
-            res: ServerResponse,
-          ) => {
-            // Convert Node.js request to Web Request
-            const url = `http://${req.headers.host || 'localhost'}${req.url}`;
-            const headers = new Headers();
-            for (const [key, value] of Object.entries(req.headers)) {
-              if (value) {
-                headers.set(
-                  key,
-                  Array.isArray(value) ? value.join(', ') : value,
-                );
-              }
-            }
-
-            const request = new Request(url, {
-              method: req.method,
-              headers,
-              // Note: body handling would be needed for POST/PUT requests
-            });
-
-            try {
-              console.log('[Dev Server API Handler] Fetching:', url);
-              const response = await server.fetch(request);
-              console.log(
-                '[Dev Server API Handler] Response status:',
-                response.status,
-              );
-
-              // Collect headers in a safe way
-              const responseHeaders: Record<string, string> = {};
-              response.headers.forEach((value: any, key: any) => {
-                responseHeaders[key] = value;
-              });
-              console.log(
-                '[Dev Server API Handler] Response headers:',
-                responseHeaders,
-              );
-
-              // Set status code
-              res.statusCode = response.status;
-
-              // Set headers
-              response.headers.forEach((value: any, key: any) => {
-                res.setHeader(key, value);
-              });
-
-              // Send body
-              const body = await response.arrayBuffer();
-              const bodyText = new TextDecoder().decode(body);
-              console.log('[Dev Server API Handler] Response body:', bodyText);
-              res.end(Buffer.from(body));
-            } catch (error) {
-              console.error('Error in apiHandler:', error);
-              res.statusCode = 500;
-              res.end('Internal Server Error');
-            }
-          };
+          // Use h3's toNodeHandler to properly bridge between Node.js and h3/Nitro,
+          // avoiding manual Web Request/Response conversion issues with h3 v2's FastResponse.
+          // Wrap server.fetch to preserve `this` binding on NitroDevServer.
+          const apiHandler = toNodeHandler({
+            fetch: (req: Request) => server.fetch(req),
+          } as any);
 
           if (hasAPIDir) {
             viteServer.middlewares.use(

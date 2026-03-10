@@ -36,10 +36,7 @@ export function pageEndpointsPlugin() {
                 : `
                 ${_code}
                 export const load = async () => {
-                  console.log('[Default Load] Called default load function');
-                  const result = {};
-                  console.log('[Default Load] Returning:', result);
-                  return result;
+                  return {};
                 }`
             }
 
@@ -48,53 +45,36 @@ export function pageEndpointsPlugin() {
                 ? ''
                 : `
                 export const action = async () => {
-                  console.log('[Default Action] Called default action function');
-                  const result = {};
-                  console.log('[Default Action] Returning:', result);
-                  return result;
+                  return {};
                 }
               `
             }
 
             export default eventHandler(async(event) => {
-              console.log('[Page Endpoint] Request URL:', event.req.url);
-              console.log('[Page Endpoint] Method:', event.method);
-              console.log('[Page Endpoint] File exports:', ${JSON.stringify(fileExports)});
-
               if (event.method === 'GET') {
                 try {
-                  console.log('[Page Endpoint] Calling load function...');
                   const result = await load({
                     params: event.context.params,
-                    req: event.node.req,
-                    res: event.node.res,
+                    req: event.req,
+                    res: event.res,
                     fetch: globalThis.$fetch,
                     event
                   });
 
-                  console.log('[Page Endpoint] Load result type:', typeof result);
-                  console.log('[Page Endpoint] Load result constructor:', result?.constructor?.name);
-                  console.log('[Page Endpoint] Load result:', JSON.stringify(result, null, 2));
-
-                  const finalResult = result || {};
-                  console.log('[Page Endpoint] Final result:', JSON.stringify(finalResult, null, 2));
-
-                  return finalResult;
+                  return result || {};
                 } catch(e) {
                   console.error('[Page Endpoint] An error occurred:', e);
                   throw e;
                 }
               } else {
                 try {
-                  console.log('[Page Endpoint] Calling action function...');
                   const result = await action({
                     params: event.context.params,
-                    req: event.node.req,
-                    res: event.node.res,
+                    req: event.req,
+                    res: event.res,
                     fetch: globalThis.$fetch,
                     event
                   });
-                  console.log('[Page Endpoint] Action result:', JSON.stringify(result, null, 2));
                   return result;
                 } catch(e) {
                   console.error('[Page Endpoint] An error occurred:', e);
