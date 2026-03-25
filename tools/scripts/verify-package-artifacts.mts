@@ -4,17 +4,17 @@
  * Verifies built package artifacts in `node_modules/@analogjs/*`.
  *
  * Usage:
- *   node tools/scripts/verify-package-artifacts.mts [package-name...]
+ *   node --experimental-strip-types tools/scripts/verify-package-artifacts.mts [package-name...]
  *
  * Examples from repo build targets:
- *   node tools/scripts/verify-package-artifacts.mts astro-angular
- *   node tools/scripts/verify-package-artifacts.mts content
- *   node tools/scripts/verify-package-artifacts.mts create-analog
- *   node tools/scripts/verify-package-artifacts.mts platform
- *   node tools/scripts/verify-package-artifacts.mts router
- *   node tools/scripts/verify-package-artifacts.mts storybook-angular
- *   node tools/scripts/verify-package-artifacts.mts vite-plugin-angular
- *   node tools/scripts/verify-package-artifacts.mts vitest-angular
+ *   node --experimental-strip-types tools/scripts/verify-package-artifacts.mts astro-angular
+ *   node --experimental-strip-types tools/scripts/verify-package-artifacts.mts content
+ *   node --experimental-strip-types tools/scripts/verify-package-artifacts.mts create-analog
+ *   node --experimental-strip-types tools/scripts/verify-package-artifacts.mts platform
+ *   node --experimental-strip-types tools/scripts/verify-package-artifacts.mts router
+ *   node --experimental-strip-types tools/scripts/verify-package-artifacts.mts storybook-angular
+ *   node --experimental-strip-types tools/scripts/verify-package-artifacts.mts vite-plugin-angular
+ *   node --experimental-strip-types tools/scripts/verify-package-artifacts.mts vitest-angular
  *
  * When no package names are provided, all configured packages are validated.
  */

@@ -10,6 +10,13 @@ import {
   DocsMd4xContentRendererService,
 } from '@ng-docs/docs-angular';
 import { HtmlContentComponent } from '@analogjs/content';
+import type { RouteMeta } from '@analogjs/router';
+
+import { docsJsonLdResolver } from './resolvers';
+
+export const routeMeta: RouteMeta = {
+  jsonLd: docsJsonLdResolver,
+};
 
 @Component({
   selector: 'app-docs-optional-catchall-page',

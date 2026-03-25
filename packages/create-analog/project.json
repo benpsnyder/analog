@@ -11,7 +11,7 @@
       "options": {
         "commands": [
           "cpy . !node_modules !project.json !__tests__ !yarn.lock ../../dist/packages/create-analog/ --cwd packages/create-analog",
-          "node tools/scripts/verify-package-artifacts.mts create-analog"
+          "node --experimental-strip-types tools/scripts/verify-package-artifacts.mts create-analog"
         ],
         "parallel": false
       }

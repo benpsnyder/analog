@@ -11,7 +11,7 @@ const [, , source, target] = process.argv;
 
 invariant(
   source && target,
-  'Usage: node tools/scripts/assert-project-dependency.mts <source-project> <target-project>',
+  'Usage: node --experimental-strip-types tools/scripts/assert-project-dependency.mts <source-project> <target-project>',
 );
 
 const graph = readCachedProjectGraph();

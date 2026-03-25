@@ -11,7 +11,7 @@
       "options": {
         "commands": [
           "vite build -c packages/storybook-angular/vite.config.lib.ts",
-          "node tools/scripts/verify-package-artifacts.mts storybook-angular"
+          "node --experimental-strip-types tools/scripts/verify-package-artifacts.mts storybook-angular"
         ],
         "parallel": false
       }

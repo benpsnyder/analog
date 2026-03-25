@@ -13,7 +13,7 @@
         "commands": [
           "vite build --config packages/vite-plugin-angular/vite.config.lib.ts",
           "nx build vite-plugin-angular-tools",
-          "node tools/scripts/verify-package-artifacts.mts vite-plugin-angular"
+          "node --experimental-strip-types tools/scripts/verify-package-artifacts.mts vite-plugin-angular"
         ],
         "parallel": false
       }
