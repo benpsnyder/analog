@@ -17,6 +17,7 @@ export {
   withMarkdownRenderer,
   MERMAID_IMPORT_TOKEN,
 } from './lib/provide-content';
+export { default as HtmlContentComponent } from './lib/html-content.component';
 export { default as MarkdownRouteComponent } from './lib/markdown-route.component';
 export { default as MarkdownComponent } from './lib/markdown.component';
 export {
@@ -40,8 +41,3 @@ export {
   withContentFileLoader,
   CONTENT_FILE_LOADER,
 } from './lib/content-file-loader';
-export {
-  contentDevToolsPlugin,
-  DevToolsContentRenderer,
-  withContentDevTools,
-} from './lib/devtools/index';

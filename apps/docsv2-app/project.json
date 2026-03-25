@@ -1,0 +1,68 @@
+{
+  "name": "docsv2-app",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/docsv2-app/src",
+  "prefix": "docsv2",
+  "tags": ["type:app", "scope:docs"],
+  "targets": {
+    "build": {
+      "executor": "@nx/vite:build",
+      "dependsOn": ["platform:build", "router:build", "content:build"],
+      "outputs": [
+        "{options.outputPath}",
+        "{workspaceRoot}/dist/apps/docsv2-app/.nitro",
+        "{workspaceRoot}/dist/apps/docsv2-app/ssr",
+        "{workspaceRoot}/dist/apps/docsv2-app/analog"
+      ],
+      "options": {
+        "configFile": "apps/docsv2-app/vite.config.ts",
+        "outputPath": "dist/apps/docsv2-app/client"
+      },
+      "defaultConfiguration": "production",
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "sourcemap": false,
+          "mode": "production"
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/vite:dev-server",
+      "dependsOn": ["platform:build", "router:build", "content:build"],
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "docsv2-app:build",
+        "port": 43060
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "docsv2-app:build:development",
+          "hmr": true
+        },
+        "production": {
+          "buildTarget": "docsv2-app:build:production"
+        }
+      }
+    },
+    "serve-nitro": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "dist/apps/docsv2-app/analog",
+        "command": "node --unhandled-rejections=throw ./server/index.mjs",
+        "env": {
+          "PORT": "43060"
+        }
+      },
+      "dependsOn": ["build"]
+    },
+    "test": {
+      "executor": "@nx/vitest:test",
+      "dependsOn": ["platform:build", "router:build", "content:build"],
+      "outputs": ["{projectRoot}/coverage"]
+    }
+  }
+}

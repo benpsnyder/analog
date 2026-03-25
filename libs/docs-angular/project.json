@@ -1,0 +1,15 @@
+{
+  "name": "docs-angular",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "libs/docs-angular/src",
+  "tags": ["type:lib", "scope:docs", "framework:angular"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p libs/docs-angular/tsconfig.lib.json --noEmit"
+      }
+    }
+  }
+}

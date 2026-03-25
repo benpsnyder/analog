@@ -30,6 +30,7 @@ type ContentFileParams = Signal<
   | string
   | {
       customFilename: string;
+      skipRender?: boolean;
     }
 >;
 
@@ -155,6 +156,7 @@ export function contentFileResource<TSchema extends StandardSchemaV1>(options: {
   params?: ContentFileParams;
   fallback?: string;
   schema: TSchema;
+  skipRender?: boolean;
 }): ResourceRef<
   | ContentFileResourceResult<
       StandardSchemaV1.InferOutput<TSchema> & Record<string, any>
@@ -169,6 +171,7 @@ export function contentFileResource(
         params?: ContentFileParams;
         fallback?: string;
         schema?: StandardSchemaV1;
+        skipRender?: boolean;
       },
   fallbackArg = 'No Content Found',
 ) {
@@ -191,6 +194,9 @@ export function contentFileResource(
   const schema: StandardSchemaV1 | undefined = isOptionsObject
     ? (paramsOrOptions as { schema?: StandardSchemaV1 }).schema
     : undefined;
+  const skipRenderFromOptions: boolean = isOptionsObject
+    ? ((paramsOrOptions as { skipRender?: boolean }).skipRender ?? false)
+    : false;
 
   const loaderPromise = injectContentFileLoader();
   const contentRenderer = inject(ContentRenderer);
@@ -241,7 +247,8 @@ export function contentFileResource(
           fallback,
           schema,
         );
-        if (typeof file.content === 'string') {
+        const skipRender = param.skipRender ?? skipRenderFromOptions;
+        if (!skipRender && typeof file.content === 'string') {
           const rendered = (await contentRenderer.render(file.content)) as {
             toc?: Array<{ id: string; level: number; text: string }>;
           };

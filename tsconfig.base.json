@@ -27,6 +27,9 @@
       ],
       "@analogjs/content/md4x": ["./packages/content/md4x/src/index.ts"],
       "@analogjs/content/mdc": ["./packages/content/mdc/src/index.ts"],
+      "@analogjs/content/devtools": [
+        "./packages/content/src/lib/devtools/index.ts"
+      ],
       "@analogjs/content/shiki-highlighter": [
         "./packages/content/shiki-highlighter/src/index.ts"
       ],
@@ -67,7 +70,9 @@
       "@analogjs/vitest-angular/setup-zone": [
         "./packages/vitest-angular/setup-zone.ts"
       ],
-      "vitest-angular": ["./packages/vitest-angular/src/index.ts"]
+      "vitest-angular": ["./packages/vitest-angular/src/index.ts"],
+      "@ng-docs/docs-angular": ["./libs/docs-angular/src/index.ts"],
+      "@ng-docs/markdown-pipeline": ["./libs/markdown-pipeline/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"],

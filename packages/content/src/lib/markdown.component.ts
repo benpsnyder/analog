@@ -8,8 +8,10 @@ import {
   Signal,
   ViewEncapsulation,
   computed,
+  effect,
   inject,
   input,
+  signal,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -38,6 +40,10 @@ export default class AnalogMarkdownComponent implements AfterViewChecked {
     optional: true,
   });
   private mermaid: typeof import('mermaid') | undefined;
+  private readonly renderedInputContent = signal<SafeHtml | string | undefined>(
+    undefined,
+  );
+  private renderRequestId = 0;
 
   private contentSource: Signal<SafeHtml | string | undefined> = toSignal(
     this.getContentSource(),
@@ -46,7 +52,7 @@ export default class AnalogMarkdownComponent implements AfterViewChecked {
     const inputContent = this.content();
 
     if (inputContent) {
-      return this.sanitizer.bypassSecurityTrustHtml(inputContent as string);
+      return this.renderedInputContent();
     }
 
     return this.contentSource();
@@ -59,6 +65,23 @@ export default class AnalogMarkdownComponent implements AfterViewChecked {
   contentRenderer: ContentRenderer = inject(ContentRenderer);
 
   constructor() {
+    effect(() => {
+      const inputContent = this.content();
+      if (typeof inputContent === 'string' && inputContent.length > 0) {
+        void this.renderInputContent(inputContent);
+        return;
+      }
+
+      if (inputContent) {
+        this.renderedInputContent.set(
+          this.sanitizer.bypassSecurityTrustHtml(String(inputContent)),
+        );
+        return;
+      }
+
+      this.renderedInputContent.set(undefined);
+    });
+
     if (isPlatformBrowser(this.platformId) && this.mermaidImport) {
       // Mermaid can only be loaded on client side
       this.loadMermaid(this.mermaidImport);
@@ -77,6 +100,16 @@ export default class AnalogMarkdownComponent implements AfterViewChecked {
   async renderContent(content: string): Promise<string> {
     const rendered = await this.contentRenderer.render(content);
     return rendered.content;
+  }
+
+  private async renderInputContent(content: string): Promise<void> {
+    const requestId = ++this.renderRequestId;
+    const rendered = await this.renderContent(content);
+    if (requestId === this.renderRequestId) {
+      this.renderedInputContent.set(
+        this.sanitizer.bypassSecurityTrustHtml(rendered),
+      );
+    }
   }
 
   ngAfterViewChecked(): void {
