@@ -63,7 +63,9 @@ export type TocItem = { id: string; level: number; text: string };
   providedIn: 'root',
 })
 export class DocsProvider implements DocsApi {
-  private readonly docsOptions = inject(DOCUMENTATION_SOURCE_TOKEN);
+  private readonly docsOptions = inject(DOCUMENTATION_SOURCE_TOKEN, {
+    optional: true,
+  });
   private readonly docsRegistry = new Map<string, Doc>();
   private pageTreeRoot: DocsTreeRoot = this.createRootTree('Docs');
 

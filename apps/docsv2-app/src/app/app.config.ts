@@ -53,27 +53,25 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(withEventReplay()),
     provideTanStackQuery(new QueryClient()),
     provideAnalogQuery(),
+    withDocumentationSource<DocsAttributes>({
+      dir: 'src/content/docs',
+      baseUrl: '/docs',
+    }),
     withDocsMd4xRenderer(),
-    provideContent(
-      withDocumentationSource<DocsAttributes>({
-        dir: 'src/content/docs',
-        baseUrl: '/docs',
-      }),
-      {
-        provide: CONTENT_FILE_LOADER,
-        useFactory: () => async () =>
-          import.meta.glob(
-            [
-              '/src/content/docs/**/*.md',
-              '/src/content/docs/**/*.markdown',
-              '/src/content/docs/**/*.mdx',
-            ],
-            {
-              query: '?raw',
-              import: 'default',
-            },
-          ),
-      },
-    ),
+    provideContent({
+      provide: CONTENT_FILE_LOADER,
+      useFactory: () => async () =>
+        import.meta.glob(
+          [
+            '/src/content/docs/**/*.md',
+            '/src/content/docs/**/*.markdown',
+            '/src/content/docs/**/*.mdx',
+          ],
+          {
+            query: '?raw',
+            import: 'default',
+          },
+        ),
+    }),
   ],
 };
