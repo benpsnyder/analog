@@ -287,8 +287,12 @@
     "description": "The label of the button to sponsor Analog"
   },
   "homepage.partnerSection.zerops": {
-    "message": "Partner Oficial de Despliegues",
-    "description": "The label of the official deployment partner"
+    "message": "Zerops - Partner Oficial de Despliegues",
+    "description": "The name of the partner Zerops"
+  },
+  "homepage.partnerSection.snyder": {
+    "message": "Snyder Tech - Partner Oficial de Desarrollo",
+    "description": "The name of the partner Snyder Tech"
   },
   "features.fileBasedRouting": {
     "message": "Analog usa enrutado basado en ficheros y soporta rutas de API (servidor) para aplicaciones Angular.",

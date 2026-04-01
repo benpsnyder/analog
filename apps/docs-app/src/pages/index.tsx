@@ -72,25 +72,57 @@ function SponsorSection() {
         </p>
 
         <div className={styles.horizontalPartners}>
-          <h2>
-            <Translate
-              id="homepage.partnerSection.zerops"
-              description="The name of the partner Zerops"
-            >
-              Zerops - Official Deployment Partner
-            </Translate>
-          </h2>
-          <div className={styles.zerops}>
-            <a
-              href="https://zerops.io?utm_source=analog&utm_medium=docs&utm_campaign=partnership"
-              target="_blank"
-            >
-              <img
-                src="../img/logos/zerops-logo.svg"
-                alt="Zerops"
-                style={{ width: '80px', height: '100px' }}
-              />
-            </a>
+          <div className={styles.partnerCard}>
+            <h2>
+              <Translate
+                id="homepage.partnerSection.zerops"
+                description="The name of the partner Zerops"
+              >
+                Zerops - Official Deployment Partner
+              </Translate>
+            </h2>
+            <div className={styles.zerops}>
+              <a
+                href="https://zerops.io?utm_source=analog&utm_medium=docs&utm_campaign=partnership"
+                target="_blank"
+              >
+                <img
+                  src="../img/logos/zerops-logo.svg"
+                  alt="Zerops"
+                  style={{ width: '80px', height: '100px' }}
+                />
+              </a>
+            </div>
+          </div>
+
+          <div className={styles.partnerCard}>
+            <h2>
+              <Translate
+                id="homepage.partnerSection.snyder"
+                description="The name of the partner Snyder Tech"
+              >
+                Snyder Tech - Official Development Partner
+              </Translate>
+            </h2>
+            <div className={styles.snyder}>
+              <a
+                href="https://snyder.tech?utm_source=analog&utm_medium=docs&utm_campaign=partnership"
+                target="_blank"
+              >
+                <img
+                  className={styles.snyderLogoLight}
+                  src="./img/logos/snyder-logo.light.svg"
+                  alt="Snyder Tech"
+                  style={{ width: '250px', height: '100px' }}
+                />
+                <img
+                  className={styles.snyderLogoDark}
+                  src="./img/logos/snyder-logo.dark.svg"
+                  alt="Snyder Tech"
+                  style={{ width: '250px', height: '100px' }}
+                />
+              </a>
+            </div>
           </div>
         </div>
 
@@ -111,14 +143,6 @@ function SponsorSection() {
               src="./img/logos/nx-logo.light.svg"
               alt="NX Dev"
               style={{ marginRight: '30px', width: '100px', height: '100px' }}
-            />
-          </a>
-
-          <a href="https://snyder.tech" target="_blank">
-            <img
-              src="./img/logos/snyder-logo.light.svg"
-              alt="Snyder Tech"
-              style={{ marginRight: '30px', width: '250px', height: '100px' }}
             />
           </a>
 

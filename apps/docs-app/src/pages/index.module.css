@@ -50,6 +50,38 @@
   border-color: var(--angular-shield-color-dark);
 }
 
+.horizontalPartners {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 3rem;
+}
+
+.partnerCard {
+  text-align: center;
+}
+
+.snyder a {
+  display: inline-block;
+}
+
+.snyderLogoLight {
+  display: inline;
+}
+
+.snyderLogoDark {
+  display: none;
+}
+
+:root[data-theme='dark'] .snyderLogoLight {
+  display: none;
+}
+
+:root[data-theme='dark'] .snyderLogoDark {
+  display: inline;
+}
+
 :root[data-theme='dark'] .sponsorButton {
   color: var(--ifm-color-white);
   background-color: var(--angular-shield-color);

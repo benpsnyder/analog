@@ -282,6 +282,10 @@
     "message": "Zerops - 官方部署合作伙伴",
     "description": "The name of the partner Zerops"
   },
+  "homepage.partnerSection.snyder": {
+    "message": "Snyder Tech - 官方开发合作伙伴",
+    "description": "The name of the partner Snyder Tech"
+  },
   "homepage.partnerSection.subtitle": {
     "message": "合作伙伴",
     "description": "The subtitle of the partner section on the homepage"

@@ -64,8 +64,16 @@ Follow the prompts to scaffold the project and start the development server.
 
 ### Partners
 
+**Zerops — Official Deployment Partner**
+
 <a href="https://zerops.io?utm_source=analog&utm_medium=github&utm_campaign=partnership" target="_blank">
   <img src="./apps/docs-app/static/img/logos/zerops-logo.svg" width="100px" height="100px" alt="Zerops" />
+</a>
+
+**Snyder Tech — Official Development Partner**
+
+<a href="https://snyder.tech?utm_source=analog&utm_medium=github&utm_campaign=partnership" target="_blank">
+  <img src="./apps/docs-app/static/img/logos/snyder-logo.light.svg" width="250px" height="100px" alt="Snyder Tech" />
 </a>
 
 ### Sponsors
@@ -76,10 +84,6 @@ Follow the prompts to scaffold the project and start the development server.
 
 <a href="https://houseofangular.io" target="_blank">
   <img src="./apps/docs-app/static/img/logos/house-of-angular.png" width="100px" height="100px" alt="House of Angular" />
-</a>
-
-<a href="https://snyder.tech/" target="_blank">
-  <img src="./apps/docs-app/static/img/logos/snyder-logo.light.svg" width="250px" height="100px" alt="Snyder Tech" />
 </a>
 
 <a href="https://coderabbit.link/analogjs" target="_blank">
