@@ -3,6 +3,7 @@ import type { Plugin } from 'vite';
 import {
   angular,
   createFsWatcherCacheInvalidator,
+  isIgnoredHmrFile,
   mapTemplateUpdatesToFiles,
   normalizeIncludeGlob,
   toAngularCompilationFileReplacements,
@@ -133,6 +134,20 @@ describe('normalizeIncludeGlob', () => {
     expect(normalizeIncludeGlob(workspaceRoot, 'libs/**')).toBe(
       '/workspace/analog/libs/**',
     );
+  });
+});
+
+describe('isIgnoredHmrFile', () => {
+  it('ignores TypeScript build info files', () => {
+    expect(
+      isIgnoredHmrFile('/workspace/apps/demo/tsconfig.app.tsbuildinfo'),
+    ).toBe(true);
+  });
+
+  it('does not ignore normal TypeScript source files', () => {
+    expect(
+      isIgnoredHmrFile('/workspace/apps/demo/src/app/app.component.ts'),
+    ).toBe(false);
   });
 });
 

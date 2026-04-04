@@ -250,6 +250,10 @@ export function normalizeIncludeGlob(
 const TS_EXT_REGEX = /\.[cm]?(ts)[^x]?\??/;
 const classNames = new Map();
 
+export function isIgnoredHmrFile(file: string): boolean {
+  return file.endsWith('.tsbuildinfo');
+}
+
 interface DeclarationFile {
   declarationFileDir: string;
   declarationPath: string;
@@ -774,6 +778,11 @@ export function angular(options?: PluginOptions): Plugin[] {
         }
       },
       async handleHotUpdate(ctx) {
+        if (isIgnoredHmrFile(ctx.file)) {
+          debugHmr('ignored file change', { file: ctx.file });
+          return [];
+        }
+
         if (TS_EXT_REGEX.test(ctx.file)) {
           const [fileId] = ctx.file.split('?');
           debugHmr('TS file changed', { file: ctx.file, fileId });
