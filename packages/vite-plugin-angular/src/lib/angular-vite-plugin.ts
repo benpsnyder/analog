@@ -221,6 +221,27 @@ export interface PluginOptions {
   };
 }
 
+export function normalizeIncludeGlob(
+  workspaceRoot: string,
+  glob: string,
+): string {
+  const normalizedWorkspaceRoot = normalizePath(resolve(workspaceRoot));
+  const normalizedGlob = normalizePath(glob);
+
+  if (
+    normalizedGlob === normalizedWorkspaceRoot ||
+    normalizedGlob.startsWith(`${normalizedWorkspaceRoot}/`)
+  ) {
+    return normalizedGlob;
+  }
+
+  if (normalizedGlob.startsWith('/')) {
+    return `${normalizedWorkspaceRoot}${normalizedGlob}`;
+  }
+
+  return normalizePath(resolve(normalizedWorkspaceRoot, normalizedGlob));
+}
+
 /**
  * TypeScript file extension regex
  * Match .(c or m)ts, .ts extensions with an optional ? for query params
@@ -1351,11 +1372,9 @@ export function angular(options?: PluginOptions): Plugin[] {
   ].filter(Boolean) as Plugin[];
 
   function findIncludes() {
-    const workspaceRoot = normalizePath(resolve(pluginOptions.workspaceRoot));
-
     // Map include patterns to absolute workspace paths
-    const globs = pluginOptions.include.map(
-      (glob) => `${workspaceRoot}${glob}`,
+    const globs = pluginOptions.include.map((glob) =>
+      normalizeIncludeGlob(pluginOptions.workspaceRoot, glob),
     );
 
     // Discover TypeScript files using tinyglobby

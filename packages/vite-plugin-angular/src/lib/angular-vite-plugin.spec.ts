@@ -4,6 +4,7 @@ import {
   angular,
   createFsWatcherCacheInvalidator,
   mapTemplateUpdatesToFiles,
+  normalizeIncludeGlob,
   toAngularCompilationFileReplacements,
   isTestWatchMode,
 } from './angular-vite-plugin';
@@ -110,6 +111,28 @@ describe('isTestWatchMode', () => {
     const result = isTestWatchMode(['--watch', 'false']);
 
     expect(result).toBeFalsy();
+  });
+});
+
+describe('normalizeIncludeGlob', () => {
+  const workspaceRoot = '/workspace/analog';
+
+  it('leaves workspace-rooted globs unchanged', () => {
+    expect(
+      normalizeIncludeGlob(workspaceRoot, '/workspace/analog/libs/**'),
+    ).toBe('/workspace/analog/libs/**');
+  });
+
+  it('prefixes workspace-relative globs that start with a slash', () => {
+    expect(normalizeIncludeGlob(workspaceRoot, '/libs/**')).toBe(
+      '/workspace/analog/libs/**',
+    );
+  });
+
+  it('resolves bare relative globs against the workspace root', () => {
+    expect(normalizeIncludeGlob(workspaceRoot, 'libs/**')).toBe(
+      '/workspace/analog/libs/**',
+    );
   });
 });
 
