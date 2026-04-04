@@ -424,6 +424,8 @@ export function angular(options?: PluginOptions): Plugin[] {
   >();
   const selectorOwners = new Map<string, Set<string>>();
   const classNameOwners = new Map<string, Set<string>>();
+  const transformedStyleOwnerMetadata = new Map<string, StyleOwnerRecord[]>();
+  const styleSourceOwners = new Map<string, Set<string>>();
 
   function shouldEnableHmr(): boolean {
     const effectiveWatchMode = isTest ? testWatchMode : watchMode;
@@ -623,6 +625,54 @@ export function angular(options?: PluginOptions): Plugin[] {
         classNameOwners.set(record.className, classNameSet);
       }
       classNameSet.add(location);
+    }
+  }
+
+  function removeStyleOwnerMetadata(file: string) {
+    const previous = transformedStyleOwnerMetadata.get(file);
+    if (!previous) {
+      return;
+    }
+
+    for (const record of previous) {
+      const owners = styleSourceOwners.get(record.sourcePath);
+      owners?.delete(record.ownerFile);
+      if (owners?.size === 0) {
+        styleSourceOwners.delete(record.sourcePath);
+      }
+    }
+
+    transformedStyleOwnerMetadata.delete(file);
+  }
+
+  function registerStyleOwnerMetadata(file: string, styleUrls: string[]) {
+    removeStyleOwnerMetadata(file);
+
+    const records = styleUrls
+      .map((urlSet) => {
+        const [, absoluteFileUrl] = urlSet.split('|');
+        return absoluteFileUrl
+          ? {
+              ownerFile: file,
+              sourcePath: normalizePath(absoluteFileUrl),
+            }
+          : undefined;
+      })
+      .filter((record): record is StyleOwnerRecord => !!record);
+
+    if (records.length === 0) {
+      return;
+    }
+
+    transformedStyleOwnerMetadata.set(file, records);
+
+    for (const record of records) {
+      let owners = styleSourceOwners.get(record.sourcePath);
+      if (!owners) {
+        owners = new Set<string>();
+        styleSourceOwners.set(record.sourcePath, owners);
+      }
+      owners.add(record.ownerFile);
     }
   }
 
@@ -1063,6 +1113,20 @@ export function angular(options?: PluginOptions): Plugin[] {
                   stylesheetDiagnosis,
                 );
 
+                // The stylesheet registry may already hold the fresh served CSS
+                // while Vite still has a stale transform result cached for the
+                // direct `?direct&ngcomp=...` module id. Invalidate the direct
+                // module up front so subsequent wrapper generation and explicit
+                // fetches cannot keep serving the pre-edit CSS payload.
+                ctx.server.moduleGraph.invalidateModule(isDirect);
+                debugHmrV('component stylesheet direct module invalidated', {
+                  file: ctx.file,
+                  directModuleId: isDirect.id,
+                  directModuleUrl: isDirect.url,
+                  reason:
+                    'Ensure Vite drops stale direct CSS transform results before wrapper or fallback handling continues.',
+                });
+
                 // Track if the component uses ShadowDOM encapsulation
                 // Shadow DOM components currently require a full reload.
                 // Vite's CSS hot replacement does not support shadow root searching.
@@ -1075,16 +1139,17 @@ export function angular(options?: PluginOptions): Plugin[] {
                     path: isDirect.url,
                     acceptedPath: isDirect.file,
                   });
-                  ctx.server.ws.send({
-                    type: 'update',
-                    updates: [
-                      {
-                        type: 'css-update',
-                        timestamp: Date.now(),
-                        path: isDirect.url,
-                        acceptedPath: isDirect.file,
-                      },
-                    ],
+                  sendCssUpdate(ctx.server, {
+                    path: isDirect.url,
+                    acceptedPath: isDirect.file,
+                  });
+                  logComponentStylesheetHmrOutcome({
+                    file: ctx.file,
+                    encapsulation,
+                    diagnosis: stylesheetDiagnosis,
+                    outcome: 'css-update',
+                    directModuleId: isDirect.id,
+                    wrapperIds: wrapperModules.map((mod) => mod.id),
                   });
 
                   return union(
@@ -1121,7 +1186,95 @@ export function angular(options?: PluginOptions): Plugin[] {
                   trackedRequestIds:
                     stylesheetRegistry?.getRequestIdsForSource(ctx.file) ?? [],
                 });
-                ctx.server.ws.send({ type: 'full-reload' });
+                const ownerModules = findStyleOwnerModules(
+                  ctx.server,
+                  ctx.file,
+                  styleSourceOwners,
+                );
+                debugHmrV('component stylesheet owner fallback lookup', {
+                  file: ctx.file,
+                  ownerCount: ownerModules.length,
+                  ownerIds: ownerModules.map((mod) => mod.id),
+                  ownerFiles: [
+                    ...(styleSourceOwners.get(normalizePath(ctx.file)) ?? []),
+                  ],
+                });
+
+                if (ownerModules.length > 0) {
+                  pendingCompilation = performCompilation(resolvedConfig, [
+                    ...ownerModules.map((mod) => mod.id).filter(Boolean),
+                  ]);
+                  await pendingCompilation;
+                  pendingCompilation = null;
+
+                  const updates = ownerModules
+                    .map((mod) => mod.id)
+                    .filter((id): id is string => !!id && !!classNames.get(id));
+                  const derivedUpdates = ownerModules
+                    .map((mod) => mod.id)
+                    .filter((id): id is string => !!id)
+                    .flatMap((ownerId) =>
+                      resolveComponentClassNamesForStyleOwner(
+                        ownerId,
+                        ctx.file,
+                      ).map((className) => ({
+                        ownerId,
+                        className,
+                        via: 'raw-component-metadata' as const,
+                      })),
+                    );
+                  debugHmrV('component stylesheet owner fallback compilation', {
+                    file: ctx.file,
+                    ownerIds: ownerModules.map((mod) => mod.id),
+                    updateIds: updates,
+                    classNames: updates.map((id) => ({
+                      id,
+                      className: classNames.get(id),
+                    })),
+                    derivedUpdates,
+                  });
+                  // Keep owner recompilation and metadata derivation as
+                  // diagnostics only. For externalized component styles, a
+                  // component-update message is not a safe substitute for a
+                  // missing `?ngcomp=...` wrapper module because Angular can
+                  // re-render the component without forcing the browser to
+                  // re-evaluate the live stylesheet wrapper. That exact shape
+                  // produced false-positive "successful HMR" logs while the UI
+                  // stayed visually stale. If the wrapper is absent, prefer a
+                  // hard reload after gathering the owner evidence needed to
+                  // explain why the fallback was necessary.
+                  if (derivedUpdates.length > 0) {
+                    debugHmrV(
+                      'component stylesheet owner fallback derived updates',
+                      {
+                        file: ctx.file,
+                        updates: derivedUpdates,
+                        hint: 'Angular did not repopulate classNames during CSS-only owner recompilation, so Analog derived component identities from raw component metadata.',
+                      },
+                    );
+                  }
+                }
+
+                logComponentStylesheetHmrOutcome({
+                  file: ctx.file,
+                  encapsulation,
+                  diagnosis: stylesheetDiagnosis,
+                  outcome: 'full-reload',
+                  directModuleId: isDirect.id,
+                  wrapperIds: wrapperModules.map((mod) => mod.id),
+                  ownerIds: ownerModules.map((mod) => mod.id),
+                });
+                sendFullReload(ctx.server, {
+                  file: ctx.file,
+                  encapsulation,
+                  reason:
+                    wrapperModules.length === 0
+                      ? 'missing-wrapper-module-and-no-owner-updates'
+                      : 'shadow-encapsulation',
+                  directId: isDirect.id,
+                  trackedRequestIds:
+                    stylesheetRegistry?.getRequestIdsForSource(ctx.file) ?? [],
+                });
                 return [];
               }
             }
@@ -1600,6 +1753,19 @@ export function angular(options?: PluginOptions): Plugin[] {
         }
 
         if (TS_EXT_REGEX.test(cleanId)) {
+          const rawStyleUrls = styleUrlsResolver.resolve(code, cleanId);
+          registerStyleOwnerMetadata(cleanId, rawStyleUrls);
+          debugHmrV('component stylesheet owner metadata registered', {
+            file: cleanId,
+            styleUrlCount: rawStyleUrls.length,
+            styleUrls: rawStyleUrls,
+            ownerSources: [
+              ...(transformedStyleOwnerMetadata
+                .get(cleanId)
+                ?.map((record) => record.sourcePath) ?? []),
+            ],
+          });
+
           // Parse raw component decorators before Angular compilation strips
           // them. This lets Analog fail fast on template/class-footguns and
           // keep a lightweight active-graph index for duplicate selector/class
@@ -3110,12 +3276,72 @@ export async function findComponentStylesheetWrapperModules(
 }
 
 function sendHMRComponentUpdate(server: ViteDevServer, id: string) {
+  debugHmrV('ws send: angular component update', {
+    id,
+    timestamp: Date.now(),
+  });
   server.ws.send('angular:component-update', {
     id: encodeURIComponent(id),
     timestamp: Date.now(),
   });
 
   classNames.delete(id);
+}
+
+function sendCssUpdate(
+  server: ViteDevServer,
+  update: {
+    path: string;
+    acceptedPath: string;
+  },
+) {
+  const timestamp = Date.now();
+  debugHmrV('ws send: css-update', {
+    ...update,
+    timestamp,
+  });
+  server.ws.send({
+    type: 'update',
+    updates: [
+      {
+        type: 'css-update',
+        timestamp,
+        path: update.path,
+        acceptedPath: update.acceptedPath,
+      },
+    ],
+  });
+}
+
+function sendFullReload(
+  server: ViteDevServer,
+  details: Record<string, unknown>,
+) {
+  debugHmrV('ws send: full-reload', details);
+  server.ws.send({ type: 'full-reload' });
+}
+
+function resolveComponentClassNamesForStyleOwner(
+  ownerFile: string,
+  sourcePath: string,
+): string[] {
+  if (!existsSync(ownerFile)) {
+    return [];
+  }
+
+  const ownerCode = readFileSync(ownerFile, 'utf-8');
+  const components = getAngularComponentMetadata(ownerCode);
+  const normalizedSourcePath = normalizePath(sourcePath);
+
+  return components
+    .filter((component) =>
+      component.styleUrls.some(
+        (styleUrl) =>
+          normalizePath(resolve(dirname(ownerFile), styleUrl)) ===
+          normalizedSourcePath,
+      ),
+    )
+    .map((component) => component.className);
 }
 
 interface TemplateClassBindingIssue {
@@ -3129,6 +3355,16 @@ interface ActiveGraphComponentRecord {
   className: string;
   selector?: string;
 }
+
+interface StyleOwnerRecord {
+  sourcePath: string;
+  ownerFile: string;
+}
+
+type ComponentStylesheetHmrOutcome =
+  | 'css-update'
+  | 'owner-component-update'
+  | 'full-reload';
 
 export function findStaticClassAndBoundClassConflicts(
   template: string,
@@ -3216,6 +3452,84 @@ function formatActiveGraphLocations(entries: Iterable<string>): string {
     .join('\n');
 }
 
+function logComponentStylesheetHmrOutcome(details: {
+  file: string;
+  encapsulation: string;
+  diagnosis: ReturnType<typeof diagnoseComponentStylesheetPipeline>;
+  outcome: ComponentStylesheetHmrOutcome;
+  directModuleId?: string;
+  wrapperIds?: string[];
+  ownerIds?: Array<string | undefined>;
+  updateIds?: string[];
+}) {
+  const pitfalls: string[] = [];
+  const rejectedPreferredPaths: string[] = [];
+  const hints: string[] = [];
+
+  if (details.encapsulation === 'shadow') {
+    pitfalls.push('shadow-encapsulation');
+    rejectedPreferredPaths.push('css-update');
+    rejectedPreferredPaths.push('owner-component-update');
+    hints.push(
+      'Shadow DOM styles cannot rely on Vite CSS patching because Angular applies them inside a shadow root.',
+    );
+  }
+
+  if (details.diagnosis.anomalies.includes('wrapper_not_yet_tracked')) {
+    pitfalls.push('wrapper-not-yet-tracked');
+    rejectedPreferredPaths.push('css-update');
+    hints.push(
+      'The direct stylesheet module exists, but the browser-visible Angular wrapper module was not available in the live graph during this HMR pass.',
+    );
+  }
+
+  if (
+    details.diagnosis.anomalies.includes(
+      'tracked_wrapper_missing_from_module_graph',
+    )
+  ) {
+    pitfalls.push('tracked-wrapper-missing-from-module-graph');
+    rejectedPreferredPaths.push('css-update');
+    hints.push(
+      'A wrapper request id is known, but Vite could not resolve a live wrapper module for targeted CSS HMR.',
+    );
+  }
+
+  if ((details.ownerIds?.filter(Boolean).length ?? 0) === 0) {
+    pitfalls.push('no-owner-modules');
+    if (details.outcome === 'full-reload') {
+      rejectedPreferredPaths.push('owner-component-update');
+      hints.push(
+        'No owning TS component modules were available in the module graph for owner-based fallback.',
+      );
+    }
+  } else if ((details.updateIds?.length ?? 0) === 0) {
+    pitfalls.push('owner-modules-without-class-identities');
+    if (details.outcome === 'full-reload') {
+      rejectedPreferredPaths.push('owner-component-update');
+      hints.push(
+        'Owner modules were found, but Angular did not expose component class identities after recompilation, so no targeted component update could be sent.',
+      );
+    }
+  }
+
+  debugHmrV('component stylesheet hmr outcome', {
+    file: details.file,
+    outcome: details.outcome,
+    encapsulation: details.encapsulation,
+    directModuleId: details.directModuleId,
+    wrapperIds: details.wrapperIds ?? [],
+    ownerIds: details.ownerIds ?? [],
+    updateIds: details.updateIds ?? [],
+    preferredPath:
+      details.encapsulation === 'shadow' ? 'full-reload' : 'css-update',
+    rejectedPreferredPaths: [...new Set(rejectedPreferredPaths)],
+    pitfalls: [...new Set(pitfalls)],
+    anomalies: details.diagnosis.anomalies,
+    hints: [...new Set([...details.diagnosis.hints, ...hints])],
+  });
+}
+
 export function findTemplateOwnerModules(
   server: ViteDevServer,
   resourceFile: string,
@@ -3228,6 +3542,29 @@ export function findTemplateOwnerModules(
   const modules = new Map<string, ModuleNode>();
   for (const candidate of candidateTsFiles) {
     const owners = server.moduleGraph.getModulesByFile(candidate);
+    owners?.forEach((mod) => {
+      if (mod.id) {
+        modules.set(mod.id, mod);
+      }
+    });
+  }
+
+  return [...modules.values()];
+}
+
+function findStyleOwnerModules(
+  server: ViteDevServer,
+  resourceFile: string,
+  styleSourceOwners: Map<string, Set<string>>,
+): ModuleNode[] {
+  const normalizedResourceFile = normalizePath(resourceFile.split('?')[0]);
+  const candidateOwnerFiles = [
+    ...(styleSourceOwners.get(normalizedResourceFile) ?? []),
+  ];
+  const modules = new Map<string, ModuleNode>();
+
+  for (const ownerFile of candidateOwnerFiles) {
+    const owners = server.moduleGraph.getModulesByFile(ownerFile);
     owners?.forEach((mod) => {
       if (mod.id) {
         modules.set(mod.id, mod);

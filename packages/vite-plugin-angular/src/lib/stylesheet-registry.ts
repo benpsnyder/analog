@@ -29,6 +29,43 @@ export class AnalogStylesheetRegistry {
    */
   private sourceToRequestIds = new Map<string, Set<string>>();
 
+  /**
+   * Canonicalizes browser-facing stylesheet request ids so Vite timestamp
+   * variants (`?t=...`) and path-shape variants (`abc.css?...` vs
+   * `/abc.css?...`) all collapse onto one logical module identity.
+   *
+   * This is critical for Angular component stylesheet HMR because the browser
+   * can keep both timestamped and non-timestamped requests alive for the same
+   * externalized stylesheet. If Analog tracks them as distinct resources, HMR
+   * can update one module while the browser continues rendering another stale
+   * module for the same public stylesheet id.
+   */
+  private normalizeRequestId(requestId: string): string {
+    const [rawPathname, rawSearch = ''] = requestId.split('?');
+    const normalizedPathname = rawPathname.replace(/^\//, '');
+
+    if (!rawSearch) {
+      return normalizedPathname;
+    }
+
+    // Preserve bare query flags like `?direct&ngcomp=...` exactly. Using
+    // URLSearchParams reserializes `direct` as `direct=`, which changes the
+    // module identity and breaks Vite module-graph lookups for Angular's
+    // externalized component stylesheet requests.
+    const normalizedSearch = rawSearch
+      .split('&')
+      .filter((segment) => segment.length > 0)
+      .filter((segment) => {
+        const [key] = segment.split('=');
+        return key !== 't';
+      })
+      .join('&');
+
+    return normalizedSearch
+      ? `${normalizedPathname}?${normalizedSearch}`
+      : normalizedPathname;
+  }
+
   get servedCount(): number {
     return this.servedById.size;
   }
@@ -46,7 +83,8 @@ export class AnalogStylesheetRegistry {
   }
 
   resolveExternalSource(requestId: string): string | undefined {
-    return this.externalRequestToSource.get(requestId);
+    const normalizedRequestId = this.normalizeRequestId(requestId);
+    return this.externalRequestToSource.get(normalizedRequestId);
   }
 
   getPublicIdsForSource(sourcePath: string): string[] {
@@ -58,7 +96,10 @@ export class AnalogStylesheetRegistry {
   }
 
   registerExternalRequest(requestId: string, sourcePath: string): void {
-    this.externalRequestToSource.set(requestId, sourcePath);
+    this.externalRequestToSource.set(
+      this.normalizeRequestId(requestId),
+      sourcePath,
+    );
   }
 
   registerActiveRequest(requestId: string): void {
@@ -66,7 +107,8 @@ export class AnalogStylesheetRegistry {
     // stylesheet (`abc123.css?...` vs `/abc123.css?...`). Normalize both back to
     // the source file so later HMR events for `/src/...component.css` can find
     // the currently active virtual requests.
-    const requestPath = requestId.split('?')[0];
+    const normalizedRequestId = this.normalizeRequestId(requestId);
+    const requestPath = normalizedRequestId.split('?')[0];
     const sourcePath =
       this.resolveExternalSource(requestPath) ??
       this.resolveExternalSource(requestPath.replace(/^\//, ''));
@@ -75,7 +117,7 @@ export class AnalogStylesheetRegistry {
     }
 
     const requestIds = this.sourceToRequestIds.get(sourcePath) ?? new Set();
-    requestIds.add(requestId);
+    requestIds.add(normalizedRequestId);
     this.sourceToRequestIds.set(sourcePath, requestIds);
   }
 
@@ -83,17 +125,18 @@ export class AnalogStylesheetRegistry {
     record: AnalogStylesheetRecord,
     aliases: string[] = [],
   ): void {
-    this.servedById.set(record.publicId, record);
-    this.servedAliasToId.set(record.publicId, record.publicId);
+    const publicId = this.normalizeRequestId(record.publicId);
+    this.servedById.set(publicId, { ...record, publicId });
+    this.servedAliasToId.set(publicId, publicId);
 
     for (const alias of aliases) {
-      this.servedAliasToId.set(alias, record.publicId);
+      this.servedAliasToId.set(this.normalizeRequestId(alias), publicId);
     }
 
     if (record.sourcePath) {
       const publicIds =
         this.sourceToPublicIds.get(record.sourcePath) ?? new Set();
-      publicIds.add(record.publicId);
+      publicIds.add(publicId);
       this.sourceToPublicIds.set(record.sourcePath, publicIds);
     }
   }
@@ -101,7 +144,11 @@ export class AnalogStylesheetRegistry {
   private resolveServedRecord(
     requestId: string,
   ): AnalogStylesheetRecord | undefined {
-    const publicId = this.servedAliasToId.get(requestId) ?? requestId;
+    const normalizedRequestId = this.normalizeRequestId(requestId);
+    const publicId =
+      this.servedAliasToId.get(normalizedRequestId) ??
+      this.servedAliasToId.get(normalizedRequestId.split('?')[0]) ??
+      normalizedRequestId.split('?')[0];
     return this.servedById.get(publicId);
   }
 }

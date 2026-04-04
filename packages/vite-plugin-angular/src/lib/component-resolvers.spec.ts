@@ -433,13 +433,41 @@ describe('component-resolvers', () => {
         {
           className: 'DemoCardComponent',
           selector: 'demo-card',
+          styleUrls: [],
           templateUrls: ['./demo-card.component.html'],
           inlineTemplates: ['<section>Inline</section>'],
         },
         {
           className: 'DemoDialogComponent',
+          styleUrls: [],
           templateUrls: [],
           inlineTemplates: ['<div>Selectorless</div>'],
+        },
+      ]);
+    });
+
+    it('extracts component styleUrls alongside other metadata', () => {
+      const code = `
+        @Component({
+          selector: 'demo-card',
+          styleUrl: './demo-card.component.css',
+          styleUrls: ['./demo-card.theme.css', '../shared/demo-card.tokens.css'],
+          template: '<section>Inline</section>'
+        })
+        export class DemoCardComponent {}
+      `;
+
+      expect(getAngularComponentMetadata(code)).toEqual([
+        {
+          className: 'DemoCardComponent',
+          selector: 'demo-card',
+          styleUrls: [
+            './demo-card.component.css',
+            './demo-card.theme.css',
+            '../shared/demo-card.tokens.css',
+          ],
+          templateUrls: [],
+          inlineTemplates: ['<section>Inline</section>'],
         },
       ]);
     });

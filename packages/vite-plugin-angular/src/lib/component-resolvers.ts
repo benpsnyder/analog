@@ -104,6 +104,7 @@ function collectComponentUrls(code: string): {
 export interface AngularComponentMetadata {
   className: string;
   selector?: string;
+  styleUrls: string[];
   templateUrls: string[];
   inlineTemplates: string[];
 }
@@ -141,6 +142,7 @@ export function getAngularComponentMetadata(
 
         const metadata: AngularComponentMetadata = {
           className: node.id?.name ?? '(anonymous)',
+          styleUrls: [],
           templateUrls: [],
           inlineTemplates: [],
         };
@@ -156,6 +158,21 @@ export function getAngularComponentMetadata(
           const name = property.key.name;
           if (name === 'selector') {
             metadata.selector = getStringValue(property.value);
+          } else if (name === 'styleUrl') {
+            const val = getStringValue(property.value);
+            if (val !== undefined) {
+              metadata.styleUrls.push(val);
+            }
+          } else if (
+            name === 'styleUrls' &&
+            property.value?.type === 'ArrayExpression'
+          ) {
+            for (const el of property.value.elements ?? []) {
+              const val = getStringValue(el);
+              if (val !== undefined) {
+                metadata.styleUrls.push(val);
+              }
+            }
           } else if (name === 'templateUrl') {
             const val = getStringValue(property.value);
             if (val !== undefined) {
