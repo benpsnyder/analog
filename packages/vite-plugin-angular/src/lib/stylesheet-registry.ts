@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { basename, dirname, normalize, resolve } from 'node:path';
+import { dirname, normalize, resolve } from 'node:path';
 import { normalizePath } from 'vite';
 import type { StylePreprocessor } from './style-preprocessor.js';
 
@@ -73,10 +73,16 @@ export function rewriteRelativeCssImports(
 ): string {
   const cssDir = dirname(filename);
   return code.replace(
-    /@import\s+(['"])(\.[^'"]+)\1/g,
-    (_match, quote, relPath) => {
+    /@import\s+(?:url\(\s*(["']?)(\.[^'")\s;]+)\1\s*\)|(["'])(\.[^'"]+)\3)/g,
+    (_match, urlQuote, urlPath, stringQuote, stringPath) => {
+      const relPath = urlPath ?? stringPath;
       const absPath = resolve(cssDir, relPath);
-      return `@import ${quote}${absPath}${quote}`;
+
+      if (typeof urlPath === 'string') {
+        return `@import url(${urlQuote}${absPath}${urlQuote})`;
+      }
+
+      return `@import ${stringQuote}${absPath}${stringQuote}`;
     },
   );
 }
@@ -111,10 +117,11 @@ export function registerStylesheetContent(
 
   if (resourceFile) {
     const normalizedResourceFile = normalizePath(normalize(resourceFile));
+    // Avoid basename-only aliases here: shared filenames like `index.css`
+    // can collide across components and break HMR lookups.
     aliases.push(
       resourceFile,
       normalizedResourceFile,
-      basename(resourceFile),
       resourceFile.replace(/^\//, ''),
       normalizedResourceFile.replace(/^\//, ''),
     );

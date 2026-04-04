@@ -555,8 +555,16 @@ export function angular(options?: PluginOptions): Plugin[] {
   function angularPlugin(): Plugin {
     let isProd = false;
 
-    if (angularFullVersion < 190000) {
+    if (angularFullVersion < 190000 && pluginOptions.hmr) {
       // Angular < 19 does not support externalRuntimeStyles or _enableHmr.
+      debugHmr('hmr disabled: Angular version does not support HMR APIs', {
+        angularVersion: angularFullVersion,
+        isTest,
+      });
+      console.warn(
+        '[@analogjs/vite-plugin-angular]: HMR was disabled because Angular v19+ is required for externalRuntimeStyles/_enableHmr support. Detected Angular version: %s.',
+        angularFullVersion,
+      );
       pluginOptions.hmr = false;
     }
 

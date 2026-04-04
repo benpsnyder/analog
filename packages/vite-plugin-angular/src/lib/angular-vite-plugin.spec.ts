@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest';
 import type { Plugin } from 'vite';
 import {
   angular,
@@ -8,6 +8,13 @@ import {
   isTestWatchMode,
 } from './angular-vite-plugin';
 
+const hmrPluginNames = [
+  '@analogjs/vite-plugin-angular:hmr-vite-ignore',
+  'analogjs-live-reload-plugin',
+];
+const originalNodeEnv = process.env['NODE_ENV'];
+const originalVitestEnv = process.env['VITEST'];
+
 describe('angularVitePlugin', () => {
   it('should work', () => {
     expect(angular()[0].name).toEqual('@analogjs/vite-plugin-angular');
@@ -15,31 +22,50 @@ describe('angularVitePlugin', () => {
 });
 
 describe('hmr option', () => {
+  beforeEach(() => {
+    process.env['NODE_ENV'] = 'development';
+    delete process.env['VITEST'];
+  });
+
+  afterEach(() => {
+    if (typeof originalNodeEnv === 'undefined') {
+      delete process.env['NODE_ENV'];
+    } else {
+      process.env['NODE_ENV'] = originalNodeEnv;
+    }
+
+    if (typeof originalVitestEnv === 'undefined') {
+      delete process.env['VITEST'];
+    } else {
+      process.env['VITEST'] = originalVitestEnv;
+    }
+  });
+
   it('disables HMR helper plugins when hmr is false', () => {
     const plugins = angular({ hmr: false });
     const names = plugins.map((plugin) => plugin.name);
 
-    expect(names).not.toContain(
-      '@analogjs/vite-plugin-angular:hmr-vite-ignore',
-    );
-    expect(names).not.toContain('analogjs-live-reload-plugin');
+    expect(names).toEqual(expect.not.arrayContaining(hmrPluginNames));
   });
 
-  it('accepts liveReload as a compatibility alias', () => {
+  it('enables HMR helper plugins by default', () => {
+    const names = angular().map((plugin) => plugin.name);
+
+    expect(names).toEqual(expect.arrayContaining(hmrPluginNames));
+  });
+
+  it('accepts liveReload as a compatibility alias for HMR', () => {
     const plugins = angular({ liveReload: true });
     const names = plugins.map((plugin) => plugin.name);
 
-    expect(names).toContain('@analogjs/vitest-angular-esm-plugin');
+    expect(names).toEqual(expect.arrayContaining(hmrPluginNames));
   });
 
   it('prefers hmr over liveReload when both are provided', () => {
     const plugins = angular({ hmr: false, liveReload: true });
     const names = plugins.map((plugin) => plugin.name);
 
-    expect(names).not.toContain(
-      '@analogjs/vite-plugin-angular:hmr-vite-ignore',
-    );
-    expect(names).not.toContain('analogjs-live-reload-plugin');
+    expect(names).toEqual(expect.not.arrayContaining(hmrPluginNames));
   });
 });
 

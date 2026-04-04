@@ -54,8 +54,6 @@ describe('stylesheet-registry', () => {
     expect(
       registry.getServedContent('project/src/app/demo.component.css'),
     ).toBe('.demo { color: red; }');
-    expect(registry.getServedContent('demo.component.css')).toBe(
-      '.demo { color: red; }',
-    );
+    expect(registry.getServedContent('demo.component.css')).toBeUndefined();
   });
 });
