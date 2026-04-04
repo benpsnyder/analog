@@ -73,8 +73,8 @@
     "@astrojs/mdx": "catalog:",
     "@astrojs/react": "catalog:",
     "@mdx-js/react": "3.1.1",
-    "@nx/angular": "22.6.2",
-    "@nx/devkit": "22.6.2",
+    "@nx/angular": "22.7.0-beta.10",
+    "@nx/devkit": "22.7.0-beta.10",
     "@standard-schema/spec": "catalog:",
     "@tanstack/angular-query-experimental": "^5.95.2",
     "@tanstack/query-core": "^5.95.2",
@@ -118,14 +118,14 @@
     "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^10.0.1",
     "@netlify/functions": "^5.1.5",
-    "@nx/eslint": "22.6.2",
-    "@nx/eslint-plugin": "22.6.2",
-    "@nx/playwright": "22.6.2",
-    "@nx/plugin": "22.6.2",
-    "@nx/storybook": "22.6.2",
-    "@nx/vite": "22.6.2",
-    "@nx/vitest": "22.6.2",
-    "@nx/web": "22.6.2",
+    "@nx/eslint": "22.7.0-beta.10",
+    "@nx/eslint-plugin": "22.7.0-beta.10",
+    "@nx/playwright": "22.7.0-beta.10",
+    "@nx/plugin": "22.7.0-beta.10",
+    "@nx/storybook": "22.7.0-beta.10",
+    "@nx/vite": "22.7.0-beta.10",
+    "@nx/vitest": "22.7.0-beta.10",
+    "@nx/web": "22.7.0-beta.10",
     "@oxc-angular/vite": "^0.0.22",
     "@oxc-project/runtime": "^0.123.0",
     "@playwright/test": "^1.58.2",
@@ -183,7 +183,7 @@
     "minimist": "^1.2.8",
     "ng-packagr": "21.2.1",
     "nitro": "catalog:",
-    "nx": "22.6.2",
+    "nx": "22.7.0-beta.10",
     "obug": "^2.1.1",
     "ofetch": "catalog:",
     "oxc-parser": "catalog:",
@@ -255,9 +255,6 @@
     "@typescript-eslint/type-utils": "$@typescript-eslint/type-utils",
     "jiti": "$jiti",
     "less": "$less",
-    "nitropack": {
-      "vite": "$vite"
-    },
     "rolldown": "$rolldown",
     "sass-embedded": "$sass-embedded",
     "sass": "$sass",
@@ -265,9 +262,97 @@
     "vite": "$vite",
     "zone.js": "$zone.js"
   },
-  "workspaces": [
-    "apps/*",
-    "packages/*",
-    "libs/**"
-  ]
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "packages/*",
+      "libs/**",
+      "tests/*"
+    ],
+    "catalog": {
+      "@astrojs/mdx": "^5.0.3",
+      "@astrojs/react": "^5.0.2",
+      "@tailwindcss/vite": "^4.2.2",
+      "@standard-schema/spec": "^1.1.0",
+      "astro": "6.1.1",
+      "defu": "^6.1.4",
+      "front-matter": "^4.0.2",
+      "es-toolkit": "^1.45.1",
+      "marked": "^17.0.5",
+      "marked-gfm-heading-id": "^4.1.3",
+      "marked-highlight": "^2.2.3",
+      "marked-mangle": "^1.1.12",
+      "marked-shiki": "^1.2.1",
+      "nitro": "3.0.260311-beta",
+      "obug": "^2.1.1",
+      "ofetch": "2.0.0-alpha.3",
+      "oxc-parser": "^0.123.0",
+      "oxc-transform": "^0.123.0",
+      "oxc-resolver": "^11.19.1",
+      "prismjs": "^1.30.0",
+      "prompts": "^2.4.2",
+      "radix3": "^1.1.2",
+      "react": "^19.2.4",
+      "react-dom": "^19.2.4",
+      "rolldown": "^1.0.0-rc.13",
+      "satori-html": "^0.3.2",
+      "schema-dts": "^2.0.0",
+      "shiki": "^1.29.2 || ^4.0.2",
+      "sharp": "^0.34.5",
+      "tslib": "^2.3.0",
+      "tinyglobby": "^0.2.15",
+      "tailwindcss": "^4.2.2",
+      "tsdown": "^0.21.5",
+      "typescript": "6.0.2",
+      "vitefu": "^1.1.2",
+      "xmlbuilder2": "^4.0.3"
+    },
+    "catalogs": {
+      "peerCompat": {
+        "@angular/common": "^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^20.0.0 || ^21.0.0",
+        "@angular/core": "^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^20.0.0 || ^21.0.0",
+        "@angular/platform-browser": "^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^20.0.0 || ^21.0.0",
+        "@angular/platform-server": "^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^20.0.0 || ^21.0.0",
+        "@angular/router": "^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^20.0.0 || ^21.0.0",
+        "@nx/angular": "^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0 || ^22",
+        "@nx/devkit": "^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0 || ^22",
+        "@nx/vite": "^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0 || ^22",
+        "rxjs": "^6.5.0 || ^7.5.0",
+        "vite": "^6.0.0 || ^7.0.0 || ^8.0.0"
+      },
+      "peerAngularBuilders": {
+        "@angular-devkit/build-angular": "^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^20.0.0 || ^21.0.0",
+        "@angular/build": "^18.0.0 || ^19.0.0 || ^20.0.0 || ^21.0.0"
+      },
+      "peerAngular20Plus": {
+        "@angular/animations": ">=20.0.0",
+        "@angular/build": ">=20.0.0",
+        "@angular/common": ">=20.0.0",
+        "@angular/compiler": ">=20.0.0",
+        "@angular/compiler-cli": ">=20.0.0",
+        "@angular/core": ">=20.0.0",
+        "@angular/language-service": ">=20.0.0",
+        "@angular/platform-browser": ">=20.0.0",
+        "@angular/platform-server": ">=20.0.0",
+        "rxjs": "^7.8.0",
+        "tslib": "^2.4.0"
+      },
+      "peerStorybook10": {
+        "@storybook/angular": "^10.0.0",
+        "@storybook/builder-vite": "^10.3.3",
+        "storybook": "^10.0.0"
+      },
+      "peerVitestAngular": {
+        "@analogjs/vite-plugin-angular": "*",
+        "@angular-devkit/architect": ">=0.1500.0 < 0.2200.0",
+        "@angular-devkit/schematics": ">=17.0.0",
+        "vitest": "^1.3.1 || ^2.0.0 || ^3.0.0 || ^4.0.0",
+        "zone.js": ">=0.14.0"
+      },
+      "peerContentOptional": {
+        "md4x": ">=0.0.20",
+        "satori": "^0.10.14"
+      }
+    }
+  }
 }
