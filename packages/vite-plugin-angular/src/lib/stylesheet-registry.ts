@@ -14,6 +14,20 @@ export class AnalogStylesheetRegistry {
   private servedById = new Map<string, AnalogStylesheetRecord>();
   private servedAliasToId = new Map<string, string>();
   private externalRequestToSource = new Map<string, string>();
+  /**
+   * Maps a real source stylesheet path back to the generated public stylesheet
+   * ids Analog serves for Angular. This is stable across requests and lets HMR
+   * reason about "which virtual stylesheet came from this source file?"
+   */
+  private sourceToPublicIds = new Map<string, Set<string>>();
+  /**
+   * Tracks the live request ids Vite/Angular have actually served for a source
+   * stylesheet, including both `?direct&ngcomp=...` CSS modules and
+   * `?ngcomp=...` JS wrapper modules. HMR must use these live request ids
+   * because Angular component styles are no longer addressed by their original
+   * file paths once externalized.
+   */
+  private sourceToRequestIds = new Map<string, Set<string>>();
 
   get servedCount(): number {
     return this.servedById.size;
@@ -35,8 +49,34 @@ export class AnalogStylesheetRegistry {
     return this.externalRequestToSource.get(requestId);
   }
 
+  getPublicIdsForSource(sourcePath: string): string[] {
+    return [...(this.sourceToPublicIds.get(sourcePath) ?? [])];
+  }
+
+  getRequestIdsForSource(sourcePath: string): string[] {
+    return [...(this.sourceToRequestIds.get(sourcePath) ?? [])];
+  }
+
   registerExternalRequest(requestId: string, sourcePath: string): void {
     this.externalRequestToSource.set(requestId, sourcePath);
+  }
+
+  registerActiveRequest(requestId: string): void {
+    // Requests arrive in multiple shapes depending on who asked for the
+    // stylesheet (`abc123.css?...` vs `/abc123.css?...`). Normalize both back to
+    // the source file so later HMR events for `/src/...component.css` can find
+    // the currently active virtual requests.
+    const requestPath = requestId.split('?')[0];
+    const sourcePath =
+      this.resolveExternalSource(requestPath) ??
+      this.resolveExternalSource(requestPath.replace(/^\//, ''));
+    if (!sourcePath) {
+      return;
+    }
+
+    const requestIds = this.sourceToRequestIds.get(sourcePath) ?? new Set();
+    requestIds.add(requestId);
+    this.sourceToRequestIds.set(sourcePath, requestIds);
   }
 
   registerServedStylesheet(
@@ -48,6 +88,13 @@ export class AnalogStylesheetRegistry {
 
     for (const alias of aliases) {
       this.servedAliasToId.set(alias, record.publicId);
+    }
+
+    if (record.sourcePath) {
+      const publicIds =
+        this.sourceToPublicIds.get(record.sourcePath) ?? new Set();
+      publicIds.add(record.publicId);
+      this.sourceToPublicIds.set(record.sourcePath, publicIds);
     }
   }
 

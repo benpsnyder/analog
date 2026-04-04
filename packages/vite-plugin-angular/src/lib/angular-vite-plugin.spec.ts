@@ -1,14 +1,25 @@
 import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import type { Plugin } from 'vite';
 import {
   angular,
   createFsWatcherCacheInvalidator,
+  findBoundClassAndNgClassConflicts,
+  findStaticClassAndBoundClassConflicts,
+  findTemplateOwnerModules,
+  findComponentStylesheetWrapperModules,
+  getModulesForChangedFile,
+  isModuleForChangedResource,
   isIgnoredHmrFile,
   mapTemplateUpdatesToFiles,
   normalizeIncludeGlob,
+  refreshStylesheetRegistryForFile,
   toAngularCompilationFileReplacements,
   isTestWatchMode,
 } from './angular-vite-plugin';
+import { AnalogStylesheetRegistry } from './stylesheet-registry.js';
 
 const hmrPluginNames = [
   '@analogjs/vite-plugin-angular:hmr-vite-ignore',
@@ -19,7 +30,9 @@ const originalVitestEnv = process.env['VITEST'];
 
 describe('angularVitePlugin', () => {
   it('should work', () => {
-    expect(angular()[0].name).toEqual('@analogjs/vite-plugin-angular');
+    expect(angular().map((plugin) => plugin.name)).toContain(
+      '@analogjs/vite-plugin-angular',
+    );
   });
 });
 
@@ -148,6 +161,262 @@ describe('isIgnoredHmrFile', () => {
     expect(
       isIgnoredHmrFile('/workspace/apps/demo/src/app/app.component.ts'),
     ).toBe(false);
+  });
+});
+
+describe('getModulesForChangedFile', () => {
+  it('includes module-graph entries when the watcher event omits direct css modules', async () => {
+    const directModule = {
+      id: '/workspace/apps/demo/src/app/demo.component.css?direct&ngcomp=ng-c1&e=0',
+      file: '/workspace/apps/demo/src/app/demo.component.css',
+      url: '/src/app/demo.component.css?direct&ngcomp=ng-c1&e=0',
+      type: 'css',
+    } as any;
+    const sourceModule = {
+      id: '/workspace/apps/demo/src/app/demo.component.css',
+      file: '/workspace/apps/demo/src/app/demo.component.css',
+      url: '/src/app/demo.component.css',
+      type: 'css',
+    } as any;
+    const server = {
+      moduleGraph: {
+        getModulesByFile: vi.fn().mockReturnValue(new Set([directModule])),
+        getModuleByUrl: vi.fn(),
+        getModuleById: vi.fn(),
+      },
+    } as any;
+
+    const result = await getModulesForChangedFile(
+      server,
+      '/workspace/apps/demo/src/app/demo.component.css',
+      [sourceModule],
+    );
+
+    expect(result).toEqual([sourceModule, directModule]);
+    expect(server.moduleGraph.getModulesByFile).toHaveBeenCalledWith(
+      '/workspace/apps/demo/src/app/demo.component.css',
+    );
+  });
+
+  it('deduplicates modules by id across watcher and module-graph sources', async () => {
+    const sharedModule = {
+      id: '/workspace/apps/demo/src/app/demo.component.css',
+      file: '/workspace/apps/demo/src/app/demo.component.css',
+    } as any;
+    const server = {
+      moduleGraph: {
+        getModulesByFile: vi.fn().mockReturnValue(new Set([sharedModule])),
+        getModuleByUrl: vi.fn(),
+        getModuleById: vi.fn(),
+      },
+    } as any;
+
+    const result = await getModulesForChangedFile(
+      server,
+      '/workspace/apps/demo/src/app/demo.component.css',
+      [sharedModule],
+    );
+
+    expect(result).toEqual([sharedModule]);
+  });
+
+  it('includes tracked virtual stylesheet modules for a changed source stylesheet', async () => {
+    const virtualModule = {
+      id: '/abc123.css?ngcomp=ng-c1&e=0',
+      file: '/abc123.css',
+      url: '/abc123.css?ngcomp=ng-c1&e=0',
+      type: 'js',
+    } as any;
+    const server = {
+      moduleGraph: {
+        getModulesByFile: vi.fn().mockReturnValue(undefined),
+        getModuleByUrl: vi.fn().mockImplementation((id: string) => {
+          return id === '/abc123.css?ngcomp=ng-c1&e=0'
+            ? virtualModule
+            : undefined;
+        }),
+        getModuleById: vi.fn().mockImplementation((id: string) => {
+          return id === '/abc123.css?ngcomp=ng-c1&e=0'
+            ? virtualModule
+            : undefined;
+        }),
+      },
+    } as any;
+    const stylesheetRegistry = {
+      getRequestIdsForSource: vi
+        .fn()
+        .mockReturnValue(['abc123.css?ngcomp=ng-c1&e=0']),
+    } as any;
+
+    const result = await getModulesForChangedFile(
+      server,
+      '/workspace/apps/demo/src/app/demo.component.css',
+      [],
+      stylesheetRegistry,
+    );
+
+    expect(result).toEqual([virtualModule]);
+    expect(stylesheetRegistry.getRequestIdsForSource).toHaveBeenCalledWith(
+      '/workspace/apps/demo/src/app/demo.component.css',
+    );
+    expect(server.moduleGraph.getModuleById).toHaveBeenCalledWith(
+      'abc123.css?ngcomp=ng-c1&e=0',
+    );
+    expect(server.moduleGraph.getModuleByUrl).toHaveBeenCalledWith(
+      '/abc123.css?ngcomp=ng-c1&e=0',
+    );
+    expect(server.moduleGraph.getModuleById).not.toHaveBeenCalledWith(
+      '/abc123.css?ngcomp=ng-c1&e=0',
+    );
+  });
+
+  it('falls back to getModuleById when getModuleByUrl misses a tracked request id', async () => {
+    const virtualModule = {
+      id: '/abc123.css?direct&ngcomp=ng-c1&e=0',
+      file: '/abc123.css',
+      url: '/abc123.css?direct&ngcomp=ng-c1&e=0',
+      type: 'css',
+    } as any;
+    const server = {
+      moduleGraph: {
+        getModulesByFile: vi.fn().mockReturnValue(undefined),
+        getModuleByUrl: vi.fn().mockResolvedValue(undefined),
+        getModuleById: vi.fn().mockImplementation((id: string) => {
+          return id === '/abc123.css?direct&ngcomp=ng-c1&e=0'
+            ? virtualModule
+            : undefined;
+        }),
+      },
+    } as any;
+    const stylesheetRegistry = {
+      getRequestIdsForSource: vi
+        .fn()
+        .mockReturnValue(['abc123.css?direct&ngcomp=ng-c1&e=0']),
+    } as any;
+
+    const result = await getModulesForChangedFile(
+      server,
+      '/workspace/apps/demo/src/app/demo.component.css',
+      [],
+      stylesheetRegistry,
+    );
+
+    expect(result).toEqual([virtualModule]);
+    expect(server.moduleGraph.getModuleByUrl).toHaveBeenCalledWith(
+      'abc123.css?direct&ngcomp=ng-c1&e=0',
+    );
+    expect(server.moduleGraph.getModuleByUrl).toHaveBeenCalledWith(
+      '/abc123.css?direct&ngcomp=ng-c1&e=0',
+    );
+    expect(server.moduleGraph.getModuleById).toHaveBeenCalledWith(
+      'abc123.css?direct&ngcomp=ng-c1&e=0',
+    );
+    expect(server.moduleGraph.getModuleById).toHaveBeenCalledWith(
+      '/abc123.css?direct&ngcomp=ng-c1&e=0',
+    );
+  });
+});
+
+describe('isModuleForChangedResource', () => {
+  it('matches a virtual component stylesheet module back to its source css file', () => {
+    const mod = {
+      id: '/abc123.css?direct&ngcomp=ng-c1&e=0',
+      file: '/abc123.css',
+      type: 'css',
+    } as any;
+    const stylesheetRegistry = {
+      resolveExternalSource: vi.fn().mockImplementation((id: string) => {
+        return id === 'abc123.css'
+          ? '/workspace/apps/demo/src/app/demo.component.css'
+          : undefined;
+      }),
+    } as any;
+
+    expect(
+      isModuleForChangedResource(
+        mod,
+        '/workspace/apps/demo/src/app/demo.component.css',
+        stylesheetRegistry,
+      ),
+    ).toBe(true);
+  });
+});
+
+describe('findComponentStylesheetWrapperModules', () => {
+  it('recovers the js wrapper module from a direct stylesheet request id', async () => {
+    const wrapperModule = {
+      id: '/abc123.css?ngcomp=ng-c1&e=0',
+      file: '/abc123.css',
+      url: '/abc123.css?ngcomp=ng-c1&e=0',
+      type: 'js',
+    } as any;
+    const directModule = {
+      id: '/abc123.css?direct&ngcomp=ng-c1&e=0',
+      file: '/abc123.css',
+      url: '/abc123.css?direct&ngcomp=ng-c1&e=0',
+      type: 'css',
+    } as any;
+    const server = {
+      moduleGraph: {
+        getModuleByUrl: vi.fn().mockImplementation((id: string) => {
+          return id === '/abc123.css?ngcomp=ng-c1&e=0'
+            ? wrapperModule
+            : undefined;
+        }),
+        getModuleById: vi.fn(),
+      },
+    } as any;
+    const stylesheetRegistry = {
+      resolveExternalSource: vi.fn().mockImplementation((id: string) => {
+        return id === 'abc123.css'
+          ? '/workspace/apps/demo/src/app/demo.component.css'
+          : undefined;
+      }),
+      getRequestIdsForSource: vi
+        .fn()
+        .mockReturnValue(['/abc123.css?direct&ngcomp=ng-c1&e=0']),
+    } as any;
+
+    const result = await findComponentStylesheetWrapperModules(
+      server,
+      '/workspace/apps/demo/src/app/demo.component.css',
+      directModule,
+      [directModule],
+      stylesheetRegistry,
+    );
+
+    expect(result).toEqual([wrapperModule]);
+    expect(server.moduleGraph.getModuleByUrl).toHaveBeenCalledWith(
+      '/abc123.css?ngcomp=ng-c1&e=0',
+    );
+  });
+});
+
+describe('refreshStylesheetRegistryForFile', () => {
+  it('updates served stylesheet content from the changed source file', () => {
+    const tempDir = mkdtempSync(join(tmpdir(), 'analog-styles-'));
+    const stylesheetPath = join(tempDir, 'demo.component.css');
+    writeFileSync(stylesheetPath, '.demo { color: red; }', 'utf-8');
+
+    const registry = new AnalogStylesheetRegistry();
+    registry.registerServedStylesheet(
+      {
+        publicId: 'abc123.css',
+        sourcePath: stylesheetPath,
+        normalizedCode: '.demo { color: blue; }',
+      },
+      [stylesheetPath, stylesheetPath.replace(/^\//, '')],
+    );
+
+    try {
+      refreshStylesheetRegistryForFile(stylesheetPath, registry);
+
+      expect(registry.getServedContent('abc123.css')).toBe(
+        '.demo { color: red; }',
+      );
+    } finally {
+      rmSync(tempDir, { recursive: true, force: true });
+    }
   });
 });
 
@@ -350,6 +619,308 @@ describe('mapTemplateUpdatesToFiles', () => {
       'BarComponent',
       'FooComponent',
     ]);
+  });
+});
+
+describe('findTemplateOwnerModules', () => {
+  it('maps an external html template back to its ts owner module', () => {
+    const ownerModule = {
+      id: '/workspace/apps/demo/src/app/demo.component.ts',
+      file: '/workspace/apps/demo/src/app/demo.component.ts',
+    } as any;
+    const server = {
+      moduleGraph: {
+        getModulesByFile: vi.fn().mockReturnValue(new Set([ownerModule])),
+      },
+    } as any;
+
+    const result = findTemplateOwnerModules(
+      server,
+      '/workspace/apps/demo/src/app/demo.component.html',
+    );
+
+    expect(server.moduleGraph.getModulesByFile).toHaveBeenCalledWith(
+      '/workspace/apps/demo/src/app/demo.component.ts',
+    );
+    expect(result).toEqual([ownerModule]);
+  });
+
+  it('returns no owners when the module graph has no matching ts module', () => {
+    const server = {
+      moduleGraph: {
+        getModulesByFile: vi.fn().mockReturnValue(undefined),
+      },
+    } as any;
+
+    const result = findTemplateOwnerModules(
+      server,
+      '/workspace/apps/demo/src/app/demo.component.html',
+    );
+
+    expect(result).toEqual([]);
+  });
+});
+
+describe('findStaticClassAndBoundClassConflicts', () => {
+  it('detects an element that mixes static class and [class]', () => {
+    const template = `<section class="hero sa:bg-blue-500" [class]="'sa:text-' + align"></section>`;
+
+    expect(findStaticClassAndBoundClassConflicts(template)).toEqual([
+      expect.objectContaining({
+        line: 1,
+        snippet: `<section class="hero sa:bg-blue-500" [class]="'sa:text-' + align">`,
+      }),
+    ]);
+  });
+
+  it('does not flag static class with explicit [class.foo] bindings', () => {
+    const template = `<section class="hero" [class.sa:text-center]="isCentered"></section>`;
+
+    expect(findStaticClassAndBoundClassConflicts(template)).toEqual([]);
+  });
+});
+
+describe('findBoundClassAndNgClassConflicts', () => {
+  it('detects an element that mixes [class] and [ngClass]', () => {
+    const template = `<section [class]="'hero'" [ngClass]="{ active: isActive }"></section>`;
+
+    expect(findBoundClassAndNgClassConflicts(template)).toEqual([
+      expect.objectContaining({
+        line: 1,
+        snippet: `<section [class]="'hero'" [ngClass]="{ active: isActive }">`,
+      }),
+    ]);
+  });
+
+  it('does not flag [class.foo] with [ngClass]', () => {
+    const template = `<section [class.hero]="isHero" [ngClass]="{ active: isActive }"></section>`;
+
+    expect(findBoundClassAndNgClassConflicts(template)).toEqual([]);
+  });
+});
+
+describe('template class binding guard plugin', () => {
+  it('throws for inline templates that mix static class and [class]', () => {
+    const plugin = angular().find(
+      (p) =>
+        p.name === '@analogjs/vite-plugin-angular:template-class-binding-guard',
+    ) as Plugin;
+
+    const transform =
+      typeof plugin.transform === 'function'
+        ? plugin.transform
+        : (plugin.transform as any)?.handler;
+
+    expect(() =>
+      transform.call(
+        {} as any,
+        `
+          @Component({
+            template: \`<section class="hero sa:bg-blue-500" [class]="'sa:text-' + align"></section>\`
+          })
+          export class DemoComponent {}
+        `,
+        '/workspace/apps/demo/src/app/demo.component.ts',
+      ),
+    ).toThrow(/Invalid template class binding/);
+  });
+
+  it('throws for external html templates that mix static class and [class]', () => {
+    const plugin = angular().find(
+      (p) =>
+        p.name === '@analogjs/vite-plugin-angular:template-class-binding-guard',
+    ) as Plugin;
+
+    const transform =
+      typeof plugin.transform === 'function'
+        ? plugin.transform
+        : (plugin.transform as any)?.handler;
+
+    expect(() =>
+      transform.call(
+        {} as any,
+        `<section class="hero sa:bg-blue-500" [class]="'sa:text-' + align"></section>`,
+        '/workspace/apps/demo/src/app/demo.component.html',
+      ),
+    ).toThrow(/Use `\[ngClass\]` or explicit `\[class\.foo\]` bindings/);
+  });
+
+  it('warns for external html templates that mix [class] and [ngClass]', () => {
+    const plugin = angular().find(
+      (p) =>
+        p.name === '@analogjs/vite-plugin-angular:template-class-binding-guard',
+    ) as Plugin;
+
+    const transform =
+      typeof plugin.transform === 'function'
+        ? plugin.transform
+        : (plugin.transform as any)?.handler;
+    const warn = vi.fn();
+
+    transform.call(
+      { warn } as any,
+      `<section [class]="'hero'" [ngClass]="{ active: isActive }"></section>`,
+      '/workspace/apps/demo/src/app/demo.component.html',
+    );
+
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringMatching(/Conflicting class composition/),
+    );
+  });
+
+  it('throws for selectorless non-page components', () => {
+    const plugin = angular().find(
+      (p) =>
+        p.name === '@analogjs/vite-plugin-angular:template-class-binding-guard',
+    ) as Plugin;
+
+    const transform =
+      typeof plugin.transform === 'function'
+        ? plugin.transform
+        : (plugin.transform as any)?.handler;
+    expect(() =>
+      transform.call(
+        { warn: vi.fn() } as any,
+        `
+          @Component({
+            template: '<section></section>'
+          })
+          export class DemoDialogComponent {}
+        `,
+        '/workspace/libs/demo/src/lib/demo-dialog.component.ts',
+      ),
+    ).toThrow(/Selectorless component detected/);
+  });
+
+  it('allows selectorless page components', () => {
+    const plugin = angular().find(
+      (p) =>
+        p.name === '@analogjs/vite-plugin-angular:template-class-binding-guard',
+    ) as Plugin;
+
+    const transform =
+      typeof plugin.transform === 'function'
+        ? plugin.transform
+        : (plugin.transform as any)?.handler;
+
+    expect(() =>
+      transform.call(
+        { warn: vi.fn() } as any,
+        `
+          @Component({
+            template: '<section>Page</section>'
+          })
+          export default class DemoPageComponent {}
+        `,
+        '/workspace/apps/demo/src/app/pages/demo.page.ts',
+      ),
+    ).not.toThrow();
+  });
+
+  it('allows selectorless components inside pages directories', () => {
+    const plugin = angular().find(
+      (p) =>
+        p.name === '@analogjs/vite-plugin-angular:template-class-binding-guard',
+    ) as Plugin;
+
+    const transform =
+      typeof plugin.transform === 'function'
+        ? plugin.transform
+        : (plugin.transform as any)?.handler;
+
+    expect(() =>
+      transform.call(
+        { warn: vi.fn() } as any,
+        `
+          @Component({
+            imports: [RouterOutlet],
+            template: '<router-outlet />'
+          })
+          export default class DemoShellComponent {}
+        `,
+        '/workspace/apps/demo/src/app/pages/(shell).ts',
+      ),
+    ).not.toThrow();
+  });
+
+  it('throws for duplicate selectors in the active graph', () => {
+    const plugin = angular().find(
+      (p) =>
+        p.name === '@analogjs/vite-plugin-angular:template-class-binding-guard',
+    ) as Plugin;
+
+    const transform =
+      typeof plugin.transform === 'function'
+        ? plugin.transform
+        : (plugin.transform as any)?.handler;
+
+    transform.call(
+      { warn: vi.fn() } as any,
+      `
+        @Component({
+          selector: 'demo-card',
+          template: '<section></section>'
+        })
+        export class DemoCardComponent {}
+      `,
+      '/workspace/libs/demo/src/lib/demo-card.component.ts',
+    );
+
+    expect(() =>
+      transform.call(
+        { warn: vi.fn() } as any,
+        `
+          @Component({
+            selector: 'demo-card',
+            template: '<section></section>'
+          })
+          export class DemoCardCloneComponent {}
+        `,
+        '/workspace/libs/demo/src/lib/demo-card-clone.component.ts',
+      ),
+    ).toThrow(/Duplicate component selector detected/);
+  });
+
+  it('warns for duplicate component class names in the active graph', () => {
+    const plugin = angular().find(
+      (p) =>
+        p.name === '@analogjs/vite-plugin-angular:template-class-binding-guard',
+    ) as Plugin;
+
+    const transform =
+      typeof plugin.transform === 'function'
+        ? plugin.transform
+        : (plugin.transform as any)?.handler;
+    const firstWarn = vi.fn();
+    const secondWarn = vi.fn();
+
+    transform.call(
+      { warn: firstWarn } as any,
+      `
+        @Component({
+          selector: 'demo-alpha',
+          template: '<section></section>'
+        })
+        export class DemoSharedComponent {}
+      `,
+      '/workspace/libs/demo/src/lib/demo-alpha.component.ts',
+    );
+
+    transform.call(
+      { warn: secondWarn } as any,
+      `
+        @Component({
+          selector: 'demo-beta',
+          template: '<section></section>'
+        })
+        export class DemoSharedComponent {}
+      `,
+      '/workspace/libs/demo/src/lib/demo-beta.component.ts',
+    );
+
+    expect(secondWarn).toHaveBeenCalledWith(
+      expect.stringMatching(/Duplicate component class name detected/),
+    );
   });
 });
 
