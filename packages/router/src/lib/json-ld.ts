@@ -9,7 +9,7 @@ import type { Graph, Thing, WithContext } from 'schema-dts';
 export type JsonLdObject = Record<string, unknown>;
 
 export function isJsonLdObject(value: unknown): value is JsonLdObject {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
+  return isPlainObject(value);
 }
 
 export function normalizeJsonLd(value: unknown): JsonLdObject[] {
