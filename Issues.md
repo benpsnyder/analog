@@ -999,6 +999,10 @@ Risks / notes:
 
 ### `analogjs/analog#2178` missing `.mjs.map` files in published packages
 
+- Current state:
+  - closeout comment posted at <https://github.com/analogjs/analog/issues/2178#issuecomment-4188529617>
+  - current `alpha` build output and packed tarballs both include the referenced `.mjs.map` artifacts for `@analogjs/router` and `@analogjs/content`
+
 Root cause / working theory:
 
 - Build outputs reference `.mjs.map` files, but published tarballs do not include them consistently.
@@ -1031,6 +1035,12 @@ Verification:
 
 - `npm pack` or equivalent tarball inspection for affected packages.
 - Artifact verifier regression tests.
+- `node tools/scripts/build-lib.mts router`
+- `node tools/scripts/build-lib.mts content`
+- `node tools/scripts/verify-package-artifacts.mts router content`
+- `node tools/scripts/release-artifacts.mts pack`
+- tarball inspection of `tmp/release-artifacts/analogjs-router-3.0.0-alpha.25.tgz`
+- tarball inspection of `tmp/release-artifacts/analogjs-content-3.0.0-alpha.25.tgz`
 
 Risks / notes:
 
@@ -1336,6 +1346,12 @@ Risks / notes:
 
 ### `analogjs/analog#2029` Mermaid / Shiki OOM avoidance
 
+- Current state:
+  - branch `fix/2029-mermaid-shiki-oom`
+  - draft PR: [analogjs/analog#2239](https://github.com/analogjs/analog/pull/2239)
+  - `shikiOptions.highlighter.skipLangs` now skips Shiki grammar loading for languages such as `mermaid` while preserving Analog's existing Mermaid render path
+  - follow-up PR comment posted at <https://github.com/analogjs/analog/pull/2239#issuecomment-4188526311> after escaping skipped-language fallback output
+
 Root cause / working theory:
 
 - The current docs and content setup encourage a path where Mermaid content is still expensive in the highlighting/build pipeline.
@@ -1358,6 +1374,8 @@ Verification:
 
 - Content package tests for skipped-language behavior.
 - Docs update and manual memory-sensitive smoke test.
+- `pnpm nx test platform --runTestsByPath packages/platform/src/lib/content/shiki/index.spec.ts`
+- `pnpm nx build docs-app`
 
 Risks / notes:
 
@@ -1867,7 +1885,7 @@ Status convention:
   | `analogjs/analog#2174` | Planned | 7 | `fix/2174-pathless-layout-typed-routes` | `analogjs/alpha` | Issue closeout comment | Typed-routes hardening item |
   | `analogjs/analog#2049` | Planned | 8 | `fix/2049-dev-keyframe-scoping` | `analogjs/alpha` | Issue closeout comment | Dev/prod stylesheet parity bug |
   | `analogjs/analog#2026` | Planned | 7 | `fix/2026-angular-hmr-reload-matrix` | `analogjs/alpha` | Issue closeout comment with explicit HMR vs reload matrix | Canonical thread endpoint: <https://github.com/analogjs/analog/issues/2026#issuecomment-3677561130> |
-  | `analogjs/analog#2178` | Planned | 5 | `fix/2178-missing-mjs-sourcemaps` | `analogjs/alpha` | Issue closeout comment | Packaging and artifact verification fix |
+  | `analogjs/analog#2178` | Pending Close (Completed) | 5 | `fix/2178-missing-mjs-sourcemaps` | `analogjs/alpha` | Issue closeout comment | Closeout comment posted at <https://github.com/analogjs/analog/issues/2178#issuecomment-4188529617>; current `alpha` build and packed tarballs include the `.mjs.map` artifacts |
   | `analogjs/analog#2215` | Planned | 4 | `chore/2215-deprecation-audit` | `analogjs/alpha` | Issue closeout comment plus docs/migration references | Deprecation audit is repo-wide but contained |
   | `analogjs/analog#2127` | Planned | 6 | `fix/2127-router-followups` | `analogjs/alpha` | Tracker issue comment, and possibly issue body refresh if it remains active | Current tracker comment: <https://github.com/analogjs/analog/issues/2127#issuecomment-4187640151> |
   | `analogjs/analog#1939` | Planned | 3 | `docs/1939-v3-migration-guide` | `analogjs/alpha` | Issue closeout comment with final migration-guide URL | Latest migration thread endpoint: <https://github.com/analogjs/analog/issues/1939#issuecomment-3536712188> |
@@ -1877,7 +1895,7 @@ Status convention:
   | `analogjs/analog#2173` | In progress | 3 | `fix/2173-setup-vitest-legacy-path` | `analogjs/alpha` | Issue closeout comment | Draft PR: [analogjs/analog#2235](https://github.com/analogjs/analog/pull/2235). Covers both `ng update` and `nx migrate` for the legacy import path, and stops stale `setup-vitest` artifacts from being republished |
   | `analogjs/analog#2185` | Closed upstream | 2 | `fix/2185-release-lockfile-regeneration` | `analogjs/alpha` | None | Issue was closed upstream before a branch was carried forward |
   | `analogjs/analog#2074` | In progress | 4 | `fix/2074-storybook-component-wrapper-decorator` | `analogjs/alpha` | Issue closeout comment | Draft PR: [analogjs/analog#2236](https://github.com/analogjs/analog/pull/2236). Re-applies the `beta` fix from [analogjs/analog#2086](https://github.com/analogjs/analog/pull/2086) onto `alpha` with regression coverage |
-  | `analogjs/analog#2029` | Planned | 5 | `fix/2029-mermaid-shiki-oom` | `analogjs/alpha` | Issue closeout comment and docs link | Latest repro/investigation endpoint: <https://github.com/analogjs/analog/issues/2029#issuecomment-4046690307> |
+  | `analogjs/analog#2029` | In progress | 5 | `fix/2029-mermaid-shiki-oom` | `analogjs/alpha` | Issue closeout comment and docs link | Draft PR: [analogjs/analog#2239](https://github.com/analogjs/analog/pull/2239) |
   | `analogjs/analog#2159` | Pending Close (Completed) | 2 | `docs/2159-remove-agx-references` | `analogjs/alpha` | Issue closeout comment | Branch was later repurposed for `analogjs/analog#2168`, so this now needs a maintainer closeout note rather than a dedicated PR |
   | `analogjs/analog#2076` | Planned | 2 | `docs/2076-remove-standalone-true` | `analogjs/alpha` | Issue closeout comment | Existing volunteer comment: <https://github.com/analogjs/analog/issues/2076#issuecomment-3935674971> |
   | `analogjs/analog#2036` | Pending Close (Completed) | 2 | `docs/2036-ai-integrations` | `analogjs/alpha` | Issue closeout comment with docs URL | Draft PR: [analogjs/analog#2234](https://github.com/analogjs/analog/pull/2234) |
