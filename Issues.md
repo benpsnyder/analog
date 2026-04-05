@@ -999,6 +999,10 @@ Risks / notes:
 
 ### `analogjs/analog#2178` missing `.mjs.map` files in published packages
 
+- Current state:
+  - closeout comment posted at <https://github.com/analogjs/analog/issues/2178#issuecomment-4188529617>
+  - current `alpha` build output and packed tarballs both include the referenced `.mjs.map` artifacts for `@analogjs/router` and `@analogjs/content`
+
 Root cause / working theory:
 
 - Build outputs reference `.mjs.map` files, but published tarballs do not include them consistently.
@@ -1031,6 +1035,12 @@ Verification:
 
 - `npm pack` or equivalent tarball inspection for affected packages.
 - Artifact verifier regression tests.
+- `node tools/scripts/build-lib.mts router`
+- `node tools/scripts/build-lib.mts content`
+- `node tools/scripts/verify-package-artifacts.mts router content`
+- `node tools/scripts/release-artifacts.mts pack`
+- tarball inspection of `tmp/release-artifacts/analogjs-router-3.0.0-alpha.25.tgz`
+- tarball inspection of `tmp/release-artifacts/analogjs-content-3.0.0-alpha.25.tgz`
 
 Risks / notes:
 
@@ -1117,6 +1127,11 @@ Risks / notes:
 
 ### `analogjs/analog#1939` migration guide
 
+- Current state:
+  - branch `docs/1939-v3-migration-guide`
+  - draft PR: [analogjs/analog#2240](https://github.com/analogjs/analog/pull/2240)
+  - the guide now includes a focused v3 migration checklist for Angular version support, removed SFC support, explicit content highlighter setup, Astro Angular's Angular 20 zoneless baseline, and the legacy `setup-vitest` import migration
+
 Root cause / working theory:
 
 - There is no current stable-grade migration narrative for the v2 to v3 surface.
@@ -1146,6 +1161,7 @@ Verification:
 
 - Docs review against `IssuesInventoryTodo.md`.
 - Cross-check with template and example app current state.
+- `pnpm nx build docs-app`
 
 Risks / notes:
 
@@ -1867,10 +1883,10 @@ Status convention:
   | `analogjs/analog#2174` | Planned | 7 | `fix/2174-pathless-layout-typed-routes` | `analogjs/alpha` | Issue closeout comment | Typed-routes hardening item |
   | `analogjs/analog#2049` | Planned | 8 | `fix/2049-dev-keyframe-scoping` | `analogjs/alpha` | Issue closeout comment | Dev/prod stylesheet parity bug |
   | `analogjs/analog#2026` | Planned | 7 | `fix/2026-angular-hmr-reload-matrix` | `analogjs/alpha` | Issue closeout comment with explicit HMR vs reload matrix | Canonical thread endpoint: <https://github.com/analogjs/analog/issues/2026#issuecomment-3677561130> |
-  | `analogjs/analog#2178` | Planned | 5 | `fix/2178-missing-mjs-sourcemaps` | `analogjs/alpha` | Issue closeout comment | Packaging and artifact verification fix |
+  | `analogjs/analog#2178` | Pending Close (Completed) | 5 | `fix/2178-missing-mjs-sourcemaps` | `analogjs/alpha` | Issue closeout comment | Closeout comment posted at <https://github.com/analogjs/analog/issues/2178#issuecomment-4188529617>; current `alpha` build and packed tarballs include the `.mjs.map` artifacts |
   | `analogjs/analog#2215` | Planned | 4 | `chore/2215-deprecation-audit` | `analogjs/alpha` | Issue closeout comment plus docs/migration references | Deprecation audit is repo-wide but contained |
   | `analogjs/analog#2127` | Planned | 6 | `fix/2127-router-followups` | `analogjs/alpha` | Tracker issue comment, and possibly issue body refresh if it remains active | Current tracker comment: <https://github.com/analogjs/analog/issues/2127#issuecomment-4187640151> |
-  | `analogjs/analog#1939` | Planned | 3 | `docs/1939-v3-migration-guide` | `analogjs/alpha` | Issue closeout comment with final migration-guide URL | Latest migration thread endpoint: <https://github.com/analogjs/analog/issues/1939#issuecomment-3536712188> |
+  | `analogjs/analog#1939` | In progress | 3 | `docs/1939-v3-migration-guide` | `analogjs/alpha` | Issue closeout comment with final migration-guide URL | Draft PR: [analogjs/analog#2240](https://github.com/analogjs/analog/pull/2240) |
   | `analogjs/analog#2222` | Planned | 7 | `fix/2222-vitest-isolation` | `analogjs/alpha` | Issue closeout comment | Latest thread endpoint: <https://github.com/analogjs/analog/issues/2222#issuecomment-4183839053> |
   | `analogjs/analog#2220` | In progress | 3 | `fix/2220-snapshot-whitespace` | `analogjs/alpha` | Issue closeout comment | Draft PR: [analogjs/analog#2237](https://github.com/analogjs/analog/pull/2237) |
   | `analogjs/analog#2218` | Planned | 4 | `fix/2218-snapshot-generated-ids` | `analogjs/alpha` | Issue closeout comment | Serializer cleanup |
