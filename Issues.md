@@ -1130,7 +1130,8 @@ Risks / notes:
 - Current state:
   - branch `docs/1939-v3-migration-guide`
   - draft PR: [analogjs/analog#2240](https://github.com/analogjs/analog/pull/2240)
-  - the guide now includes a focused v3 migration checklist for Angular version support, removed SFC support, explicit content highlighter setup, Astro Angular's Angular 20 zoneless baseline, and the legacy `setup-vitest` import migration
+  - the guide is now split into `v1 -> v2` and `v2 -> v3` paths, with the `v2 -> v3` section written as an LLM-friendly migration checklist
+  - the `v2 -> v3` section now covers Angular version support, removed SFC support, explicit content highlighter setup, public `@analogjs/content` imports, Storybook and Vitest setup-path changes, deployment/base-href updates, and current diagnostics/API-surface notes that are useful during migration automation
 
 Root cause / working theory:
 
@@ -1352,9 +1353,15 @@ Risks / notes:
 
 ### `analogjs/analog#2029` Mermaid / Shiki OOM avoidance
 
+- Current state:
+  - branch `fix/2029-mermaid-shiki-oom`
+  - draft PR: [analogjs/analog#2239](https://github.com/analogjs/analog/pull/2239)
+  - `skipLangs` support is implemented, docs now recommend `skipLangs: ['mermaid']` for constrained-memory Mermaid builds, skipped languages are excluded from the loaded Shiki grammar list, and skipped fallback output is HTML-escaped
+
 Root cause / working theory:
 
 - The current docs and content setup encourage a path where Mermaid content is still expensive in the highlighting/build pipeline.
+- The skipped-language fallback path must preserve Mermaid's existing render behavior and must not interpolate raw HTML.
 
 Desired end state:
 
@@ -1374,10 +1381,13 @@ Verification:
 
 - Content package tests for skipped-language behavior.
 - Docs update and manual memory-sensitive smoke test.
+- `pnpm nx test platform --runTestsByPath packages/platform/src/lib/content/shiki/index.spec.ts`
+- `pnpm nx build docs-app`
 
 Risks / notes:
 
 - Keep the API generic enough to support more than Mermaid.
+- Keep the fallback output escaped so the skip path does not become an HTML injection bug.
 
 ### `analogjs/analog#2159` remove `.agx` references
 
@@ -1886,14 +1896,14 @@ Status convention:
   | `analogjs/analog#2178` | Pending Close (Completed) | 5 | `fix/2178-missing-mjs-sourcemaps` | `analogjs/alpha` | Issue closeout comment | Closeout comment posted at <https://github.com/analogjs/analog/issues/2178#issuecomment-4188529617>; current `alpha` build and packed tarballs include the `.mjs.map` artifacts |
   | `analogjs/analog#2215` | Planned | 4 | `chore/2215-deprecation-audit` | `analogjs/alpha` | Issue closeout comment plus docs/migration references | Deprecation audit is repo-wide but contained |
   | `analogjs/analog#2127` | Planned | 6 | `fix/2127-router-followups` | `analogjs/alpha` | Tracker issue comment, and possibly issue body refresh if it remains active | Current tracker comment: <https://github.com/analogjs/analog/issues/2127#issuecomment-4187640151> |
-  | `analogjs/analog#1939` | In progress | 3 | `docs/1939-v3-migration-guide` | `analogjs/alpha` | Issue closeout comment with final migration-guide URL | Draft PR: [analogjs/analog#2240](https://github.com/analogjs/analog/pull/2240) |
+  | `analogjs/analog#1939` | In progress | 3 | `docs/1939-v3-migration-guide` | `analogjs/alpha` | Issue closeout comment with final migration-guide URL | Draft PR: [analogjs/analog#2240](https://github.com/analogjs/analog/pull/2240). Guide is now split into `v1 -> v2` and `v2 -> v3`, with LLM-oriented upgrade notes and current diagnostics/API-surface guidance |
   | `analogjs/analog#2222` | Planned | 7 | `fix/2222-vitest-isolation` | `analogjs/alpha` | Issue closeout comment | Latest thread endpoint: <https://github.com/analogjs/analog/issues/2222#issuecomment-4183839053> |
   | `analogjs/analog#2220` | In progress | 3 | `fix/2220-snapshot-whitespace` | `analogjs/alpha` | Issue closeout comment | Draft PR: [analogjs/analog#2237](https://github.com/analogjs/analog/pull/2237) |
-  | `analogjs/analog#2218` | Planned | 4 | `fix/2218-snapshot-generated-ids` | `analogjs/alpha` | Issue closeout comment | Serializer cleanup |
+  | `analogjs/analog#2218` | In progress | 4 | `fix/2218-snapshot-generated-ids` | `analogjs/alpha` | Issue closeout comment | Draft PR: [analogjs/analog#2238](https://github.com/analogjs/analog/pull/2238) |
   | `analogjs/analog#2173` | In progress | 3 | `fix/2173-setup-vitest-legacy-path` | `analogjs/alpha` | Issue closeout comment | Draft PR: [analogjs/analog#2235](https://github.com/analogjs/analog/pull/2235). Covers both `ng update` and `nx migrate` for the legacy import path, and stops stale `setup-vitest` artifacts from being republished |
   | `analogjs/analog#2185` | Closed upstream | 2 | `fix/2185-release-lockfile-regeneration` | `analogjs/alpha` | None | Issue was closed upstream before a branch was carried forward |
   | `analogjs/analog#2074` | In progress | 4 | `fix/2074-storybook-component-wrapper-decorator` | `analogjs/alpha` | Issue closeout comment | Draft PR: [analogjs/analog#2236](https://github.com/analogjs/analog/pull/2236). Re-applies the `beta` fix from [analogjs/analog#2086](https://github.com/analogjs/analog/pull/2086) onto `alpha` with regression coverage |
-  | `analogjs/analog#2029` | Planned | 5 | `fix/2029-mermaid-shiki-oom` | `analogjs/alpha` | Issue closeout comment and docs link | Latest repro/investigation endpoint: <https://github.com/analogjs/analog/issues/2029#issuecomment-4046690307> |
+  | `analogjs/analog#2029` | In progress | 5 | `fix/2029-mermaid-shiki-oom` | `analogjs/alpha` | Issue closeout comment and docs link | Draft PR: [analogjs/analog#2239](https://github.com/analogjs/analog/pull/2239). Includes `skipLangs`, Mermaid docs updates, and escaped skipped-language fallback output |
   | `analogjs/analog#2159` | Pending Close (Completed) | 2 | `docs/2159-remove-agx-references` | `analogjs/alpha` | Issue closeout comment | Branch was later repurposed for `analogjs/analog#2168`, so this now needs a maintainer closeout note rather than a dedicated PR |
   | `analogjs/analog#2076` | Planned | 2 | `docs/2076-remove-standalone-true` | `analogjs/alpha` | Issue closeout comment | Existing volunteer comment: <https://github.com/analogjs/analog/issues/2076#issuecomment-3935674971> |
   | `analogjs/analog#2036` | Pending Close (Completed) | 2 | `docs/2036-ai-integrations` | `analogjs/alpha` | Issue closeout comment with docs URL | Draft PR: [analogjs/analog#2234](https://github.com/analogjs/analog/pull/2234) |
@@ -2523,6 +2533,10 @@ When an area has no current logger, the plan below calls out the exact `createDe
 
 ### analogjs/analog#2218 Snapshot unstable ids and `aria-describedby`
 
+- Current state:
+  - branch `fix/2218-snapshot-generated-ids`
+  - draft PR: [analogjs/analog#2238](https://github.com/analogjs/analog/pull/2238)
+  - serializer cleanup now strips unstable generated ids such as `cdk-drop-list-a20` and also removes generated `aria-describedby`
 - Root cause analysis:
   - `no-ng-attributes.ts` cleans only a limited set of attributes and patterns
   - current regexes match `mat|cdk|ng` ids with `-<digits>` patterns but not more complex generated ids such as CDK drag/drop or bootstrap popover IDs
@@ -2538,6 +2552,9 @@ When an area has no current logger, the plan below calls out the exact `createDe
   - log which attributes were cleaned when a debug flag is enabled
 - Regression tests:
   - add targeted serializer spec cases for CDK and Ngb patterns
+- Verification completed:
+  - `pnpm exec vitest run --config packages/vitest-angular/vite.config.ts packages/vitest-angular/src/lib/snapshot-serializers/no-ng-attributes.spec.ts`
+  - `pnpm nx build vitest-angular`
 - Risks:
   - broad regexes can accidentally strip user-authored IDs if not specific enough
 
