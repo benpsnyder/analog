@@ -238,7 +238,7 @@ Opinion: typed routing cannot be considered stable while valid pathless layouts 
 
 #### `analogjs/analog#2049` Scoped CSS keyframes does not have unique names in dev mode
 
-Status: `must fix before stable`
+Status: `verify on current alpha, then close if reporter confirms`
 
 Files:
 
@@ -247,7 +247,7 @@ Files:
 - `packages/vite-plugin-angular/src/lib/host.ts`
 - `apps/tailwind-debug-app-e2e/tests/component-css-hmr.spec.ts`
 
-Opinion: dev and prod should not disagree on CSS scoping semantics. The likely fix belongs in the dev stylesheet transformation/externalization path, not in application code.
+Opinion: current `analogjs/alpha` now appears to contain the right class of fix in the dev stylesheet path: externalized component CSS is explicitly passed through Angular emulated-style encapsulation via `ngCompiler.encapsulateStyle(...)` in `packages/vite-plugin-angular/src/lib/angular-vite-plugin.ts`. This issue should now be treated as a reporter-retest / closeout item unless a fresh repro shows the behavior still exists on the latest v3 alpha.
 
 #### `analogjs/analog#2026` HMR is not working
 
@@ -867,42 +867,32 @@ Risks / notes:
 
 ### `analogjs/analog#2049` scoped CSS keyframes are not unique in dev mode
 
-Root cause / working theory:
+Current status:
 
-- The prod build path applies component-style scoping/keyframe rewriting differently than the dev externalized stylesheet path.
-- In dev, wrapper modules and Vite-served CSS likely bypass or partially bypass the same transformation that prod gets.
+- The issue has no maintainer/reporter follow-up comments after the original report.
+- Current `analogjs/alpha` includes an explicit dev-path encapsulation step for externalized component styles in `packages/vite-plugin-angular/src/lib/angular-vite-plugin.ts`.
+- That code path uses Angular's `encapsulateStyle(...)`, which rewrites duplicated `@keyframes` names to component-scoped names in the same class of way prod normally does.
 
-Desired end state:
+Working conclusion:
 
-- Keyframe names are component-scoped consistently in both dev and prod.
-- HMR continues to work for component styles after the fix.
+- This is likely already fixed on current `alpha`.
+- The remaining work is to get reporter confirmation on the latest v3 alpha and close the issue if they cannot reproduce it anymore.
 
-Execution plan:
+Closeout plan:
 
-1. Identify where keyframe rewriting happens today in the prod path.
-2. Compare that with the dev path that serves externalized component styles through the stylesheet registry.
-3. Move or share the keyframe-scoping transform so both paths use the same logic.
-4. Add a dedicated fixture with colliding keyframe names across multiple components.
-5. Add both spec-level and e2e-level regression coverage.
+1. Ask the reporter to retest on the latest `alpha` / v3 alpha release.
+2. Ask them to post back debug logs if the issue still reproduces:
+   - `analog:angular:styles`
+   - `analog:angular:styles:v`
+   - `analog:angular:hmr`
+   - `analog:angular:hmr:v`
+3. If they confirm the fix, close the issue.
+4. Only reopen implementation work if a fresh repro still fails on current `alpha`.
 
-Instrumentation:
+Notes:
 
-- `analog:angular:styles`
-- `analog:angular:styles:v`
-- `analog:angular:hmr:v`
-- Add debug snapshots of:
-  - raw stylesheet content
-  - post-transform stylesheet content
-  - registry entries for the same source file
-
-Verification:
-
-- Extend HMR-style fixtures in `apps/tailwind-debug-app-e2e`.
-- Add test(s) comparing dev-emitted CSS to build-emitted CSS for keyframe naming.
-
-Risks / notes:
-
-- The fix must not break sourcemaps or wrapper request mapping for CSS HMR.
+- Issue comment posted: <https://github.com/analogjs/analog/issues/2049#issuecomment-4189327385>
+- If this reopens, the right follow-up is a focused regression test around the dev externalized stylesheet path, not a broad stylesheet-pipeline rewrite.
 
 ### `analogjs/analog#2026` HMR reliability
 
@@ -1851,7 +1841,7 @@ Status convention:
   | `analogjs/analog#2172` | Closed upstream | 4 | `fix/2172-blog-root-redirect` | `analogjs/alpha` | None | Issue closed on 2026-04-05. Open PR [analogjs/analog#2241](https://github.com/analogjs/analog/pull/2241) may still need independent maintainer disposition. |
   | `analogjs/analog#2165` | Planned | 8 | `fix/2165-content-resource-prerender-hydration` | `analogjs/alpha` | Issue closeout comment | Preserve thread context from <https://github.com/analogjs/analog/issues/2165#issuecomment-4107403358> |
   | `analogjs/analog#2174` | Planned | 7 | `fix/2174-pathless-layout-typed-routes` | `analogjs/alpha` | Issue closeout comment | Typed-routes hardening item |
-  | `analogjs/analog#2049` | Planned | 8 | `fix/2049-dev-keyframe-scoping` | `analogjs/alpha` | Issue closeout comment | Dev/prod stylesheet parity bug |
+  | `analogjs/analog#2049` | Verify on current alpha | 5 | `fix/2049-dev-keyframe-scoping` | `analogjs/alpha` | Issue closeout comment | Reporter retest requested at <https://github.com/analogjs/analog/issues/2049#issuecomment-4189327385>; current `alpha` now explicitly encapsulates externalized component styles in dev |
   | `analogjs/analog#2026` | Planned | 7 | `fix/2026-angular-hmr-reload-matrix` | `analogjs/alpha` | Issue closeout comment with explicit HMR vs reload matrix | Canonical thread endpoint: <https://github.com/analogjs/analog/issues/2026#issuecomment-3677561130> |
   | `analogjs/analog#2178` | Pending Close (Completed) | 5 | `fix/2178-missing-mjs-sourcemaps` | `analogjs/alpha` | Issue closeout comment | Closeout comment posted at <https://github.com/analogjs/analog/issues/2178#issuecomment-4188529617>; current `alpha` build and packed tarballs include the `.mjs.map` artifacts |
   | `analogjs/analog#2215` | Planned | 4 | `chore/2215-deprecation-audit` | `analogjs/alpha` | Issue closeout comment plus docs/migration references | Deprecation audit is repo-wide but contained |
@@ -1997,27 +1987,20 @@ When an area has no current logger, the plan below calls out the exact `createDe
 
 ### analogjs/analog#2049 Scoped CSS keyframes are not unique in dev mode
 
-- Root cause analysis:
-  - prod and dev use different stylesheet handling paths
-  - the dev path externalizes component styles for Vite processing and HMR, which makes it easy to lose Angular’s normal style rewriting semantics
-  - the likely failure point is between `host.ts`, stylesheet preprocessing, and the served external stylesheet module in `angular-vite-plugin.ts`
-- Desired end result:
-  - component-scoped keyframes are rewritten consistently in dev and prod
-  - no visual behavior changes when switching from `pnpm dev` to built output
-- Implementation plan:
-  - trace how keyframe names appear in raw source, preprocessed CSS, registry snapshots, and served wrapper CSS
-  - compare Angular’s emitted style text when inline vs externalized
-  - if the registry path bypasses a rewrite step, move that rewrite into the common stylesheet pipeline before wrapper-module serving
-  - add a focused e2e fixture with two components using the same keyframe name to prove scoping
-- Instrumentation:
-  - `analog:angular:styles`, `analog:angular:styles:v`
-  - if needed, add a temporary verbose logger around keyframe rewrite output in `stylesheet-registry.ts`
-  - capture scoped logs while editing a component stylesheet in `tailwind-debug-app`
-- Regression tests:
-  - unit test a CSS sample with colliding keyframe names
-  - add an e2e assertion that the browser sees unique keyframe names in dev
-- Risks:
-  - fixing only the wrapper CSS path may leave inline/JIT CSS inconsistent
+- Current status:
+  - likely fixed on current `analogjs/alpha`
+  - reporter retest requested in [analogjs/analog#2049 comment 4189327385](https://github.com/analogjs/analog/issues/2049#issuecomment-4189327385)
+- Current code state:
+  - `packages/vite-plugin-angular/src/lib/angular-vite-plugin.ts` now explicitly applies Angular emulated-style encapsulation when component styles are externalized in dev
+  - this is the right class of fix for duplicated `@keyframes` names across multiple emulated component styles
+- Next action:
+  - wait for reporter confirmation on the latest v3 alpha
+  - if they still reproduce, ask for scoped logs:
+    - `analog:angular:styles`
+    - `analog:angular:styles:v`
+    - `analog:angular:hmr`
+    - `analog:angular:hmr:v`
+  - only resume implementation if the fresh repro still fails on current `alpha`
 
 ### analogjs/analog#2026 HMR is not working
 
