@@ -251,7 +251,7 @@ Opinion: current `analogjs/alpha` now appears to contain the right class of fix 
 
 #### `analogjs/analog#2026` HMR is not working
 
-Status: `must fix before stable`
+Status: `verify on current alpha, then tighten fallback coverage if still reproducible`
 
 Files:
 
@@ -261,7 +261,7 @@ Files:
 - `apps/analog-app-e2e/tests/angular-compilation-api.spec.ts`
 - `apps/analog-app-e2e-playwright/tests/angular-compilation-api.spec.ts`
 
-Opinion: clarify the contract first, then enforce it in tests. Template/style edits should HMR where supported; TS logic edits must at least trigger deterministic full reload when Angular cannot produce a safe HMR payload.
+Opinion: the issue title is broader than the actual reporter conclusion. The real gap is: template/style edits can HMR, but TS component-code edits must at least trigger a deterministic full reload when Angular cannot safely emit a component HMR payload. Current `analogjs/alpha` already contains a much more explicit Angular compilation API + full-reload fallback pipeline than the original report did. Treat this as a verify-and-tighten item, not a blind rewrite.
 
 #### `analogjs/analog#2178` bug: Missing `.mjs.map` source map files in published ng-packagr packages
 
@@ -909,35 +909,31 @@ Desired end state:
   - full reload
 - Docs and tests state which edits are expected to HMR and which are expected to reload.
 
-Execution plan:
+Current status:
 
-1. Enumerate current edit classes:
-   - inline template changes
-   - external template changes
-   - external stylesheet changes
-   - TS logic changes that do not produce safe HMR metadata
-2. Build an explicit outcome matrix in tests.
-3. Tighten fallback logic so “no HMR payload” means immediate clear full reload, not ambiguous no-op behavior.
-4. Add docs clarifying Angular's HMR limitations vs full reload expectations.
+- The reporter's own final clarification says Angular's built-in dev server HMRs template/style edits, but component code edits should fall back to page reload.
+- Current `analogjs/alpha` now has explicit full-reload fallback branches and debug events in `packages/vite-plugin-angular/src/lib/angular-vite-plugin.ts`.
+- Issue comment posted: <https://github.com/analogjs/analog/issues/2026#issuecomment-4189333998>
+- This is also part of the broader v3 `alpha` overhaul tracked in [analogjs/analog#2229](https://github.com/analogjs/analog/issues/2229).
 
-Instrumentation:
+Closeout plan:
 
-- `analog:angular:hmr`
-- `analog:angular:hmr:v`
-- `analog:angular:compilation-api`
-- Reuse:
-  - `tmp/debug/tailwind-debug-app.vite-hmr.log`
-  - `tmp/debug/tailwind-debug-app.vite-ws.log`
+1. Ask the reporter to retest on the latest v3 `alpha`.
+2. If the repro still fails, collect scoped logs:
+   - `analog:angular:hmr`
+   - `analog:angular:hmr:v`
+   - `analog:angular:styles`
+   - `analog:angular:styles:v`
+3. Only if it still reproduces, tighten the regression coverage around:
+   - template edit HMR
+   - style edit HMR / CSS update
+   - TS component edit full-reload fallback
+4. Close if the reporter confirms the current `alpha` behavior is now acceptable.
 
-Verification:
+Notes:
 
-- Expand `packages/vite-plugin-angular/src/lib/angular-vite-plugin-live-reload.spec.ts`.
-- Expand `apps/analog-app-e2e/tests/angular-compilation-api.spec.ts`.
-- If needed, add one more repro app focused on TS logic edit fallbacks.
-
-Risks / notes:
-
-- Avoid over-promising “HMR everywhere”. Stable behavior matters more than maximizing HMR coverage.
+- The missing piece today is still the explicit test matrix for supported HMR vs required reload cases.
+- Avoid reframing this as “all TS edits should HMR.” The real requirement is safe fallback behavior.
 
 ### `analogjs/analog#2178` missing `.mjs.map` files in published packages
 
@@ -1842,7 +1838,7 @@ Status convention:
   | `analogjs/analog#2165` | Planned | 8 | `fix/2165-content-resource-prerender-hydration` | `analogjs/alpha` | Issue closeout comment | Preserve thread context from <https://github.com/analogjs/analog/issues/2165#issuecomment-4107403358> |
   | `analogjs/analog#2174` | Planned | 7 | `fix/2174-pathless-layout-typed-routes` | `analogjs/alpha` | Issue closeout comment | Typed-routes hardening item |
   | `analogjs/analog#2049` | Verify on current alpha | 5 | `fix/2049-dev-keyframe-scoping` | `analogjs/alpha` | Issue closeout comment | Reporter retest requested at <https://github.com/analogjs/analog/issues/2049#issuecomment-4189327385>; current `alpha` now explicitly encapsulates externalized component styles in dev |
-  | `analogjs/analog#2026` | Planned | 7 | `fix/2026-angular-hmr-reload-matrix` | `analogjs/alpha` | Issue closeout comment with explicit HMR vs reload matrix | Canonical thread endpoint: <https://github.com/analogjs/analog/issues/2026#issuecomment-3677561130> |
+  | `analogjs/analog#2026` | Verify on current alpha | 5 | `fix/2026-angular-hmr-reload-matrix` | `analogjs/alpha` | Issue closeout comment with explicit HMR vs reload matrix | Reporter retest requested at <https://github.com/analogjs/analog/issues/2026#issuecomment-4189333998>; broader pipeline work tracked in [analogjs/analog#2229](https://github.com/analogjs/analog/issues/2229) |
   | `analogjs/analog#2178` | Pending Close (Completed) | 5 | `fix/2178-missing-mjs-sourcemaps` | `analogjs/alpha` | Issue closeout comment | Closeout comment posted at <https://github.com/analogjs/analog/issues/2178#issuecomment-4188529617>; current `alpha` build and packed tarballs include the `.mjs.map` artifacts |
   | `analogjs/analog#2215` | Planned | 4 | `chore/2215-deprecation-audit` | `analogjs/alpha` | Issue closeout comment plus docs/migration references | Deprecation audit is repo-wide but contained |
   | `analogjs/analog#2127` | Planned | 6 | `fix/2127-router-followups` | `analogjs/alpha` | Tracker issue comment, and possibly issue body refresh if it remains active | Current tracker comment: <https://github.com/analogjs/analog/issues/2127#issuecomment-4187640151> |
@@ -2004,18 +2000,21 @@ When an area has no current logger, the plan below calls out the exact `createDe
 
 ### analogjs/analog#2026 HMR is not working
 
+- Current status:
+  - likely partially addressed already on current `analogjs/alpha`
+  - reporter retest requested in [analogjs/analog#2026 comment 4189333998](https://github.com/analogjs/analog/issues/2026#issuecomment-4189333998)
+  - broader pipeline context tracked in [analogjs/analog#2229](https://github.com/analogjs/analog/issues/2229)
 - Root cause analysis:
-  - the issue thread mixes true HMR expectations with legitimate full-reload cases for TS logic changes
-  - the plugin already has complex decision points around invalidation, ownership lookup, Angular template updates, and direct CSS updates
-  - the gap is likely a combination of unsupported TS-change cases plus unclear acceptance criteria
+  - the issue thread mixes legitimate HMR cases with legitimate full-reload cases
+  - the actual requirement is not “HMR for all TS edits”; it is “safe full reload when TS edits cannot be hot-swapped”
+  - current plugin code already has explicit fallback-to-full-reload branches, but the acceptance matrix is still under-specified in tests
 - Desired end result:
   - supported template/style edits HMR cleanly
-  - unsupported TS logic edits always trigger reliable full reload instead of ambiguous no-op behavior
-  - docs explain the boundary clearly
-- Implementation plan:
-  - formalize a support matrix: template edits, external template edits, inline styles, external styles, TS metadata edits, TS logic-only edits
-  - encode that matrix in tests before changing runtime logic
-  - make fallback-to-full-reload explicit whenever component update code is absent or ownership cannot be resolved safely
+  - unsupported TS component edits always trigger reliable full reload instead of ambiguous no-op behavior
+  - docs/tests explain that boundary clearly
+- Next action:
+  - wait for reporter confirmation on latest `alpha`
+  - if still reproducible, add the explicit HMR-vs-reload regression matrix before changing runtime logic
   - document the support matrix in debugging/HMR docs
 - Instrumentation:
   - `analog:angular:hmr`, `analog:angular:hmr:v`, `analog:angular:compilation-api`, `analog:angular:compiler:v`
