@@ -1872,11 +1872,11 @@ Status convention:
   | `analogjs/analog#2127` | Planned | 6 | `fix/2127-router-followups` | `analogjs/alpha` | Tracker issue comment, and possibly issue body refresh if it remains active | Current tracker comment: <https://github.com/analogjs/analog/issues/2127#issuecomment-4187640151> |
   | `analogjs/analog#1939` | Planned | 3 | `docs/1939-v3-migration-guide` | `analogjs/alpha` | Issue closeout comment with final migration-guide URL | Latest migration thread endpoint: <https://github.com/analogjs/analog/issues/1939#issuecomment-3536712188> |
   | `analogjs/analog#2222` | Planned | 7 | `fix/2222-vitest-isolation` | `analogjs/alpha` | Issue closeout comment | Latest thread endpoint: <https://github.com/analogjs/analog/issues/2222#issuecomment-4183839053> |
-  | `analogjs/analog#2220` | Planned | 3 | `fix/2220-snapshot-whitespace` | `analogjs/alpha` | Issue closeout comment | Serializer cleanup |
+  | `analogjs/analog#2220` | In progress | 3 | `fix/2220-snapshot-whitespace` | `analogjs/alpha` | Issue closeout comment | Serializer cleanup |
   | `analogjs/analog#2218` | Planned | 4 | `fix/2218-snapshot-generated-ids` | `analogjs/alpha` | Issue closeout comment | Serializer cleanup |
-  | `analogjs/analog#2173` | In progress | 3 | `fix/2173-setup-vitest-legacy-path` | `analogjs/alpha` | Issue closeout comment | Fix committed locally; build no longer republishes stale `setup-vitest` artifacts. Reference maintainer guidance at <https://github.com/analogjs/analog/issues/2173#issuecomment-4119092949> |
+  | `analogjs/analog#2173` | In progress | 3 | `fix/2173-setup-vitest-legacy-path` | `analogjs/alpha` | Issue closeout comment | Draft PR: [analogjs/analog#2235](https://github.com/analogjs/analog/pull/2235). Covers both `ng update` and `nx migrate` for the legacy import path, and stops stale `setup-vitest` artifacts from being republished |
   | `analogjs/analog#2185` | Closed upstream | 2 | `fix/2185-release-lockfile-regeneration` | `analogjs/alpha` | None | Issue was closed upstream before a branch was carried forward |
-  | `analogjs/analog#2074` | Planned | 4 | `fix/2074-storybook-component-wrapper-decorator` | `analogjs/alpha` | Issue closeout comment | Repro thread endpoint: <https://github.com/analogjs/analog/issues/2074#issuecomment-3963819693> |
+  | `analogjs/analog#2074` | In progress | 4 | `fix/2074-storybook-component-wrapper-decorator` | `analogjs/alpha` | Issue closeout comment | Draft PR: [analogjs/analog#2236](https://github.com/analogjs/analog/pull/2236). Re-applies the `beta` fix from [analogjs/analog#2086](https://github.com/analogjs/analog/pull/2086) onto `alpha` with regression coverage |
   | `analogjs/analog#2029` | Planned | 5 | `fix/2029-mermaid-shiki-oom` | `analogjs/alpha` | Issue closeout comment and docs link | Latest repro/investigation endpoint: <https://github.com/analogjs/analog/issues/2029#issuecomment-4046690307> |
   | `analogjs/analog#2159` | Pending Close (Completed) | 2 | `docs/2159-remove-agx-references` | `analogjs/alpha` | Issue closeout comment | Branch was later repurposed for `analogjs/analog#2168`, so this now needs a maintainer closeout note rather than a dedicated PR |
   | `analogjs/analog#2076` | Planned | 2 | `docs/2076-remove-standalone-true` | `analogjs/alpha` | Issue closeout comment | Existing volunteer comment: <https://github.com/analogjs/analog/issues/2076#issuecomment-3935674971> |
@@ -2523,7 +2523,9 @@ When an area has no current logger, the plan below calls out the exact `createDe
 - Current state:
   - maintainer guidance is to remove the old export path and rely on `@analogjs/vitest-angular` plus migration
   - `packages/vite-plugin-angular` already contains `migrate-setup-vitest`, which rewrites imports to `@analogjs/vitest-angular/setup-zone` and installs `@analogjs/vitest-angular`
-  - branch `fix/2173-setup-vitest-legacy-path` now sets `emptyOutDir: true` in the package build so stale `dist/setup-vitest.*` files are not republished
+  - branch `fix/2173-setup-vitest-legacy-path`, draft PR: [analogjs/analog#2235](https://github.com/analogjs/analog/pull/2235)
+  - the branch now sets `emptyOutDir: true` in the package build so stale `dist/setup-vitest.*` files are not republished
+  - the branch also adds an Nx migration entry so `nx migrate` follows the same rewrite/install path as the existing Angular schematic migration used by `ng update`
 - Root cause analysis:
   - the old path belongs to `@analogjs/vite-plugin-angular`, but the active setup now lives in `@analogjs/vitest-angular`
   - the package manifest no longer exposes a correct dependency story for the old path
@@ -2540,7 +2542,7 @@ When an area has no current logger, the plan below calls out the exact `createDe
   - extend `migrate-setup-vitest.spec.ts`
   - verify docs point only to the new path
 - Verification completed:
-  - `pnpm nx test vite-plugin-angular --runTestsByPath packages/vite-plugin-angular/migrations/migrate-setup-vitest/migrate-setup-vitest.spec.ts`
+  - `pnpm nx test vite-plugin-angular --runTestsByPath packages/vite-plugin-angular/migrations/update-3-0-0/migrate-setup-vitest.spec.ts packages/vite-plugin-angular/migrations/migrate-setup-vitest/migrate-setup-vitest.spec.ts`
   - `pnpm nx build vite-plugin-angular`
 - Risks:
   - leaving the legacy path half-supported creates confusing install failures for stable users
