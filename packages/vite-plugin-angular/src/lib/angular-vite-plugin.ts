@@ -1130,14 +1130,37 @@ export function angular(options?: PluginOptions): Plugin[] {
                 // Track if the component uses ShadowDOM encapsulation
                 // Shadow DOM components currently require a full reload.
                 // Vite's CSS hot replacement does not support shadow root searching.
-                if (encapsulation !== 'shadow' && wrapperModules.length > 0) {
+                const trackedWrapperRequestIds =
+                  stylesheetDiagnosis.trackedRequestIds.filter((id) =>
+                    id.includes('?ngcomp='),
+                  );
+                const canUseCssUpdate =
+                  encapsulation !== 'shadow' &&
+                  (wrapperModules.length > 0 ||
+                    trackedWrapperRequestIds.length > 0);
+
+                if (canUseCssUpdate) {
                   wrapperModules.forEach((mod) =>
                     ctx.server.moduleGraph.invalidateModule(mod),
                   );
+                  // A live wrapper ModuleNode is ideal because we can
+                  // invalidate it directly, but it is not strictly required.
+                  // When the browser has already loaded the wrapper URL and the
+                  // registry knows that wrapper request id, a normal CSS patch
+                  // against the direct stylesheet is still the most accurate
+                  // update path available. Falling back to full reload in that
+                  // state is needlessly pessimistic and causes the exact UX
+                  // regression we are trying to eliminate.
                   debugHmrV('sending css-update for component stylesheet', {
                     file: ctx.file,
                     path: isDirect.url,
                     acceptedPath: isDirect.file,
+                    wrapperCount: wrapperModules.length,
+                    trackedWrapperRequestIds,
+                    hint:
+                      wrapperModules.length > 0
+                        ? 'Live wrapper modules were found and invalidated before sending the CSS update.'
+                        : 'No live wrapper ModuleNode was available, but the wrapper request id is already tracked, so Analog is trusting the browser-visible wrapper identity and patching the direct stylesheet instead of forcing a reload.',
                   });
                   sendCssUpdate(ctx.server, {
                     path: isDirect.url,
@@ -1179,9 +1202,11 @@ export function angular(options?: PluginOptions): Plugin[] {
                   file: ctx.file,
                   encapsulation,
                   reason:
-                    wrapperModules.length === 0
+                    trackedWrapperRequestIds.length === 0
                       ? 'missing-wrapper-module'
-                      : 'shadow-encapsulation',
+                      : encapsulation === 'shadow'
+                        ? 'shadow-encapsulation'
+                        : 'tracked-wrapper-still-not-patchable',
                   directId: isDirect.id,
                   trackedRequestIds:
                     stylesheetRegistry?.getRequestIdsForSource(ctx.file) ?? [],
@@ -3318,6 +3343,7 @@ function sendFullReload(
   details: Record<string, unknown>,
 ) {
   debugHmrV('ws send: full-reload', details);
+  server.ws.send('analog:debug-full-reload', details);
   server.ws.send({ type: 'full-reload' });
 }
 

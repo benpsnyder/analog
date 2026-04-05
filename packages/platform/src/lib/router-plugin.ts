@@ -255,6 +255,12 @@ export function routerPlugin(options?: Options): Plugin[] {
             });
           });
 
+          server.ws.send('analog:debug-full-reload', {
+            plugin: 'platform:router-plugin',
+            reason: 'route-graph-shape-changed',
+            event,
+            path,
+          });
           server.ws.send({
             type: 'full-reload',
           });

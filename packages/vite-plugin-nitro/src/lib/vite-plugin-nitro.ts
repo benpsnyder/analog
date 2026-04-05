@@ -1209,6 +1209,10 @@ export function nitro(options?: Options, nitroOptions?: NitroConfig): Plugin[] {
 
               // Reload the page after the server rebuild completes so the next
               // request observes the updated API route implementation.
+              viteServer.ws.send('analog:debug-full-reload', {
+                plugin: 'vite-plugin-nitro',
+                reason: 'nitro-server-rebuilt',
+              });
               viteServer.ws.send({ type: 'full-reload' });
             })()
               .catch((error: unknown) => {

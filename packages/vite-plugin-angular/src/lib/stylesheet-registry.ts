@@ -118,6 +118,18 @@ export class AnalogStylesheetRegistry {
 
     const requestIds = this.sourceToRequestIds.get(sourcePath) ?? new Set();
     requestIds.add(normalizedRequestId);
+    // Angular component styles are served through both a direct CSS request
+    // (`?direct&ngcomp=...`) and a JS wrapper request (`?ngcomp=...`). The
+    // browser can already have the wrapper loaded even when Vite's live module
+    // graph only surfaces the direct request during a CSS-only edit. Track the
+    // derived wrapper id eagerly so HMR can reason about the browser-visible
+    // stylesheet identity without waiting for that wrapper request to be
+    // observed later in the session.
+    if (normalizedRequestId.includes('?direct&ngcomp=')) {
+      requestIds.add(
+        normalizedRequestId.replace('?direct&ngcomp=', '?ngcomp='),
+      );
+    }
     this.sourceToRequestIds.set(sourcePath, requestIds);
   }
 

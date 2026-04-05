@@ -140,7 +140,7 @@ describe('stylesheet-registry', () => {
     ).toBe('.demo { color: red; }');
   });
 
-  it('preserves bare direct query flags when tracking active request ids', () => {
+  it('preserves bare direct query flags and eagerly tracks the paired wrapper request', () => {
     const registry = new AnalogStylesheetRegistry();
 
     registry.registerExternalRequest(
@@ -157,6 +157,9 @@ describe('stylesheet-registry', () => {
 
     expect(
       registry.getRequestIdsForSource('/project/src/app/demo.component.css'),
-    ).toEqual(['abc123.css?direct&ngcomp=ng-c1&e=0']);
+    ).toEqual([
+      'abc123.css?direct&ngcomp=ng-c1&e=0',
+      'abc123.css?ngcomp=ng-c1&e=0',
+    ]);
   });
 });

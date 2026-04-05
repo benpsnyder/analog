@@ -1,0 +1,69 @@
+{
+  "name": "tailwind-debug-app",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/tailwind-debug-app/src",
+  "prefix": "tdbg",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/vite:build",
+      "dependsOn": ["platform:build", "router:build"],
+      "outputs": [
+        "{options.outputPath}",
+        "{workspaceRoot}/dist/apps/tailwind-debug-app/.nitro",
+        "{workspaceRoot}/dist/apps/tailwind-debug-app/ssr",
+        "{workspaceRoot}/dist/apps/tailwind-debug-app/analog"
+      ],
+      "options": {
+        "configFile": "apps/tailwind-debug-app/vite.config.ts",
+        "outputPath": "dist/apps/tailwind-debug-app/client"
+      },
+      "defaultConfiguration": "production",
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "sourcemap": false,
+          "mode": "production"
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/vite:dev-server",
+      "dependsOn": ["platform:build", "router:build"],
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "tailwind-debug-app:build",
+        "buildLibsFromSource": true,
+        "port": 43040
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "tailwind-debug-app:build:development",
+          "hmr": true
+        },
+        "production": {
+          "buildTarget": "tailwind-debug-app:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "serve-nitro": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "dist/apps/tailwind-debug-app/analog",
+        "command": "node --unhandled-rejections=throw ./server/index.mjs",
+        "env": { "PORT": "43040" }
+      }
+    },
+    "test": {
+      "executor": "@nx/vitest:test",
+      "dependsOn": ["platform:build", "router:build"],
+      "outputs": ["{projectRoot}/coverage"]
+    }
+  }
+}
