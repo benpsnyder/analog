@@ -572,7 +572,7 @@ Opinion: do not mix performance experimentation with content-runtime stabilizati
 
 #### `analogjs/analog#2068` [storybook] vite builder does not build scss
 
-Status: `defer unless a minimal reproduction appears`
+Status: `in progress with scoped diagnostics/docs hardening`
 
 Files:
 
@@ -580,7 +580,7 @@ Files:
 - `packages/storybook-angular/README.md`
 - `apps/docs-app/docs/integrations/storybook/index.md`
 
-Opinion: current code already handles style injection and SCSS load paths, and the thread never produced a small repro. Improve docs first; only escalate if a repro shows a package bug.
+Opinion: the thread still lacks a minimal repro, so this should not be treated as a confirmed runtime fix project. However, active mitigation work now exists: add preset regression coverage for the concrete Nx/SCSS cases already discussed, add scoped diagnostics, and tighten the Storybook docs so the next follow-up is actionable.
 
 #### `analogjs/analog#2039` [Docs] analogjs.org/docs not accessible
 
@@ -1129,7 +1129,7 @@ Risks / notes:
 
 - Current state:
   - branch `docs/1939-v3-migration-guide`
-  - draft PR: [analogjs/analog#2240](https://github.com/analogjs/analog/pull/2240)
+  - open PR: [analogjs/analog#2240](https://github.com/analogjs/analog/pull/2240)
   - the guide is now split into `v1 -> v2` and `v2 -> v3` paths, with the `v2 -> v3` section written as an LLM-friendly migration checklist
   - the `v2 -> v3` section now covers Angular version support, removed SFC support, explicit content highlighter setup, public `@analogjs/content` imports, Storybook and Vitest setup-path changes, deployment/base-href updates, and current diagnostics/API-surface notes that are useful during migration automation
 
@@ -1355,7 +1355,7 @@ Risks / notes:
 
 - Current state:
   - branch `fix/2029-mermaid-shiki-oom`
-  - draft PR: [analogjs/analog#2239](https://github.com/analogjs/analog/pull/2239)
+  - open PR: [analogjs/analog#2239](https://github.com/analogjs/analog/pull/2239)
   - `skipLangs` support is implemented, docs now recommend `skipLangs: ['mermaid']` for constrained-memory Mermaid builds, skipped languages are excluded from the loaded Shiki grammar list, and skipped fallback output is HTML-escaped
 
 Root cause / working theory:
@@ -1417,6 +1417,12 @@ Risks / notes:
 - Avoid rewriting historical changelog context if the wording is still needed; prefer clarifying that the feature is removed.
 
 ### `analogjs/analog#2076` remove `standalone: true` from modern docs/examples
+
+- Current state:
+  - branch `docs/2076-remove-standalone-true-pr`
+  - open PR: [analogjs/analog#2242](https://github.com/analogjs/analog/pull/2242)
+  - the active PR expands the work beyond docs cleanup: page templates stop generating redundant `standalone: true`, `@analogjs/platform` ships an Angular 19+ cleanup migration, and `vite-plugin-angular` warns in dev when redundant metadata is still present
+  - the earlier draft [analogjs/analog#2232](https://github.com/analogjs/analog/pull/2232) is no longer the active PR for this issue
 
 Root cause / working theory:
 
@@ -1727,6 +1733,11 @@ Risks / notes:
 
 ### `analogjs/analog#2068` Storybook SCSS build issue
 
+- Current state:
+  - branch `fix/2068-storybook-scss-build`
+  - open PR: [analogjs/analog#2243](https://github.com/analogjs/analog/pull/2243)
+  - the active PR does not claim a full runtime fix; it adds preset regression coverage for Nx workspace SCSS cases, scoped style-resolution diagnostics, and docs clarifications around global styles, Sass `loadPaths`, and bare package CSS imports
+
 Root cause / working theory:
 
 - Still ambiguous without a repro. Current code already injects styles and load paths.
@@ -1737,8 +1748,8 @@ Desired end state:
 
 Execution plan:
 
-1. Treat docs/support cleanup as the near-term work.
-2. If a repro arrives, inspect preview transform and path resolution.
+1. Land the current diagnostics/docs/test hardening to narrow the next reproduction gap.
+2. If a repro still appears after that, inspect preview transform and path resolution with the new debug scopes.
 
 Instrumentation:
 
@@ -1746,7 +1757,8 @@ Instrumentation:
 
 Verification:
 
-- Docs checks now; bug fix later if repro exists.
+- `storybook-angular` preset spec coverage for the newly documented Nx/SCSS cases.
+- Docs checks now; deeper runtime fix later if a repro still exists.
 
 Risks / notes:
 
@@ -1896,19 +1908,19 @@ Status convention:
   | `analogjs/analog#2178` | Pending Close (Completed) | 5 | `fix/2178-missing-mjs-sourcemaps` | `analogjs/alpha` | Issue closeout comment | Closeout comment posted at <https://github.com/analogjs/analog/issues/2178#issuecomment-4188529617>; current `alpha` build and packed tarballs include the `.mjs.map` artifacts |
   | `analogjs/analog#2215` | Planned | 4 | `chore/2215-deprecation-audit` | `analogjs/alpha` | Issue closeout comment plus docs/migration references | Deprecation audit is repo-wide but contained |
   | `analogjs/analog#2127` | Planned | 6 | `fix/2127-router-followups` | `analogjs/alpha` | Tracker issue comment, and possibly issue body refresh if it remains active | Current tracker comment: <https://github.com/analogjs/analog/issues/2127#issuecomment-4187640151> |
-  | `analogjs/analog#1939` | In progress | 3 | `docs/1939-v3-migration-guide` | `analogjs/alpha` | Issue closeout comment with final migration-guide URL | Draft PR: [analogjs/analog#2240](https://github.com/analogjs/analog/pull/2240). Guide is now split into `v1 -> v2` and `v2 -> v3`, with LLM-oriented upgrade notes and current diagnostics/API-surface guidance |
+  | `analogjs/analog#1939` | In progress | 3 | `docs/1939-v3-migration-guide` | `analogjs/alpha` | Issue closeout comment with final migration-guide URL | Open PR: [analogjs/analog#2240](https://github.com/analogjs/analog/pull/2240). Guide is now split into `v1 -> v2` and `v2 -> v3`, with LLM-oriented upgrade notes and current diagnostics/API-surface guidance |
   | `analogjs/analog#2222` | Planned | 7 | `fix/2222-vitest-isolation` | `analogjs/alpha` | Issue closeout comment | Latest thread endpoint: <https://github.com/analogjs/analog/issues/2222#issuecomment-4183839053> |
-  | `analogjs/analog#2220` | In progress | 3 | `fix/2220-snapshot-whitespace` | `analogjs/alpha` | Issue closeout comment | Draft PR: [analogjs/analog#2237](https://github.com/analogjs/analog/pull/2237) |
-  | `analogjs/analog#2218` | In progress | 4 | `fix/2218-snapshot-generated-ids` | `analogjs/alpha` | Issue closeout comment | Draft PR: [analogjs/analog#2238](https://github.com/analogjs/analog/pull/2238) |
-  | `analogjs/analog#2173` | In progress | 3 | `fix/2173-setup-vitest-legacy-path` | `analogjs/alpha` | Issue closeout comment | Draft PR: [analogjs/analog#2235](https://github.com/analogjs/analog/pull/2235). Covers both `ng update` and `nx migrate` for the legacy import path, and stops stale `setup-vitest` artifacts from being republished |
+  | `analogjs/analog#2220` | In progress | 3 | `fix/2220-snapshot-whitespace` | `analogjs/alpha` | Issue closeout comment | Open PR: [analogjs/analog#2237](https://github.com/analogjs/analog/pull/2237) |
+  | `analogjs/analog#2218` | In progress | 4 | `fix/2218-snapshot-generated-ids` | `analogjs/alpha` | Issue closeout comment | Open PR: [analogjs/analog#2238](https://github.com/analogjs/analog/pull/2238) |
+  | `analogjs/analog#2173` | In progress | 3 | `fix/2173-setup-vitest-legacy-path` | `analogjs/alpha` | Issue closeout comment | Open PR: [analogjs/analog#2235](https://github.com/analogjs/analog/pull/2235). Covers both `ng update` and `nx migrate` for the legacy import path, and stops stale `setup-vitest` artifacts from being republished |
   | `analogjs/analog#2185` | Closed upstream | 2 | `fix/2185-release-lockfile-regeneration` | `analogjs/alpha` | None | Issue was closed upstream before a branch was carried forward |
-  | `analogjs/analog#2074` | In progress | 4 | `fix/2074-storybook-component-wrapper-decorator` | `analogjs/alpha` | Issue closeout comment | Draft PR: [analogjs/analog#2236](https://github.com/analogjs/analog/pull/2236). Re-applies the `beta` fix from [analogjs/analog#2086](https://github.com/analogjs/analog/pull/2086) onto `alpha` with regression coverage |
-  | `analogjs/analog#2029` | In progress | 5 | `fix/2029-mermaid-shiki-oom` | `analogjs/alpha` | Issue closeout comment and docs link | Draft PR: [analogjs/analog#2239](https://github.com/analogjs/analog/pull/2239). Includes `skipLangs`, Mermaid docs updates, and escaped skipped-language fallback output |
+  | `analogjs/analog#2074` | In progress | 4 | `fix/2074-storybook-component-wrapper-decorator` | `analogjs/alpha` | Issue closeout comment | Open PR: [analogjs/analog#2236](https://github.com/analogjs/analog/pull/2236). Re-applies the `beta` fix from [analogjs/analog#2086](https://github.com/analogjs/analog/pull/2086) onto `alpha` with regression coverage |
+  | `analogjs/analog#2029` | In progress | 5 | `fix/2029-mermaid-shiki-oom` | `analogjs/alpha` | Issue closeout comment and docs link | Open PR: [analogjs/analog#2239](https://github.com/analogjs/analog/pull/2239). Includes `skipLangs`, Mermaid docs updates, and escaped skipped-language fallback output |
   | `analogjs/analog#2159` | Pending Close (Completed) | 2 | `docs/2159-remove-agx-references` | `analogjs/alpha` | Issue closeout comment | Branch was later repurposed for `analogjs/analog#2168`, so this now needs a maintainer closeout note rather than a dedicated PR |
-  | `analogjs/analog#2076` | Planned | 2 | `docs/2076-remove-standalone-true` | `analogjs/alpha` | Issue closeout comment | Existing volunteer comment: <https://github.com/analogjs/analog/issues/2076#issuecomment-3935674971> |
-  | `analogjs/analog#2036` | Pending Close (Completed) | 2 | `docs/2036-ai-integrations` | `analogjs/alpha` | Issue closeout comment with docs URL | Draft PR: [analogjs/analog#2234](https://github.com/analogjs/analog/pull/2234) |
+  | `analogjs/analog#2076` | In progress | 2 | `docs/2076-remove-standalone-true-pr` | `analogjs/alpha` | Issue closeout comment | Open PR: [analogjs/analog#2242](https://github.com/analogjs/analog/pull/2242). Supersedes the earlier draft [analogjs/analog#2232](https://github.com/analogjs/analog/pull/2232) and now covers template cleanup, Angular 19+ migration, and dev diagnostics |
+  | `analogjs/analog#2036` | Pending Close (Completed) | 2 | `docs/2036-ai-integrations` | `analogjs/alpha` | Issue closeout comment with docs URL | Open PR: [analogjs/analog#2234](https://github.com/analogjs/analog/pull/2234) |
   | `analogjs/analog#2177` | In progress | 1 | `chore/2177-verify-http2-pseudo-headers` | `analogjs/alpha` | Issue closeout comment explicitly saying current code was verified | Draft PR: [analogjs/analog#2233](https://github.com/analogjs/analog/pull/2233) |
-  | `analogjs/analog#2168` | In progress | 2 | `docs/2159-remove-agx-references` | `analogjs/alpha` | Issue closeout comment explicitly saying current package shape/published behavior was verified | Repurposed onto draft PR: [analogjs/analog#2231](https://github.com/analogjs/analog/pull/2231) |
+  | `analogjs/analog#2168` | In progress | 2 | `docs/2159-remove-agx-references` | `analogjs/alpha` | Issue closeout comment explicitly saying current package shape/published behavior was verified | Repurposed onto open PR: [analogjs/analog#2231](https://github.com/analogjs/analog/pull/2231) |
   | `analogjs/analog#2044` | Verify and close | 6 | `chore/2044-typed-routing-umbrella-closeout` | `analogjs/alpha` | Issue closeout comment referencing the prior typed-routes status update | Canonical comment: <https://github.com/analogjs/analog/issues/2044#issuecomment-4107833684> |
   | `analogjs/analog#2092` | Pending Close (Completed) | 2 | `chore/2092-oxc-followup-closeout` | `analogjs/alpha` | Issue closeout or re-scope comment referencing the OXC summary comment | Closeout comment posted at <https://github.com/analogjs/analog/issues/2092#issuecomment-4188471667>; maintainer close still required |
   | `analogjs/analog#2227` | Deferred | 8 | `feat/2227-style-dictionary-support` | `analogjs/alpha` | Issue comment only unless feature is actively implemented | Latest design discussion endpoint: <https://github.com/analogjs/analog/issues/2227#issuecomment-4187347062> |
@@ -1916,7 +1928,7 @@ Status convention:
   | `analogjs/analog#2189` | Deferred | 9 | `feat/2189-runtime-i18n-localize` | `analogjs/alpha` | Issue comment only unless scope becomes active | Broad cross-package feature |
   | `analogjs/analog#2175` | Deferred | 1 | `chore/2175-vite-plugin-registry-metadata` | `analogjs/alpha` | Issue closeout or defer comment | Existing maintainer directive: <https://github.com/analogjs/analog/issues/2175#issuecomment-4166726621> |
   | `analogjs/analog#2158` | Deferred | 8 | `feat/2158-content-rendering-performance` | `analogjs/alpha` | Issue comment only unless moved into active scope | Canonical context endpoint: <https://github.com/analogjs/analog/issues/2158#issuecomment-4107088995> |
-  | `analogjs/analog#2068` | Blocked | 6 | `fix/2068-storybook-scss-build` | `analogjs/alpha` | Issue comment only unless a real repro/fix lands | Latest thread endpoint: <https://github.com/analogjs/analog/issues/2068#issuecomment-4061779661> |
+  | `analogjs/analog#2068` | In progress | 6 | `fix/2068-storybook-scss-build` | `analogjs/alpha` | Issue comment summarizing diagnostics/docs/test hardening and any remaining repro gap | Open PR: [analogjs/analog#2243](https://github.com/analogjs/analog/pull/2243). Adds scoped style diagnostics, preset regression coverage for the concrete Nx/SCSS cases, and docs clarifications without claiming a full runtime fix yet |
   | `analogjs/analog#2039` | Blocked | 2 | `chore/2039-docs-hosting-investigation` | `analogjs/alpha` | Issue comment only unless hosting fix is done alongside release work | Likely operational rather than code-level |
   | `analogjs/analog#2038` | Deferred | 7 | `feat/2038-docs-platform-migration` | `analogjs/alpha` | Issue comment if resumed; otherwise leave open as on hold | Maintainer on-hold comment: <https://github.com/analogjs/analog/issues/2038#issuecomment-4107135282> |
   | `analogjs/analog#2035` | Deferred | 9 | `feat/investigate-nitro-vite-plugin` | `analogjs/alpha` | Update issue and open [analogjs/analog#2188](https://github.com/analogjs/analog/pull/2188) | Architecture-heavy migration; not v3 GA scope |
@@ -2235,15 +2247,16 @@ When an area has no current logger, the plan below calls out the exact `createDe
 
 - Current state:
   - completed on branch `docs/2036-ai-integrations`
-  - draft PR: [analogjs/analog#2234](https://github.com/analogjs/analog/pull/2234)
+  - open PR: [analogjs/analog#2234](https://github.com/analogjs/analog/pull/2234)
+  - the active PR adds an `AI` docs page under `Integrations`, documents `llms.txt` and `llms-full.txt`, and carries translated docs/sidebar updates for the locales that already localize integration content
 - Root cause analysis:
   - docs already emit `llms.txt` and `llms-full.txt`, but there is no focused docs page explaining AI integration use cases
 - Desired end result:
-  - a docs page covering llms files, AI-friendly routing/content patterns, and recommended integration boundaries
+  - a focused docs page covering the repo's existing AI-facing docs artifacts and where they fit in user workflows
 - Implementation plan:
   - create a dedicated docs page and add it to navigation
   - explain the purpose of `llms.txt` / `llms-full.txt`
-  - cross-link content, server routes, and any streaming examples that are actually maintained
+  - keep the scope tied to maintained docs behavior rather than speculative AI app patterns
 - Instrumentation:
   - if the llms plugin changes, add `createDebug('analog:docs:llms')` inside `apps/docs-app/docusaurus.config.js`
   - otherwise docs-only
@@ -2293,15 +2306,20 @@ When an area has no current logger, the plan below calls out the exact `createDe
 
 ### analogjs/analog#2172 blog-app root redirect
 
+- Current state:
+  - branch `fix/2172-blog-root-redirect`
+  - open PR: [analogjs/analog#2241](https://github.com/analogjs/analog/pull/2241)
+  - current `alpha` behavior already accepts redirect-only page modules, so the active fix removes the app-level navigation workaround and restores the metadata-based redirect plus the blocked e2e assertion
+
 - Root cause analysis:
   - `apps/blog-app/src/app/pages/index.page.ts` currently uses browser navigation in `ngOnInit`, while the template blog uses route metadata
-  - route generation likely drops redirect-only routes that do not export a component
+  - the app drifted to a client-side workaround even though the current `alpha` route pipeline now accepts redirect-only page modules
 - Desired end result:
   - metadata-only redirect route works in app and generated templates
 - Implementation plan:
-  - trace redirect-only route discovery and manifest generation
-  - allow route files that export redirect metadata without a component default export
-  - restore blog-app to metadata route and re-enable e2e
+  - restore the blog app to the metadata-only redirect route used by the template
+  - re-enable the `/ -> /blog` e2e assertion
+  - only revisit framework internals if a fresh regression shows redirect-only modules are being dropped again
 - Instrumentation:
   - `analog:platform:typed-router`
   - add temporary `analog:platform:routes` logging if redirect files are being skipped before manifest generation
@@ -2410,7 +2428,7 @@ When an area has no current logger, the plan below calls out the exact `createDe
 
 - Current state:
   - verified on branch `docs/2159-remove-agx-references`
-  - draft PR repurposed to: [analogjs/analog#2231](https://github.com/analogjs/analog/pull/2231)
+  - open PR repurposed to: [analogjs/analog#2231](https://github.com/analogjs/analog/pull/2231)
 - Root cause analysis:
   - repo shape suggests the compatibility work is already in place
 - Desired end result:
@@ -2510,7 +2528,7 @@ When an area has no current logger, the plan below calls out the exact `createDe
 
 - Current state:
   - branch `fix/2220-snapshot-whitespace`
-  - draft PR: [analogjs/analog#2237](https://github.com/analogjs/analog/pull/2237)
+  - open PR: [analogjs/analog#2237](https://github.com/analogjs/analog/pull/2237)
   - serializer now trims trailing spaces at line ends and collapses repeated blank lines in the final printed snapshot output
 - Root cause analysis:
   - `createAngularFixtureSnapshotSerializer()` simply prints a DOM node from `DOMParser`
@@ -2535,7 +2553,7 @@ When an area has no current logger, the plan below calls out the exact `createDe
 
 - Current state:
   - branch `fix/2218-snapshot-generated-ids`
-  - draft PR: [analogjs/analog#2238](https://github.com/analogjs/analog/pull/2238)
+  - open PR: [analogjs/analog#2238](https://github.com/analogjs/analog/pull/2238)
   - serializer cleanup now strips unstable generated ids such as `cdk-drop-list-a20` and also removes generated `aria-describedby`
 - Root cause analysis:
   - `no-ng-attributes.ts` cleans only a limited set of attributes and patterns
@@ -2563,7 +2581,7 @@ When an area has no current logger, the plan below calls out the exact `createDe
 - Current state:
   - maintainer guidance is to remove the old export path and rely on `@analogjs/vitest-angular` plus migration
   - `packages/vite-plugin-angular` already contains `migrate-setup-vitest`, which rewrites imports to `@analogjs/vitest-angular/setup-zone` and installs `@analogjs/vitest-angular`
-  - branch `fix/2173-setup-vitest-legacy-path`, draft PR: [analogjs/analog#2235](https://github.com/analogjs/analog/pull/2235)
+  - branch `fix/2173-setup-vitest-legacy-path`, open PR: [analogjs/analog#2235](https://github.com/analogjs/analog/pull/2235)
   - the branch now sets `emptyOutDir: true` in the package build so stale `dist/setup-vitest.*` files are not republished
   - the branch also adds an Nx migration entry so `nx migrate` follows the same rewrite/install path as the existing Angular schematic migration used by `ng update`
 - Root cause analysis:
@@ -2610,7 +2628,7 @@ When an area has no current logger, the plan below calls out the exact `createDe
 
 - Current state:
   - branch `fix/2074-storybook-component-wrapper-decorator`
-  - draft PR: [analogjs/analog#2236](https://github.com/analogjs/analog/pull/2236)
+  - open PR: [analogjs/analog#2236](https://github.com/analogjs/analog/pull/2236)
   - note: the same fix previously merged via [analogjs/analog#2086](https://github.com/analogjs/analog/pull/2086), but onto `beta` rather than `alpha`
 - Root cause analysis:
   - `packages/storybook-angular/src/lib/testing.ts` omits `applyDecorators` from `renderAnnotations`
@@ -2632,6 +2650,11 @@ When an area has no current logger, the plan below calls out the exact `createDe
 
 ### analogjs/analog#2068 Storybook SCSS build issue
 
+- Current state:
+  - branch `fix/2068-storybook-scss-build`
+  - open PR: [analogjs/analog#2243](https://github.com/analogjs/analog/pull/2243)
+  - the active PR adds targeted preset regression coverage, scoped `analog:storybook:styles` diagnostics, and Storybook docs clarifications without claiming a full runtime fix
+
 - Root cause analysis:
   - no minimal reproduction exists
   - current preset already maps `stylePreprocessorOptions.loadPaths` and injects builder `styles` into `preview.ts`
@@ -2639,16 +2662,16 @@ When an area has no current logger, the plan below calls out the exact `createDe
 - Desired end result:
   - either a confirmed docs-only clarification or a narrowly reproduced bug
 - Implementation plan:
-  - do not code-fix first
-  - tighten docs around global style registration, `preview.ts` imports, and package export requirements
-  - only patch runtime after a minimal repro is obtained
+  - land the current docs, diagnostics, and preset-test hardening
+  - use the new debug scopes and regression coverage to narrow any remaining repro
+  - only claim a deeper runtime fix after a minimal repro still demonstrates a package bug
 - Instrumentation:
-  - add `createDebug('analog:storybook:styles')` in `preset.ts` if a repro appears
+  - `createDebug('analog:storybook:styles')` in `preset.ts`
   - log resolved imports, load paths, and root/workspace resolution
 - Regression tests:
-  - if a repro appears, convert it into a preset test
+  - preset coverage for Nx workspace-relative global SCSS, Sass `loadPaths`, and bare package CSS imports
 - Risks:
-  - speculative fixes without repro can break existing working setups
+  - the issue may still need a future repro-backed runtime fix even after diagnostics/docs hardening lands
 
 ### analogjs/analog#2092 OXC tooling adoption
 
