@@ -31,14 +31,13 @@ Planning branch policy:
 ### Must fix before stable
 
 - [ ] `analogjs/analog#2229` Refactor stylesheet pipeline / Tailwind v4 / HMR
-- [ ] `analogjs/analog#2172` blog-app root route should redirect to `/blog`
 - [ ] `analogjs/analog#2165` `contentFileResource` fails during prerender and file-server hydration
 - [ ] `analogjs/analog#2174` typed route generation drops pathless parent layouts
 - [ ] `analogjs/analog#2049` scoped CSS keyframes are not unique in dev mode
 - [ ] `analogjs/analog#2026` Angular HMR / reload behavior is unreliable and underspecified
 - [ ] `analogjs/analog#2178` published `.mjs.map` files are missing
 - [ ] `analogjs/analog#2215` deprecation audit and removal plan
-- [ ] `analogjs/analog#2127` remaining maintainer follow-ups that affect correctness/API behavior
+- [ ] `analogjs/analog#2127` merge `analogjs/analog#2247` and close the remaining current-`alpha` maintainer follow-ups
 - [ ] `analogjs/analog#1939` migration guide for stable v3
 
 ### Should fix before stable
@@ -109,7 +108,7 @@ Opinion: `analogjs/analog#2165` is a blocker; `analogjs/analog#2029` is the oppo
 
 ### Workstream C: Router / typed routes / redirect correctness
 
-Issues: `analogjs/analog#2172`, `analogjs/analog#2174`, `analogjs/analog#2044`, correctness items from `analogjs/analog#2127`  
+Issues: `analogjs/analog#2174`, `analogjs/analog#2044`, correctness items from `analogjs/analog#2127`  
 Primary packages:
 
 - `packages/platform/src/lib/route-manifest.ts`
@@ -197,7 +196,7 @@ Open PR context:
 
 #### `analogjs/analog#2172` [AnalogJS v3] blog-app index route does not redirect to /blog
 
-Status: `must fix before stable`
+Status: `closed upstream`
 
 Files:
 
@@ -207,7 +206,7 @@ Files:
 - `packages/platform/src/lib/route-generation-plugin.ts`
 - `packages/platform/src/lib/route-manifest.ts`
 
-Opinion: the app currently uses a client-only navigation workaround while the template still shows the intended metadata-based redirect. Fix redirect-only route handling in the route pipeline, restore the metadata route in the app, and re-enable the e2e.
+Opinion: the issue was closed upstream on 2026-04-05. The linked PR [analogjs/analog#2241](https://github.com/analogjs/analog/pull/2241) is still open, but this tracker should no longer treat `analogjs/analog#2172` as unresolved release-gate work.
 
 #### `analogjs/analog#2165` [AnalogJS v3] `contentFileResource` does not resolve during prerender or file-server hydration
 
@@ -297,23 +296,19 @@ Opinion: v3 stable should ship with an explicit deprecation posture. Inventory e
 
 #### `analogjs/analog#2127` [AnalogJS v3] Track follow-ups and feedback from maintainer
 
-Status: `must fix before stable` for the correctness/API items; `defer` for the future enhancements
+Status: `in progress` via open PR `analogjs/analog#2247`; close after merge if maintainers agree the issue is now scoped to current `alpha`
 
 Files:
 
 - `packages/router/src/lib/request-context.ts`
 - `packages/router/package.json`
-- `packages/router/src/lib/define-server-route.ts`
-- `packages/router/src/lib/tanstack-query`
-- `apps/tanstack-query-app`
 
-Opinion: only a subset is truly release-critical. The must-fix items are:
+Opinion: only the current-`alpha` correctness and packaging items are still actionable. They are now covered by open PR `analogjs/analog#2247`:
 
 - SSR query-param forwarding in `requestContextInterceptor`
 - a clear published-consumer story for `@standard-schema/spec`
-- mutually exclusive `defineServerRoute` option shapes
 
-The “upstream to TanStack Query” and future resource API ideas are post-stable work.
+The older `defineServerRoute` / TanStack Query bridge follow-ups referenced in historical comments are not present on the live `alpha` tip and should not block closure.
 
 #### `analogjs/analog#1939` AnalogJS 2.0 migration guide
 
@@ -769,49 +764,6 @@ Risks / notes:
 - This touches both modern and compatibility code paths. Do not “fix” only the Compilation API path and leave the legacy path divergent.
 - Keep the public API stable for v3; the work should mostly be behavioral hardening, not new surface area.
 
-### `analogjs/analog#2172` blog-app root route redirect
-
-Root cause / working theory:
-
-- The route generation path appears to assume a page file needs a component-like export to survive manifest generation.
-- Redirect-only route metadata works in the template app but not in `apps/blog-app`, which currently uses client-side navigation as a workaround.
-- The disabled e2e strongly suggests this is a route-generation/runtime interpretation bug, not a blog-app-only bug.
-
-Desired end state:
-
-- Redirect-only file routes are preserved in route generation.
-- `apps/blog-app/src/app/pages/index.page.ts` can match the template's metadata-only redirect style.
-- The blog app redirects correctly during SSR, prerendered output, and client navigation.
-
-Execution plan:
-
-1. Compare the generated route data for:
-   - `apps/blog-app/src/app/pages/index.page.ts`
-   - `packages/create-analog/template-blog/src/app/pages/index.page.ts`
-2. Trace where redirect-only routes are dropped or downgraded in:
-   - route discovery
-   - route manifest generation
-   - route codegen/runtime consumption
-3. Update route-generation logic so `routeMeta.redirectTo` is sufficient for route preservation.
-4. Replace the client `Router.navigateByUrl()` workaround in the blog app with metadata-only redirect config.
-5. Re-enable the blocked Playwright assertion in `apps/blog-app-e2e/tests/app.spec.ts`.
-
-Instrumentation:
-
-- `analog:platform:routes`
-- `analog:platform:typed-router`
-- If runtime route output is still ambiguous, temporarily log route meta preservation at the generation boundary using existing `debugRoutes` / `debugTypedRouter`.
-
-Verification:
-
-- Re-enable `analogjs/analog#2172` e2e.
-- Add a focused generation/regression test around redirect-only root routes.
-- Verify redirect behavior in dev, build, and static preview.
-
-Risks / notes:
-
-- Do not “fix” this by preserving only the blog-app path. The rule must work for redirect-only file routes generically.
-
 ### `analogjs/analog#2165` `contentFileResource` prerender / hydration failure
 
 Root cause / working theory:
@@ -1086,26 +1038,22 @@ Risks / notes:
 
 Root cause / working theory:
 
-- This is a tracker issue, not a single bug. The release-relevant pieces are:
+- This is a tracker issue, not a single bug.
+- On the current `alpha` tip, the remaining actionable pieces are:
   - SSR query param forwarding
   - `@standard-schema/spec` consumer story
-  - `defineServerRoute` API cleanup
 
 Desired end state:
 
-- The correctness/API debt from the merged server-route/TanStack work is resolved without broadening v3 scope.
+- Merge `analogjs/analog#2247`, then close the tracker without broadening v3 scope.
 
 Execution plan:
 
-1. Split the issue into three execution subtracks in the eventual implementation:
-   - `requestContextInterceptor` fix
-   - published type dependency strategy
-   - `defineServerRoute` mutual-exclusivity cleanup
-2. For `requestContextInterceptor`, merge `req.params` into the Nitro fetch param object rather than forcing URL-embedded workarounds.
-3. For the Standard Schema dependency, choose one strategy and make it enforceable:
-   - regular dependency/peer surface
-   - emitted type inlining/elision
-4. For `defineServerRoute`, enforce exclusivity with types first and runtime warning second.
+1. Keep `analogjs/analog#2247` narrowly scoped to:
+   - `requestContextInterceptor` param forwarding
+   - explicit `@standard-schema/spec` peer dependency
+   - null-safe handling of `request.params.getAll()`
+2. Merge the PR and close the issue if maintainers agree the tracker now reflects only current-`alpha` work.
 
 Instrumentation:
 
@@ -1900,7 +1848,7 @@ Status convention:
   | Issue | Status | Difficulty | Implementation branch | Base branch | GitHub update target once solved | Notes |
   | --- | --- | ---: | --- | --- | --- | --- |
   | `analogjs/analog#2229` | Planned | 8 | `feat/2229-stylesheet-pipeline` | `analogjs/alpha` | Issue closeout comment; possibly update or close draft [analogjs/analog#2204](https://github.com/analogjs/analog/pull/2204) as docs follow-up | [analogjs/analog#2204](https://github.com/analogjs/analog/pull/2204) is docs-only now; implementation history points at [analogjs/analog#2226](https://github.com/analogjs/analog/pull/2226) |
-  | `analogjs/analog#2172` | Planned | 4 | `fix/2172-blog-root-redirect` | `analogjs/alpha` | Issue closeout comment | Re-enable blocked e2e in the fixing PR |
+  | `analogjs/analog#2172` | Closed upstream | 4 | `fix/2172-blog-root-redirect` | `analogjs/alpha` | None | Issue closed on 2026-04-05. Open PR [analogjs/analog#2241](https://github.com/analogjs/analog/pull/2241) may still need independent maintainer disposition. |
   | `analogjs/analog#2165` | Planned | 8 | `fix/2165-content-resource-prerender-hydration` | `analogjs/alpha` | Issue closeout comment | Preserve thread context from <https://github.com/analogjs/analog/issues/2165#issuecomment-4107403358> |
   | `analogjs/analog#2174` | Planned | 7 | `fix/2174-pathless-layout-typed-routes` | `analogjs/alpha` | Issue closeout comment | Typed-routes hardening item |
   | `analogjs/analog#2049` | Planned | 8 | `fix/2049-dev-keyframe-scoping` | `analogjs/alpha` | Issue closeout comment | Dev/prod stylesheet parity bug |
@@ -1946,7 +1894,7 @@ Status convention:
 
 ### Comment URLs Worth Keeping Even If The Cache Is Deleted
 
-- `analogjs/analog#2127`: <https://github.com/analogjs/analog/issues/2127#issuecomment-4187640151>
+- `analogjs/analog#2127`: <https://github.com/analogjs/analog/issues/2127#issuecomment-4189209410>
 - `analogjs/analog#2044`: <https://github.com/analogjs/analog/issues/2044#issuecomment-4107833684>
 - `analogjs/analog#2038`: <https://github.com/analogjs/analog/issues/2038#issuecomment-4107135282>
 - `analogjs/analog#2035`: <https://github.com/analogjs/analog/issues/2035#issuecomment-4127412595>
@@ -2307,27 +2255,8 @@ When an area has no current logger, the plan below calls out the exact `createDe
 ### analogjs/analog#2172 blog-app root redirect
 
 - Current state:
-  - branch `fix/2172-blog-root-redirect`
-  - open PR: [analogjs/analog#2241](https://github.com/analogjs/analog/pull/2241)
-  - current `alpha` behavior already accepts redirect-only page modules, so the active fix removes the app-level navigation workaround and restores the metadata-based redirect plus the blocked e2e assertion
-
-- Root cause analysis:
-  - `apps/blog-app/src/app/pages/index.page.ts` currently uses browser navigation in `ngOnInit`, while the template blog uses route metadata
-  - the app drifted to a client-side workaround even though the current `alpha` route pipeline now accepts redirect-only page modules
-- Desired end result:
-  - metadata-only redirect route works in app and generated templates
-- Implementation plan:
-  - restore the blog app to the metadata-only redirect route used by the template
-  - re-enable the `/ -> /blog` e2e assertion
-  - only revisit framework internals if a fresh regression shows redirect-only modules are being dropped again
-- Instrumentation:
-  - `analog:platform:typed-router`
-  - add temporary `analog:platform:routes` logging if redirect files are being skipped before manifest generation
-- Regression tests:
-  - re-enable `apps/blog-app-e2e/tests/app.spec.ts`
-  - add unit coverage for redirect-only route files
-- Risks:
-  - redirect semantics may collide with index/layout handling if route classification is too coarse
+  - issue [analogjs/analog#2172](https://github.com/analogjs/analog/issues/2172) was closed on 2026-04-05
+  - open PR [analogjs/analog#2241](https://github.com/analogjs/analog/pull/2241) remains, but this tracker should treat the issue itself as no longer active release-gate work
 
 ### analogjs/analog#2174 Pathless parent layouts collide in typed route generation
 
@@ -2370,14 +2299,14 @@ When an area has no current logger, the plan below calls out the exact `createDe
 
 - Root cause analysis:
   - this is a tracker issue with a mix of must-fix correctness and future design work
-  - current evidence shows `packages/router/src/lib/request-context.ts` still forwards only `requestUrl.searchParams`
+  - the live `alpha` branch only still exposes the request-param forwarding and published-type dependency parts
 - Desired end result:
-  - resolve the correctness/API items and move future ideas to their own issues
+  - merge `analogjs/analog#2247` and close the issue
 - Implementation plan:
   - in `request-context.ts`, merge `req.params` into the Nitro fetch params object instead of passing only `URLSearchParams`
-  - verify whether `@standard-schema/spec` should remain a runtime dependency or be erased from public `.d.ts` surfaces
-  - make `defineServerRoute` overloads reject `input` together with `query`/`body`
-  - split `provideAnalogQuery` scope and TanStack-upstream discussions into post-stable follow-ups
+  - keep the `request.params.getAll()` handling null-safe
+  - declare `@standard-schema/spec` as an explicit peer dependency for `@analogjs/router`
+  - leave historical `defineServerRoute` and TanStack Query bridge ideas out of the close criteria because those APIs are not present on the current `alpha` tip
 - Instrumentation:
   - add `createDebug('analog:router:request-context')` around SSR fetch param shaping
   - use `analog:nitro:ssr` in end-to-end testing to see the server side of the request path
@@ -2746,8 +2675,8 @@ When an area has no current logger, the plan below calls out the exact `createDe
 
 ## Execution Order Recommendation
 
-1. `analogjs/analog#2229`, `analogjs/analog#2172`, `analogjs/analog#2165`, `analogjs/analog#2174`, `analogjs/analog#2026`
-2. `analogjs/analog#2049`, `analogjs/analog#2178`, `analogjs/analog#2127`, `analogjs/analog#2215`, `analogjs/analog#1939`
+1. `analogjs/analog#2229`, `analogjs/analog#2165`, `analogjs/analog#2174`, `analogjs/analog#2026`, `analogjs/analog#2049`
+2. `analogjs/analog#2178`, `analogjs/analog#2127`, `analogjs/analog#2215`, `analogjs/analog#1939`, `analogjs/analog#2222`
 3. `analogjs/analog#2222`, `analogjs/analog#2220`, `analogjs/analog#2218`, `analogjs/analog#2173`, `analogjs/analog#2185`, `analogjs/analog#2074`
 4. docs/support cleanup: `analogjs/analog#2029`, `analogjs/analog#2159`, `analogjs/analog#2076`, `analogjs/analog#2036`
 5. verify-close candidates: `analogjs/analog#2177`, `analogjs/analog#2168`, `analogjs/analog#2044`, `analogjs/analog#2092`
