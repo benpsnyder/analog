@@ -19,7 +19,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'pnpm exec nx serve tailwind-debug-app --port 43040',
+    command: 'pnpm exec vite --config apps/tailwind-debug-app/vite.config.ts',
     url: 'http://localhost:43040',
     reuseExistingServer: !process.env['CI'],
     timeout: 120_000,

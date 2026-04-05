@@ -82,6 +82,7 @@ export default defineConfig(({ mode }) => {
       analog({
         apiPrefix: 'api',
         hmr: true,
+        ssr: false,
         experimental: {
           useAngularCompilationAPI: true,
         },
@@ -114,6 +115,7 @@ export default defineConfig(({ mode }) => {
       'import.meta.vitest': mode !== 'production',
     },
     server: {
+      port: 43040,
       fs: {
         allow: ['.'],
       },

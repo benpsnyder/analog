@@ -31,22 +31,10 @@
       }
     },
     "serve": {
-      "executor": "@nx/vite:dev-server",
-      "dependsOn": ["platform:build", "router:build"],
-      "defaultConfiguration": "development",
+      "executor": "nx:run-commands",
+      "dependsOn": [],
       "options": {
-        "buildTarget": "tailwind-debug-app:build",
-        "buildLibsFromSource": true,
-        "port": 43040
-      },
-      "configurations": {
-        "development": {
-          "buildTarget": "tailwind-debug-app:build:development",
-          "hmr": true
-        },
-        "production": {
-          "buildTarget": "tailwind-debug-app:build:production"
-        }
+        "command": "pnpm exec vite --config apps/tailwind-debug-app/vite.config.ts"
       }
     },
     "lint": {
@@ -62,7 +50,6 @@
     },
     "test": {
       "executor": "@nx/vitest:test",
-      "dependsOn": ["platform:build", "router:build"],
       "outputs": ["{projectRoot}/coverage"]
     }
   }

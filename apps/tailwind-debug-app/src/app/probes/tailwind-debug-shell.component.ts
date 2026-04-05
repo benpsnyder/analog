@@ -1,11 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { DebugStreamPanelComponent } from './debug-stream-panel.component';
 import { StyleProbeComponent } from './style-probe.component';
 
 @Component({
   selector: 'app-tailwind-debug-shell',
   standalone: true,
-  imports: [StyleProbeComponent, DebugStreamPanelComponent],
+  imports: [StyleProbeComponent],
   template: `
     <main class="shell" data-testid="debug-shell">
       <section class="hero">
@@ -22,7 +21,6 @@ import { StyleProbeComponent } from './style-probe.component';
 
       <section class="workspace">
         <app-tailwind-style-probe />
-        <app-tailwind-debug-stream-panel />
       </section>
     </main>
   `,
