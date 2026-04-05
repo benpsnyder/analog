@@ -1872,7 +1872,7 @@ Status convention:
   | `analogjs/analog#2127` | Planned | 6 | `fix/2127-router-followups` | `analogjs/alpha` | Tracker issue comment, and possibly issue body refresh if it remains active | Current tracker comment: <https://github.com/analogjs/analog/issues/2127#issuecomment-4187640151> |
   | `analogjs/analog#1939` | Planned | 3 | `docs/1939-v3-migration-guide` | `analogjs/alpha` | Issue closeout comment with final migration-guide URL | Latest migration thread endpoint: <https://github.com/analogjs/analog/issues/1939#issuecomment-3536712188> |
   | `analogjs/analog#2222` | Planned | 7 | `fix/2222-vitest-isolation` | `analogjs/alpha` | Issue closeout comment | Latest thread endpoint: <https://github.com/analogjs/analog/issues/2222#issuecomment-4183839053> |
-  | `analogjs/analog#2220` | In progress | 3 | `fix/2220-snapshot-whitespace` | `analogjs/alpha` | Issue closeout comment | Serializer cleanup |
+  | `analogjs/analog#2220` | In progress | 3 | `fix/2220-snapshot-whitespace` | `analogjs/alpha` | Issue closeout comment | Draft PR: [analogjs/analog#2237](https://github.com/analogjs/analog/pull/2237) |
   | `analogjs/analog#2218` | Planned | 4 | `fix/2218-snapshot-generated-ids` | `analogjs/alpha` | Issue closeout comment | Serializer cleanup |
   | `analogjs/analog#2173` | In progress | 3 | `fix/2173-setup-vitest-legacy-path` | `analogjs/alpha` | Issue closeout comment | Draft PR: [analogjs/analog#2235](https://github.com/analogjs/analog/pull/2235). Covers both `ng update` and `nx migrate` for the legacy import path, and stops stale `setup-vitest` artifacts from being republished |
   | `analogjs/analog#2185` | Closed upstream | 2 | `fix/2185-release-lockfile-regeneration` | `analogjs/alpha` | None | Issue was closed upstream before a branch was carried forward |
@@ -2482,6 +2482,10 @@ When an area has no current logger, the plan below calls out the exact `createDe
 
 ### analogjs/analog#2220 Snapshot trailing whitespace
 
+- Current state:
+  - branch `fix/2220-snapshot-whitespace`
+  - draft PR: [analogjs/analog#2237](https://github.com/analogjs/analog/pull/2237)
+  - serializer now trims trailing spaces at line ends and collapses repeated blank lines in the final printed snapshot output
 - Root cause analysis:
   - `createAngularFixtureSnapshotSerializer()` simply prints a DOM node from `DOMParser`
   - formatting normalization is minimal; downstream serializers remove attributes/comments but do not normalize whitespace
@@ -2495,6 +2499,9 @@ When an area has no current logger, the plan below calls out the exact `createDe
   - add `createDebug('analog:vitest:snapshots')` around pre/post normalization text in `angular-fixture.ts`
 - Regression tests:
   - add inline snapshot cases showing trailing-space removal and blank-line collapse
+- Verification completed:
+  - `pnpm exec vitest run --config packages/vitest-angular/vite.config.ts packages/vitest-angular/src/lib/snapshot-serializers/angular-fixture.spec.ts`
+  - `pnpm nx build vitest-angular`
 - Risks:
   - over-normalization could hide legitimate whitespace-sensitive content
 
@@ -2568,6 +2575,10 @@ When an area has no current logger, the plan below calls out the exact `createDe
 
 ### analogjs/analog#2074 Storybook `componentWrapperDecorator` in Vitest
 
+- Current state:
+  - branch `fix/2074-storybook-component-wrapper-decorator`
+  - draft PR: [analogjs/analog#2236](https://github.com/analogjs/analog/pull/2236)
+  - note: the same fix previously merged via [analogjs/analog#2086](https://github.com/analogjs/analog/pull/2086), but onto `beta` rather than `alpha`
 - Root cause analysis:
   - `packages/storybook-angular/src/lib/testing.ts` omits `applyDecorators` from `renderAnnotations`
   - the issue thread points directly at the missing piece
@@ -2580,6 +2591,9 @@ When an area has no current logger, the plan below calls out the exact `createDe
   - add `createDebug('analog:storybook:testing')` only if render-annotation debugging is needed
 - Regression tests:
   - new unit/spec for `setProjectAnnotations()` behavior
+- Verification completed:
+  - `pnpm nx test storybook-angular --runTestsByPath packages/storybook-angular/src/lib/testing.spec.ts`
+  - `pnpm nx build storybook-angular`
 - Risks:
   - low; this looks like a targeted compatibility fix
 
