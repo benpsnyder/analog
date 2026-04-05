@@ -1874,17 +1874,17 @@ Status convention:
   | `analogjs/analog#2222` | Planned | 7 | `fix/2222-vitest-isolation` | `analogjs/alpha` | Issue closeout comment | Latest thread endpoint: <https://github.com/analogjs/analog/issues/2222#issuecomment-4183839053> |
   | `analogjs/analog#2220` | Planned | 3 | `fix/2220-snapshot-whitespace` | `analogjs/alpha` | Issue closeout comment | Serializer cleanup |
   | `analogjs/analog#2218` | Planned | 4 | `fix/2218-snapshot-generated-ids` | `analogjs/alpha` | Issue closeout comment | Serializer cleanup |
-  | `analogjs/analog#2173` | Planned | 3 | `fix/2173-setup-vitest-legacy-path` | `analogjs/alpha` | Issue closeout comment | Reference maintainer guidance at <https://github.com/analogjs/analog/issues/2173#issuecomment-4119092949> |
-  | `analogjs/analog#2185` | Planned | 2 | `fix/2185-release-lockfile-regeneration` | `analogjs/alpha` | Issue closeout comment | Simple release automation hardening |
+  | `analogjs/analog#2173` | In progress | 3 | `fix/2173-setup-vitest-legacy-path` | `analogjs/alpha` | Issue closeout comment | Fix committed locally; build no longer republishes stale `setup-vitest` artifacts. Reference maintainer guidance at <https://github.com/analogjs/analog/issues/2173#issuecomment-4119092949> |
+  | `analogjs/analog#2185` | Closed upstream | 2 | `fix/2185-release-lockfile-regeneration` | `analogjs/alpha` | None | Issue was closed upstream before a branch was carried forward |
   | `analogjs/analog#2074` | Planned | 4 | `fix/2074-storybook-component-wrapper-decorator` | `analogjs/alpha` | Issue closeout comment | Repro thread endpoint: <https://github.com/analogjs/analog/issues/2074#issuecomment-3963819693> |
   | `analogjs/analog#2029` | Planned | 5 | `fix/2029-mermaid-shiki-oom` | `analogjs/alpha` | Issue closeout comment and docs link | Latest repro/investigation endpoint: <https://github.com/analogjs/analog/issues/2029#issuecomment-4046690307> |
-  | `analogjs/analog#2159` | Planned | 2 | `docs/2159-remove-agx-references` | `analogjs/alpha` | Issue closeout comment | Repo cleanup only |
+  | `analogjs/analog#2159` | Pending Close (Completed) | 2 | `docs/2159-remove-agx-references` | `analogjs/alpha` | Issue closeout comment | Branch was later repurposed for `analogjs/analog#2168`, so this now needs a maintainer closeout note rather than a dedicated PR |
   | `analogjs/analog#2076` | Planned | 2 | `docs/2076-remove-standalone-true` | `analogjs/alpha` | Issue closeout comment | Existing volunteer comment: <https://github.com/analogjs/analog/issues/2076#issuecomment-3935674971> |
-  | `analogjs/analog#2036` | Planned | 2 | `docs/2036-ai-integrations` | `analogjs/alpha` | Issue closeout comment with docs URL | Docs-only |
-  | `analogjs/analog#2177` | Verify and close | 1 | `chore/2177-verify-http2-pseudo-headers` | `analogjs/alpha` | Issue closeout comment explicitly saying current code was verified | Already appears fixed in repo |
-  | `analogjs/analog#2168` | Verify and close | 2 | `chore/2168-verify-angular-schematic-compat` | `analogjs/alpha` | Issue closeout comment explicitly saying current package shape/published behavior was verified | Already appears fixed in repo |
+  | `analogjs/analog#2036` | Pending Close (Completed) | 2 | `docs/2036-ai-integrations` | `analogjs/alpha` | Issue closeout comment with docs URL | Draft PR: [analogjs/analog#2234](https://github.com/analogjs/analog/pull/2234) |
+  | `analogjs/analog#2177` | In progress | 1 | `chore/2177-verify-http2-pseudo-headers` | `analogjs/alpha` | Issue closeout comment explicitly saying current code was verified | Draft PR: [analogjs/analog#2233](https://github.com/analogjs/analog/pull/2233) |
+  | `analogjs/analog#2168` | In progress | 2 | `docs/2159-remove-agx-references` | `analogjs/alpha` | Issue closeout comment explicitly saying current package shape/published behavior was verified | Repurposed onto draft PR: [analogjs/analog#2231](https://github.com/analogjs/analog/pull/2231) |
   | `analogjs/analog#2044` | Verify and close | 6 | `chore/2044-typed-routing-umbrella-closeout` | `analogjs/alpha` | Issue closeout comment referencing the prior typed-routes status update | Canonical comment: <https://github.com/analogjs/analog/issues/2044#issuecomment-4107833684> |
-  | `analogjs/analog#2092` | Verify and close | 2 | `chore/2092-oxc-followup-closeout` | `analogjs/alpha` | Issue closeout or re-scope comment referencing the OXC summary comment | Canonical summary: <https://github.com/analogjs/analog/issues/2092#issuecomment-4062220933> |
+  | `analogjs/analog#2092` | Pending Close (Completed) | 2 | `chore/2092-oxc-followup-closeout` | `analogjs/alpha` | Issue closeout or re-scope comment referencing the OXC summary comment | Closeout comment posted at <https://github.com/analogjs/analog/issues/2092#issuecomment-4188471667>; maintainer close still required |
   | `analogjs/analog#2227` | Deferred | 8 | `feat/2227-style-dictionary-support` | `analogjs/alpha` | Issue comment only unless feature is actively implemented | Latest design discussion endpoint: <https://github.com/analogjs/analog/issues/2227#issuecomment-4187347062> |
   | `analogjs/analog#2213` | In progress | 8 | `ng-client-hydration` | `analogjs/alpha` | Update issue and draft [analogjs/analog#2212](https://github.com/analogjs/analog/pull/2212) | Active WIP is [analogjs/analog#2212](https://github.com/analogjs/analog/pull/2212) |
   | `analogjs/analog#2189` | Deferred | 9 | `feat/2189-runtime-i18n-localize` | `analogjs/alpha` | Issue comment only unless scope becomes active | Broad cross-package feature |
@@ -2167,6 +2167,9 @@ When an area has no current logger, the plan below calls out the exact `createDe
 
 ### analogjs/analog#2159 Remove `.agx` references
 
+- Current state:
+  - completed in the earlier changelog cleanup
+  - track as `Pending Close (Completed)` because branch `docs/2159-remove-agx-references` was repurposed for `analogjs/analog#2168`
 - Root cause analysis:
   - `.agx` was a removed experiment, but references remain in changelog/docs/history
 - Desired end result:
@@ -2204,6 +2207,9 @@ When an area has no current logger, the plan below calls out the exact `createDe
 
 ### analogjs/analog#2036 AI integrations docs
 
+- Current state:
+  - completed on branch `docs/2036-ai-integrations`
+  - draft PR: [analogjs/analog#2234](https://github.com/analogjs/analog/pull/2234)
 - Root cause analysis:
   - docs already emit `llms.txt` and `llms-full.txt`, but there is no focused docs page explaining AI integration use cases
 - Desired end result:
@@ -2358,6 +2364,9 @@ When an area has no current logger, the plan below calls out the exact `createDe
 
 ### analogjs/analog#2177 HTTP/2 pseudo-header crash
 
+- Current state:
+  - verified on branch `chore/2177-verify-http2-pseudo-headers`
+  - draft PR: [analogjs/analog#2233](https://github.com/analogjs/analog/pull/2233)
 - Root cause analysis:
   - already fixed in `packages/vite-plugin-nitro/src/lib/utils/node-web-bridge.ts` by skipping keys starting with `:`
 - Desired end result:
@@ -2373,6 +2382,9 @@ When an area has no current logger, the plan below calls out the exact `createDe
 
 ### analogjs/analog#2168 Angular schematic compatibility
 
+- Current state:
+  - verified on branch `docs/2159-remove-agx-references`
+  - draft PR repurposed to: [analogjs/analog#2231](https://github.com/analogjs/analog/pull/2231)
 - Root cause analysis:
   - repo shape suggests the compatibility work is already in place
 - Desired end result:
@@ -2508,6 +2520,10 @@ When an area has no current logger, the plan below calls out the exact `createDe
 
 ### analogjs/analog#2173 legacy `setup-vitest` import path
 
+- Current state:
+  - maintainer guidance is to remove the old export path and rely on `@analogjs/vitest-angular` plus migration
+  - `packages/vite-plugin-angular` already contains `migrate-setup-vitest`, which rewrites imports to `@analogjs/vitest-angular/setup-zone` and installs `@analogjs/vitest-angular`
+  - branch `fix/2173-setup-vitest-legacy-path` now sets `emptyOutDir: true` in the package build so stale `dist/setup-vitest.*` files are not republished
 - Root cause analysis:
   - the old path belongs to `@analogjs/vite-plugin-angular`, but the active setup now lives in `@analogjs/vitest-angular`
   - the package manifest no longer exposes a correct dependency story for the old path
@@ -2523,11 +2539,16 @@ When an area has no current logger, the plan below calls out the exact `createDe
 - Regression tests:
   - extend `migrate-setup-vitest.spec.ts`
   - verify docs point only to the new path
+- Verification completed:
+  - `pnpm nx test vite-plugin-angular --runTestsByPath packages/vite-plugin-angular/migrations/migrate-setup-vitest/migrate-setup-vitest.spec.ts`
+  - `pnpm nx build vite-plugin-angular`
 - Risks:
   - leaving the legacy path half-supported creates confusing install failures for stable users
 
 ### analogjs/analog#2185 Release lockfile regeneration
 
+- Current state:
+  - the issue was closed upstream before a repo-side fix landed here
 - Root cause analysis:
   - `release.config.ts` commits `pnpm-lock.yaml`, but no prepare step regenerates it after version replacement
 - Desired end result:
@@ -2582,6 +2603,9 @@ When an area has no current logger, the plan below calls out the exact `createDe
 
 ### analogjs/analog#2092 OXC tooling adoption
 
+- Current state:
+  - closeout comment posted at <https://github.com/analogjs/analog/issues/2092#issuecomment-4188471667>
+  - issue still requires maintainer close permissions
 - Root cause analysis:
   - the repo already adopted much of the OXC path; the issue is now mostly about remaining generator/template defaults
 - Desired end result:
