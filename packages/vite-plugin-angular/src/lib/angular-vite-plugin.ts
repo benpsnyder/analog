@@ -99,6 +99,7 @@ import {
 import { TsconfigResolver } from './utils/tsconfig-resolver.js';
 import { cssExtensionStyleResolverPlugin } from './utils/css-extension-resolver.js';
 import { getJsTransformConfigKey, isRolldown } from './utils/rolldown.js';
+import { markModuleSelfAccepting } from './utils/hmr-module.js';
 import {
   toVirtualRawId,
   toVirtualStyleId,
@@ -2627,18 +2628,6 @@ function getDiagnosticsForSourceFile(
     ...semanticDiagnostics,
     ...angularDiagnostics,
   ];
-}
-
-function markModuleSelfAccepting(mod: ModuleNode): ModuleNode {
-  // support Vite 6
-  if ('_clientModule' in mod) {
-    (mod as any)['_clientModule'].isSelfAccepting = true;
-  }
-
-  return {
-    ...mod,
-    isSelfAccepting: true,
-  } as ModuleNode;
 }
 
 /**

@@ -11,6 +11,7 @@ import {
   ResolvedConfig,
   ViteDevServer,
 } from 'vite';
+import { markModuleSelfAccepting } from '../utils/hmr-module.js';
 
 import {
   createAngularCompilation,
@@ -710,7 +711,7 @@ export function compilationAPIPlugin(
 
           return ctx.modules.map((mod) => {
             if (mod.id === ctx.file) {
-              mod.isSelfAccepting = true;
+              return markModuleSelfAccepting(mod);
             }
             return mod;
           });
