@@ -1,3 +1,4 @@
+import { H3Event, getProxyRequestHeaders } from 'nitro/h3';
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -194,8 +195,10 @@ describe('analogNitroPlugin', () => {
           'renderer',
           'createFetch',
           'nitroServerFetch',
+          'H3Event',
+          'getProxyRequestHeaders',
           code,
-        )(renderer, () => vi.fn(), vi.fn());
+        )(renderer, () => vi.fn(), vi.fn(), H3Event, getProxyRequestHeaders);
         const response = await service.fetch(
           new Request('http://localhost/failed'),
         );
@@ -228,8 +231,10 @@ describe('analogNitroPlugin', () => {
         'renderer',
         'createFetch',
         'nitroServerFetch',
+        'H3Event',
+        'getProxyRequestHeaders',
         code,
-      )(renderer, () => vi.fn(), vi.fn());
+      )(renderer, () => vi.fn(), vi.fn(), H3Event, getProxyRequestHeaders);
       const abort = new AbortController();
       const request = new Request('http://localhost/stream?test=1', {
         headers: { 'x-analog-no-streaming': 'true' },

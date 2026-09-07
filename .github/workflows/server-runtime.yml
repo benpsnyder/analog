@@ -9,6 +9,8 @@ on:
       - 'apps/analog-app/**'
       - 'apps/analog-app-e2e/**'
       - 'tools/scripts/server-function-http-smoke.mjs'
+      - 'tools/scripts/router-contract-typecheck.mjs'
+      - 'tools/fixtures/router-contracts/**'
       - 'pnpm-workspace.yaml'
       - 'pnpm-lock.yaml'
       - '.github/workflows/server-runtime.yml'
@@ -34,6 +36,7 @@ jobs:
       - run: corepack enable
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec nx run-many -t test,typecheck,lint -p platform,router
+      - run: pnpm exec nx run router:consumer-types
       - run: pnpm exec nx run analog-app-e2e:server-functions
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm exec nx run analog-app-e2e:e2e
@@ -43,6 +46,8 @@ jobs:
           name: server-runtime-contracts
           path: |
             dist/apps/analog-app/server-function-http-result.json
+            dist/router-contract-types/**/result.json
+            dist/router-contract-types/**/pnpm-lock.yaml
             apps/analog-app-e2e/playwright-report/
             dist/.playwright/apps/analog-app-e2e/output/
           if-no-files-found: warn

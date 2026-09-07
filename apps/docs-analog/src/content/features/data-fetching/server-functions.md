@@ -112,11 +112,20 @@ export default class Checkout {
 
 Both helpers must be called in an injection context, and both dispatch through `HttpClient`, so client `HttpInterceptorFn`s apply and `HttpTestingController` works in tests.
 
+Changing a resource's input or destroying the resource unsubscribes its pending
+browser HTTP request. Imperative callers can pass an optional `AbortSignal` to
+`ServerFnClient.call(fn, input, signal)`. Aborting does not undo a server-side
+write, and mutations are not retried automatically.
+
 ### Hydration
 
 A read resolved while rendering on the server is transferred to the client and used as the resource's first value, so the browser does not refetch it on hydration. This works for `GET` and `POST` reads alike and needs no transfer cache configuration.
 
 During server-side rendering, calls skip HTTP entirely and run in-process in the same request injector as the render.
+
+An aborted in-process read discards its result instead of transferring a stale
+hydration value. It does not interrupt the handler's own asynchronous work.
+Hydration entries distinguish `null` input from an input-less read.
 
 ## Using Dependency Injection
 
@@ -143,6 +152,11 @@ file and use it from `main.server.ts`; having both fails the build as ambiguous.
 Without either file, the HTTP application starts with an empty provider list.
 Request and response tokens are created for each call. Native server functions
 require a Node request/response context.
+
+The dispatcher destroys its child request injector after the handler succeeds or
+fails, including after consuming a returned `Response` body. Request-scoped
+`DestroyRef` callbacks run then; application-scoped services retain their
+application lifetime.
 
 ## Adding Interceptors
 
