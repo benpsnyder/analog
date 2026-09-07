@@ -192,6 +192,11 @@ export function getSidebar(): SidebarNode[] {
           id: 'features/updating/overview',
           label: $localize`:@@sidebar.overview:Overview`,
         },
+        {
+          kind: 'doc',
+          id: 'guides/migrating-v1-to-v2',
+          label: $localize`:@@sidebar.migrating-v1-to-v2:Migrating from Analog v1 to v2`,
+        },
       ],
     },
     {
@@ -202,11 +207,6 @@ export function getSidebar(): SidebarNode[] {
           kind: 'doc',
           id: 'guides/migrating',
           label: $localize`:@@sidebar.migrating:Migrating an Angular app to Analog`,
-        },
-        {
-          kind: 'doc',
-          id: 'guides/migrating-v1-to-v2',
-          label: $localize`:@@sidebar.migrating-v1-to-v2:Migrating from Analog v1 to v2`,
         },
         {
           kind: 'doc',
