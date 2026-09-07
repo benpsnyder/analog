@@ -394,13 +394,13 @@ export function analogNitroPlugin(options: Options = {}): Plugin {
             };
           }
 
-          // Cloudflare Pages/Workers presets anchor their output at
+          // Cloudflare Pages presets anchor their output at
           // `{{rootDir}}/dist` or `{{rootDir}}/.output`, which puts the
           // deploy tree at `apps/<name>/...` for Nx monorepos. Hoist to
           // `<workspaceRoot>/dist/<rootDir>/` so `wrangler pages deploy
           // dist/<rootDir>` from the workspace root finds `_worker.js/`
           // alongside the static assets.
-          if (preset.includes('cloudflare')) {
+          if (preset.includes('cloudflare-pages')) {
             const cfDir = resolve(
               context.workspaceRoot,
               'dist',
