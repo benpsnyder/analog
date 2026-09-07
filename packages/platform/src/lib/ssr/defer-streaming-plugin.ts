@@ -1,14 +1,7 @@
 import type { Plugin } from 'vite';
+import { parseSync, type Argument, type Statement } from 'oxc-parser';
 
-/**
- * Minimum Angular major whose compiled `@angular/core` FESM matches the
- * streaming patch anchors. Incremental hydration is a stable public API from
- * v20 (`withIncrementalHydration`, `@publicApi 20.0`), but v20's FESM inlines
- * the injection anchor's `DeferBlockStateEnd` profiler event to its numeric
- * ordinal, whereas v21+ keeps the symbolic `ProfilerEvent.DeferBlockStateEnd`
- * form the anchor matches on. Keying on the literal ordinal would be fragile
- * (enum values shift between versions), so v21 is the floor.
- */
+/** Minimum Angular major qualified for streaming; the actual runtime shape is checked below. */
 export const MIN_STREAMING_ANGULAR_MAJOR = 21;
 
 /**
@@ -40,60 +33,109 @@ export function streamingSupportedOnAngular(major: number | null): boolean {
  * Returns `null` when the module is not the one carrying the defer runtime, so
  * it is a no-op on every other Angular module.
  */
-export function injectDeferStreamingHook(code: string): string | null {
-  const END_ANCHOR = 'profiler(ProfilerEvent.DeferBlockStateEnd);';
-  if (
-    !code.includes('function applyDeferBlockState(') ||
-    !code.includes(END_ANCHOR)
-  ) {
-    return null;
-  }
+type DeferAnalysis =
+  | { kind: 'not-target' }
+  | { kind: 'patchable'; offset: number }
+  | { kind: 'drifted'; reason: string };
 
-  // Wrap the entire guard — not just the call — so a drifted Angular runtime
-  // that still matches the anchors but renamed these locals fails as a silent
-  // no-op instead of throwing a ReferenceError inside applyDeferBlockState.
+function analyzeDeferRuntime(code: string): DeferAnalysis {
+  if (!code.includes('function applyDeferBlockState('))
+    return { kind: 'not-target' };
+  const parsed = parseSync('angular-core.mjs', code);
+  if (parsed.errors.length)
+    return { kind: 'drifted', reason: 'invalid Angular core JavaScript' };
+  const fn = parsed.program.body.find(
+    (node) =>
+      node.type === 'FunctionDeclaration' &&
+      node.id?.name === 'applyDeferBlockState',
+  );
+  if (!fn || fn.type !== 'FunctionDeclaration' || !fn.body)
+    return { kind: 'not-target' };
+  const names = fn.params
+    .map((param) => (param.type === 'Identifier' ? param.name : ''))
+    .join(',');
+  if (names !== 'newState,lDetails,lContainer,tNode,hostLView')
+    return {
+      kind: 'drifted',
+      reason: 'changed applyDeferBlockState parameters',
+    };
+  const collector = parsed.program.body.some(
+    (node) =>
+      node.type === 'FunctionDeclaration' &&
+      node.id?.name === 'collectNativeNodesInLContainer',
+  );
+  if (!collector)
+    return {
+      kind: 'drifted',
+      reason: 'missing collectNativeNodesInLContainer',
+    };
+  const offset = profilerEndOffset(fn.body.body[fn.body.body.length - 1]);
+  return offset === undefined
+    ? { kind: 'drifted', reason: 'missing DeferBlockStateEnd profiler anchor' }
+    : { kind: 'patchable', offset };
+}
+
+function profilerEndOffset(
+  statement: Statement | undefined,
+): number | undefined {
+  if (
+    statement?.type !== 'ExpressionStatement' ||
+    statement.expression.type !== 'CallExpression'
+  )
+    return;
+  const call = statement.expression;
+  if (
+    call.callee.type !== 'Identifier' ||
+    call.callee.name !== 'profiler' ||
+    call.arguments.length !== 1
+  )
+    return;
+  return isEndEvent(call.arguments[0]) ? statement.start : undefined;
+}
+
+function isEndEvent(event: Argument | undefined): boolean {
+  if (event?.type === 'Literal') return typeof event.value === 'number';
+  return (
+    event?.type === 'MemberExpression' &&
+    !event.computed &&
+    event.object.type === 'Identifier' &&
+    event.object.name === 'ProfilerEvent' &&
+    event.property.type === 'Identifier' &&
+    event.property.name === 'DeferBlockStateEnd'
+  );
+}
+
+function patchDeferRuntime(code: string, offset: number): string {
+  if (code.includes('globalThis.__analogSsrDeferCapture({')) return code;
   const capture =
     `try { if (newState === DeferBlockState.Complete && ` +
     `typeof ngServerMode !== 'undefined' && ngServerMode && ` +
     `typeof globalThis.__analogSsrDeferCapture === 'function') { ` +
     `globalThis.__analogSsrDeferCapture({ ssrUniqueId: lDetails[SSR_UNIQUE_ID], lContainer, hostLView }); } } catch (e) {}\n  `;
-
-  let out = code.replace(END_ANCHOR, capture + END_ANCHOR);
-
-  if (code.includes('function collectNativeNodesInLContainer(')) {
-    out +=
-      '\nglobalThis.__analogSsrInternals = Object.assign(globalThis.__analogSsrInternals || {}, { collectNativeNodesInLContainer });\n';
-  }
-
-  return out;
+  return (
+    code.slice(0, offset) +
+    capture +
+    code.slice(offset) +
+    '\nglobalThis.__analogSsrInternals = Object.assign(globalThis.__analogSsrInternals || {}, { collectNativeNodesInLContainer });\n'
+  );
 }
 
-/**
- * Classify an `@angular/core` module for the streaming patch. The patch anchors
- * on internal symbol names, so when Angular changes those the transform would
- * otherwise become a silent no-op and streaming would degrade to buffered with
- * no signal. This distinguishes "not the target module" (skip quietly) from
- * "this IS the `@defer` runtime module but the anchors drifted" (worth warning).
- */
+export function injectDeferStreamingHook(code: string): string | null {
+  const info = analyzeDeferRuntime(code);
+  return info.kind === 'patchable'
+    ? patchDeferRuntime(code, info.offset)
+    : null;
+}
+
+/** Inspect the named function's final profiler call without depending on enum ordinals. */
 export function inspectAngularCoreModule(
   code: string,
 ):
   | { kind: 'not-target' }
   | { kind: 'patchable' }
   | { kind: 'drifted'; reason: string } {
-  if (!code.includes('function applyDeferBlockState(')) {
-    return { kind: 'not-target' };
-  }
-  const missing: string[] = [];
-  if (!code.includes('profiler(ProfilerEvent.DeferBlockStateEnd);')) {
-    missing.push('DeferBlockStateEnd profiler anchor');
-  }
-  if (!code.includes('function collectNativeNodesInLContainer(')) {
-    missing.push('collectNativeNodesInLContainer');
-  }
-  return missing.length === 0
-    ? { kind: 'patchable' }
-    : { kind: 'drifted', reason: `missing ${missing.join(', ')}` };
+  const info = analyzeDeferRuntime(code);
+  return info.kind === 'patchable' ? { kind: 'patchable' } : info;
 }
 
 /**
@@ -125,7 +167,7 @@ export function deferStreamingPlugin(): Plugin {
       },
       handler(code, _id, options) {
         if (!options?.ssr) return;
-        const info = inspectAngularCoreModule(code);
+        const info = analyzeDeferRuntime(code);
         if (info.kind === 'not-target') return;
         if (info.kind === 'drifted') {
           if (!warnedDrift.has(this.environment.name)) {
@@ -139,8 +181,7 @@ export function deferStreamingPlugin(): Plugin {
           }
           return;
         }
-        const out = injectDeferStreamingHook(code);
-        if (!out) return;
+        const out = patchDeferRuntime(code, info.offset);
         applied.add(this.environment.name);
         return { code: out };
       },

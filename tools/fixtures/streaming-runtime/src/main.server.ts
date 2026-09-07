@@ -3,6 +3,7 @@ import {
   DestroyRef,
   inject,
   provideAppInitializer,
+  provideZoneChangeDetection,
   provideZonelessChangeDetection,
 } from '@angular/core';
 import {
@@ -25,7 +26,9 @@ export default function render(
   return renderStream(App, {
     providers: [
       provideServerRendering(),
-      provideZonelessChangeDetection(),
+      'Zone' in globalThis
+        ? provideZoneChangeDetection()
+        : provideZonelessChangeDetection(),
       provideClientHydration(withIncrementalHydration()),
       { provide: PROBE_ID, useValue: id },
       provideAppInitializer(() => {

@@ -8,6 +8,10 @@ The document head is sent immediately, each `@defer (hydrate …)` block is sent
 the moment it resolves on the server, and the authoritative document arrives
 last, so a slow block never holds back the rest of the page.
 
+Application module assets are preloaded with the shell, but execute only after
+the authoritative body is installed. A failed or incomplete stream therefore
+shows its error view without starting Angular against a missing application root.
+
 :::info Experimental
 
 Streaming SSR is experimental and opt-in. It requires **Angular 21 or later**
@@ -37,6 +41,7 @@ Then use `renderStream` instead of `render` in `main.server.ts`:
 
 ```ts
 // src/main.server.ts
+import '@angular/platform-server/init';
 import { renderStream } from '@analogjs/router/server';
 import { config } from './app/app.config.server';
 import { AppComponent } from './app/app.component';
@@ -130,7 +135,10 @@ An explicit `streaming: true` rule overrides an inherited opt-out. Route policy
 comes from the host's matched rules, not caller-provided headers. Cancelling the
 response body or aborting the host request disposes the rendering platform and
 cancels queued block flushes. Failures after the shell has been sent error the
-stream; they cannot change the already-committed HTTP status.
+stream for direct renderer consumers. The native HTTP adapter opts into a generic
+failure marker so the browser can show an incomplete-document error; it cannot
+change the already-committed HTTP status. Unexpected EOF after the preview
+runtime arrives is handled the same way.
 
 ## Prerendering
 

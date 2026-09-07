@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Run through: pnpm exec nx run platform:streaming-smoke --runtime=all --angular=all
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import {
   cpSync,
   existsSync,
@@ -22,10 +23,14 @@ const { values } = parseArgs({
     angular: { type: 'string', default: 'all' },
   },
 });
-assert.ok(['node', 'bun', 'workerd', 'all'].includes(values.runtime));
+assert.ok(
+  ['node', 'node-zone', 'bun', 'workerd', 'all'].includes(values.runtime),
+);
 assert.ok(['21', '22', 'all'].includes(values.angular));
 const runtimes =
-  values.runtime === 'all' ? ['node', 'bun', 'workerd'] : [values.runtime];
+  values.runtime === 'all'
+    ? ['node', 'node-zone', 'bun', 'workerd']
+    : [values.runtime];
 const majors = values.angular === 'all' ? ['21', '22'] : [values.angular];
 const workspace = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const version = (name) =>
@@ -36,6 +41,7 @@ const output = join(workspace, 'dist/streaming-runtime');
 mkdirSync(output, { recursive: true });
 const root = mkdtempSync(join(output, 'run-'));
 const packed = {};
+const artifacts = [];
 for (const name of ['vite-plugin-angular', 'platform', 'router', 'content']) {
   const cwd = join(workspace, 'packages', name, 'dist');
   const manifest = JSON.parse(readFileSync(join(cwd, 'package.json'), 'utf8'));
@@ -47,6 +53,13 @@ for (const name of ['vite-plugin-angular', 'platform', 'router', 'content']) {
     ).stdout,
   )[0];
   packed[manifest.name] = artifact.filename;
+  artifacts.push({
+    name: manifest.name,
+    version: manifest.version,
+    sha256: createHash('sha256')
+      .update(readFileSync(join(root, artifact.filename)))
+      .digest('hex'),
+  });
 }
 
 function run(cwd, command, args, env = {}) {
@@ -59,17 +72,21 @@ function run(cwd, command, args, env = {}) {
 }
 
 async function nodeHost(project, entry, runtime) {
-  const child = execa(runtime === 'bun' ? 'bun' : process.execPath, [entry], {
-    cwd: project,
-    env: {
-      PORT: '0',
-      NITRO_PORT: '0',
-      HOST: '127.0.0.1',
-      NITRO_HOST: '127.0.0.1',
+  const child = execa(
+    runtime === 'bun' ? 'bun' : process.execPath,
+    runtime === 'node-zone' ? ['--import', 'zone.js/node', entry] : [entry],
+    {
+      cwd: project,
+      env: {
+        PORT: '0',
+        NITRO_PORT: '0',
+        HOST: '127.0.0.1',
+        NITRO_HOST: '127.0.0.1',
+      },
+      reject: false,
+      forceKillAfterDelay: 5000,
     },
-    reject: false,
-    forceKillAfterDelay: 5000,
-  });
+  );
   try {
     const origin = await new Promise((resolveOrigin, reject) => {
       const timer = setTimeout(
@@ -137,6 +154,8 @@ try {
       Object.entries(packed).map(([name, file]) => [name, `file:../${file}`]),
     );
     Object.assign(deps, overrides);
+    if (runtimes.includes('node-zone'))
+      deps['zone.js'] = major === '21' ? '0.15.1' : version('zone.js');
     if (runtimes.includes('workerd')) deps.miniflare = '4.20260730.0';
     writeFileSync(
       join(project, 'package.json'),
@@ -243,7 +262,7 @@ try {
           runtimeVersion:
             runtime === 'bun'
               ? execaSync('bun', ['--version']).stdout.trim()
-              : runtime === 'node'
+              : runtime.startsWith('node')
                 ? process.version
                 : JSON.parse(
                     readFileSync(
@@ -252,6 +271,7 @@ try {
                     ),
                   ).dependencies.workerd,
           ...(runtime === 'workerd' ? { miniflare: deps.miniflare } : {}),
+          ...(runtime === 'node-zone' ? { zone: deps['zone.js'] } : {}),
         });
         console.log(`${runtime}/Angular ${angular}: passed`);
       } finally {
@@ -262,6 +282,7 @@ try {
 } finally {
   writeFileSync(
     join(root, 'result.json'),
-    JSON.stringify({ node: process.version, results }, null, 2) + '\n',
+    JSON.stringify({ node: process.version, artifacts, results }, null, 2) +
+      '\n',
   );
 }
