@@ -193,7 +193,18 @@ Unhandled navigation or page-load errors reject buffered SSR instead of producin
 an empty successful page. The native production wrapper preserves error statuses
 from 400 through 599 and returns a generic, non-cacheable, non-indexable error
 document without server details. A navigation error recovered by a router redirect
-can still render normally.
+can still render normally. If progressive rendering has already sent its shell,
+the HTTP host emits a generic failure trailer and disposes the application; its HTTP status can no
+longer change. The host opts into this framing through `ServerContext.renderErrorsAsHtml`;
+direct renderer calls retain their stream-error behavior by default.
+Use buffered rendering when the page requires its final load status
+before response headers are sent.
+Some HTTP adapters expose an errored stream as ordinary EOF. The progressive
+browser runtime therefore requires the authoritative completion tail; if the
+document ends without it, the preview becomes a generic, non-indexable error view.
+Progressive responses use identity encoding and `Cache-Control: no-store, no-transform`
+so compression cannot hold back the shell or cache an incomplete document.
+Explicitly buffered routes and static assets retain their normal encoding policy.
 
 For Worker builds, Analog respects Nitro's non-Node or `noExternals: true` target
 policy. Dependencies used by generated page-load endpoints, including RxJS, are

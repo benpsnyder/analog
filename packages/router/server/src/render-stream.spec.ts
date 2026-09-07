@@ -24,6 +24,9 @@ vi.mock('./provide-server-context', () => ({ provideServerContext: () => [] }));
 vi.mock('./utils/reset-component-def-tviews', () => ({
   resetComponentDefTViews: vi.fn(),
 }));
+vi.mock('./utils/stream-shell', () => ({
+  createStreamShell: () => '<html><head><title>Shell</title></head><body>',
+}));
 vi.mock('./ssr-navigation', () => ({
   createSsrNavigationTracker: () => ({
     provider: { ɵproviders: [] },

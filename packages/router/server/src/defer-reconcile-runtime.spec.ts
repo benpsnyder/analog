@@ -112,6 +112,25 @@ describe('DEFER_RECONCILE_RUNTIME', () => {
   });
 
   describe('__analogFinalize', () => {
+    it('activates bootstrap modules only after the authoritative body exists', () => {
+      document.body.innerHTML =
+        '<div data-analog-stream></div>' +
+        '<template data-analog-head><script type="module" src="/main.js" nonce="fixture-nonce"></script></template>' +
+        '<template data-analog-authoritative><main id="app">ready</main>' +
+        '<script type="application/json" id="ng-state">{}</script></template>';
+      rt().__analogReconcileHead();
+      expect(document.head.querySelector('script')).toBeNull();
+      rt().__analogFinalize();
+      expect(document.getElementById('app')?.textContent).toBe('ready');
+      const script = document.head.querySelector('script');
+      expect(script?.getAttribute('src')).toBe('/main.js');
+      expect(script?.nonce).toBe('fixture-nonce');
+      expect(script?.async).toBe(false);
+      expect(document.getElementById('ng-state')?.textContent).toBe('{}');
+      rt().__analogFinalize();
+      expect(document.head.querySelectorAll('script')).toHaveLength(1);
+    });
+
     it('swaps the body to the authoritative document', () => {
       document.body.innerHTML =
         '<div data-analog-stream></div>' +
