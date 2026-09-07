@@ -39,6 +39,27 @@ afterAll(async () => {
 });
 
 describe('server functions over Node HTTP', () => {
+  it.each([200, 201, 422])(
+    'preserves a JSON null Response with status %i',
+    async (status) => {
+      const ref = serverFn({ id: 'http-json-null' }, () =>
+        Response.json(null, { status }),
+      );
+      const response = await fetch(new URL(ref.url, await listening.promise));
+      expect(response.status).toBe(status);
+      expect(await response.json()).toBeNull();
+    },
+  );
+
+  it('preserves an empty created response', async () => {
+    const ref = serverFn(
+      { id: 'http-empty-created' },
+      () => new Response(null, { status: 201 }),
+    );
+    const response = await fetch(new URL(ref.url, await listening.promise));
+    expect(response.status).toBe(201);
+    expect(await response.text()).toBe('');
+  });
   it.each([null, '', 'text', false, true, 0, 7, ['a', 1], { nested: true }])(
     'serializes the raw JSON return value %j',
     async (value) => {
