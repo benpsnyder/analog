@@ -45,6 +45,12 @@ For Worker presets, Analog respects Nitro's `node: false` or `noExternals: true`
 dependency policy. Node-specific externalization remains enabled for Node
 targets; this does not make Node-only application dependencies Worker-compatible.
 
+Cloudflare Module and Durable Worker presets also retain Nitro's separate server
+and public asset directories. Use the generated Wrangler configuration when
+deploying them. Cloudflare Pages keeps its `_worker.js` convention; that Pages
+layout must not be applied to Module Workers because their asset uploader would
+include server files.
+
 ## Transforming Packages for SSR Compatibility
 
 Some dependencies may need additional transforms to work for server-side rendering. If you receive an error during SSR in development, one option is to add the package(s) to the `ssr.noExternal` array in the Vite config.
