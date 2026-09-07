@@ -251,6 +251,8 @@ try {
         const result = await probeStreamingRuntime({
           origin: host.origin,
           publicDir,
+          entry,
+          entryURL: metadata.serverEntry,
           label: `${runtime}-${major}`,
         });
         results.push({

@@ -155,6 +155,8 @@ async function browserChecks(origin, label, partial) {
 export async function probeStreamingRuntime({
   origin,
   publicDir,
+  entry,
+  entryURL,
   label,
   browser = true,
 }) {
@@ -209,6 +211,18 @@ export async function probeStreamingRuntime({
   assert.ok(
     readFileSync(join(publicDir, 'sitemap.xml'), 'utf8').includes('/static'),
   );
+  const sourceResponse = await fetch(
+    `${origin}/${entryURL}?id=asset-${label}`,
+    {
+      headers: { 'user-agent': 'Googlebot' },
+      signal: AbortSignal.timeout(10000),
+    },
+  );
+  const publicBytes = Buffer.from(await sourceResponse.arrayBuffer());
+  assert.ok(
+    !publicBytes.equals(readFileSync(entry)),
+    'Static serving must not expose the server entry',
+  );
   const shellEnd =
     normal.html.indexOf(
       '</div>',
@@ -230,6 +244,7 @@ export async function probeStreamingRuntime({
       'silent socket disconnect',
       'Angular resource cleanup',
       'prerender HTML and sitemap',
+      'server entry excluded from static serving',
     ],
   };
 }
