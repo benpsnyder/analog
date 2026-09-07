@@ -14,25 +14,6 @@ export function streamingSupportedOnAngular(major: number | null): boolean {
   return major === null || major >= MIN_STREAMING_ANGULAR_MAJOR;
 }
 
-/**
- * Pure transform that injects the streaming-SSR per-block resolution hook into
- * `@angular/core`'s compiled output. It is the same class of transform as
- * `i18nDefRegistryPlugin` in ./ssr-build-plugin — a string patch of Angular's
- * bundle applied only to SSR builds. Exported separately so it can be unit
- * tested against a bundle string.
- *
- * Two edits, both keyed on single-occurrence anchors in the module that holds
- * the defer runtime:
- *   1. Inside `applyDeferBlockState`, fire `globalThis.__analogSsrDeferCapture`
- *      when a `@defer` block reaches `Complete` on the server, passing the
- *      block's live `lContainer` — this is the per-block resolution signal a
- *      streaming renderer consumes.
- *   2. Expose `collectNativeNodesInLContainer` via `globalThis.__analogSsrInternals`
- *      so the renderer can serialize a block's subtree.
- *
- * Returns `null` when the module is not the one carrying the defer runtime, so
- * it is a no-op on every other Angular module.
- */
 type DeferAnalysis =
   | { kind: 'not-target' }
   | { kind: 'patchable'; offset: number }
@@ -120,6 +101,7 @@ function patchDeferRuntime(code: string, offset: number): string {
   );
 }
 
+/** Inject capture before the named defer function's final profiler call, preserving its original source. */
 export function injectDeferStreamingHook(code: string): string | null {
   const info = analyzeDeferRuntime(code);
   return info.kind === 'patchable'
@@ -187,8 +169,8 @@ export function deferStreamingPlugin(): Plugin {
       },
     },
     buildEnd() {
-      // Nitro's final server bundle consumes the already-transformed SSR
-      // service; it does not load Angular's source module a second time.
+      // Require coverage from the SSR service. A later Nitro rebundle may
+      // also encounter Angular modules imported by endpoint handlers.
       if (this.environment.name !== 'ssr') return;
       if (
         !applied.has(this.environment.name) &&
