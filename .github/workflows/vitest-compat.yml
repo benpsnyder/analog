@@ -30,16 +30,25 @@ jobs:
               name: 'Vitest 5 generated starters',
               case: templates,
               vitest: '5.0.0',
+              vite: workspace,
             }
           - {
               name: 'Vitest 5 Angular builders and browser',
               case: builders,
               vitest: '5.0.0',
+              vite: workspace,
             }
           - {
               name: 'Vitest 4 retained builder compatibility',
               case: builders,
               vitest: '4.1.4',
+              vite: workspace,
+            }
+          - {
+              name: 'Vitest 5 Vite 7 esbuild integration',
+              case: templates,
+              vitest: '5.0.0',
+              vite: '7.0.0',
             }
     steps:
       - uses: actions/checkout@v3
@@ -54,11 +63,11 @@ jobs:
           NX_DAEMON: 'false'
           NX_NO_CLOUD: 'true'
           PLAYWRIGHT_SKIP_BROWSER_GC: '1'
-        run: pnpm exec nx run vitest-angular:consumer-smoke --case=${{ matrix.case }} --vitest=${{ matrix.vitest }}
+        run: pnpm exec nx run vitest-angular:consumer-smoke --case=${{ matrix.case }} --vitest=${{ matrix.vitest }} --vite=${{ matrix.vite }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: vitest-${{ matrix.vitest }}-${{ matrix.case }}
+          name: vitest-${{ matrix.vitest }}-${{ matrix.case }}-vite-${{ matrix.vite }}
           path: |
             dist/vitest-consumer-smoke/**/result.json
             dist/vitest-consumer-smoke/**/pnpm-lock.yaml

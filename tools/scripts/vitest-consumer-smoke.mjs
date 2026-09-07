@@ -12,13 +12,17 @@ const { values } = parseArgs({
   options: {
     case: { type: 'string', default: 'all' },
     vitest: { type: 'string', default: '5.0.0' },
+    vite: { type: 'string', default: 'workspace' },
   },
 });
 if (
   !['all', 'templates', 'builders'].includes(values.case) ||
-  !['5.0.0', '4.1.4'].includes(values.vitest)
+  !['5.0.0', '4.1.4'].includes(values.vitest) ||
+  !['workspace', '7.0.0'].includes(values.vite)
 )
-  throw new Error('Use --case=all|templates|builders and --vitest=5.0.0|4.1.4');
+  throw new Error(
+    'Use --case=all|templates|builders, --vitest=5.0.0|4.1.4, --vite=workspace|7.0.0',
+  );
 if (values.vitest !== '5.0.0' && values.case !== 'builders')
   throw new Error('Older Vitest qualification uses --case=builders');
 
@@ -74,6 +78,8 @@ function install(project, manifest) {
     for (const name of Object.keys(manifest[section] ?? {})) {
       if (localPackages[name]) manifest[section][name] = localPackages[name];
     }
+    if (values.vite !== 'workspace' && manifest[section]?.vite)
+      manifest[section].vite = values.vite;
   }
   manifest.pnpm = {
     ...manifest.pnpm,
@@ -158,7 +164,7 @@ install(project, {
     '@vitest/ui': values.vitest,
     '@vitest/browser-playwright': values.vitest,
     playwright: version('playwright'),
-    vite: version('vite'),
+    vite: values.vite === 'workspace' ? version('vite') : values.vite,
     vitest: values.vitest,
     typescript: version('typescript'),
     jsdom: version('jsdom'),
