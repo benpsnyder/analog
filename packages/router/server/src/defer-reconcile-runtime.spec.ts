@@ -11,6 +11,7 @@ type Runtime = {
   __analogPaint: (id: string) => void;
   __analogReconcileHead: () => void;
   __analogFinalize: () => void;
+  __analogFail: () => void;
 };
 const rt = () => window as unknown as Runtime;
 
@@ -19,6 +20,39 @@ describe('DEFER_RECONCILE_RUNTIME', () => {
     document.head.innerHTML = '';
     document.body.innerHTML = '';
     installRuntime();
+  });
+
+  it('replaces an incomplete streamed document with a non-indexable error view', () => {
+    document.body.innerHTML =
+      '<div data-analog-stream><p>Incomplete preview</p></div>';
+    document.dispatchEvent(new Event('DOMContentLoaded'));
+    expect(
+      document.querySelector('[data-analog-render-error] h1')?.textContent,
+    ).toBe('Unable to load this page');
+    expect(document.querySelector('[data-analog-stream]')).toBeNull();
+    expect(
+      document.querySelector('meta[name="robots"]')?.getAttribute('content'),
+    ).toBe('noindex');
+  });
+
+  it('does not replace a completed authoritative document at EOF', () => {
+    document.body.innerHTML =
+      '<div data-analog-stream></div><template data-analog-authoritative><h1>Complete</h1></template>';
+    rt().__analogFinalize();
+    document.dispatchEvent(new Event('DOMContentLoaded'));
+    expect(document.body.textContent).toBe('Complete');
+    expect(document.querySelector('[data-analog-render-error]')).toBeNull();
+  });
+
+  it('shows a safe error as soon as the failure trailer executes', () => {
+    document.body.innerHTML = '<div data-analog-stream>Preview</div>';
+    rt().__analogFail();
+    expect(
+      document.querySelector('[data-analog-render-error]')?.textContent,
+    ).toContain('Unable to load this page');
+    expect(
+      document.querySelector('meta[name="robots"]')?.getAttribute('content'),
+    ).toBe('noindex');
   });
 
   describe('__analogPaint', () => {

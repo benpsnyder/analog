@@ -16,6 +16,7 @@ import { IncomingMessage, ServerResponse } from 'node:http';
 import { Socket } from 'node:net';
 import { afterEach, describe, expect, it } from 'vitest';
 import { render } from './render';
+import { renderStream } from './render-stream';
 
 @Component({
   selector: 'analogjs-test-root',
@@ -40,7 +41,7 @@ function context(path: string) {
   sockets.push(socket);
   const req = Object.assign(new IncomingMessage(socket), { originalUrl: path });
   req.headers.host = 'localhost';
-  return { req, res: new ServerResponse(req) };
+  return { req, res: new ServerResponse(req), streaming: false };
 }
 afterEach(() => {
   for (const socket of sockets.splice(0)) socket.destroy();
@@ -56,7 +57,10 @@ describe('SSR navigation failures', () => {
       ),
     ).toContain('Standalone render');
   });
-  for (const renderer of [{ name: 'render', create: render }]) {
+  for (const renderer of [
+    { name: 'render', create: render },
+    { name: 'buffered renderStream', create: renderStream },
+  ]) {
     it(`${renderer.name} rejects the original resolver error and disposes its application`, async () => {
       const failure = Object.assign(new Error('private-render-failure'), {
         statusCode: 422,
