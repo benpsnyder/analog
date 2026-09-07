@@ -623,7 +623,9 @@ export default defineHandler(async (event) => {
  *   filesystem. By the time Nitro's bundlers ask for \`#analog/ssr\`, Vite has
  *   already produced \`<buildDir>/vite/services/ssr/<entry>.mjs\`.
  */
-function generateSsrServiceVirtual(nitro: Nitro): string {
+export function generateSsrServiceVirtual(nitro: {
+  options: Pick<Nitro['options'], 'dev' | 'buildDir'>;
+}): string {
   if (nitro.options.dev) {
     return `
 import { fetchViteEnv } from 'nitro/vite/runtime';
