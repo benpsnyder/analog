@@ -53,10 +53,6 @@ launch-templates:
           pnpm install --frozen-lockfile --prefer-offline
 
       - name: Install browsers
-        # Agents run both `test` (Vitest + Chromium shell) and `e2e` (Playwright
-        # + Cypress) tasks, so the full browser superset is installed once. This
-        # is heavier than either old job alone but is required because any agent
-        # may receive either task family.
+        # Vitest and Playwright tasks share the installed browser binaries.
         script: |
           pnpm playwright install --with-deps
-          pnpm cypress install
