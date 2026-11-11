@@ -11,8 +11,15 @@ export class AnchorNavigationDirective {
   private readonly location = inject(Location);
   private readonly router = inject(Router);
 
-  @HostListener('click', ['$event.target'])
-  handleNavigation(element: EventTarget | null): boolean {
+  @HostListener('click', ['$event.target', '$event'])
+  handleNavigation(target: EventTarget | null, event?: MouseEvent): boolean {
+    // Leave clicks the browser owns alone: another handler took it, a
+    // non-primary button, or a modifier that opens a new tab or window.
+    if (event && isBrowserOwnedClick(event)) {
+      return true;
+    }
+    // The click target is often an element nested inside the anchor.
+    const element = target instanceof Element ? target.closest('a') : null;
     if (
       element instanceof HTMLAnchorElement &&
       isInternalUrl(element, this.document) &&
@@ -43,6 +50,17 @@ export class AnchorNavigationDirective {
 
     return true;
   }
+}
+
+function isBrowserOwnedClick(event: MouseEvent): boolean {
+  return (
+    event.defaultPrevented ||
+    event.button !== 0 ||
+    event.ctrlKey ||
+    event.metaKey ||
+    event.shiftKey ||
+    event.altKey
+  );
 }
 
 function hasDownloadAttribute(anchorElement: HTMLAnchorElement): boolean {

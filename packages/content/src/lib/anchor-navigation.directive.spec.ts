@@ -119,6 +119,37 @@ describe('AnchorNavigationDirective', () => {
     expect(router.navigateByUrl).toBeCalledWith('/page?query=analog#section1');
   }));
 
+  it('navigates when the click lands on an element nested in the anchor', fakeAsync(() => {
+    const { router, handleNavigation, selectById } = setup();
+
+    selectById('nested-element').click();
+    tick();
+
+    expect(handleNavigation.mock.results[0].value).toEqual(false);
+    expect(router.navigateByUrl).toBeCalledWith('/nested');
+  }));
+
+  it.each([
+    ['ctrlKey', { ctrlKey: true }],
+    ['metaKey', { metaKey: true }],
+    ['shiftKey', { shiftKey: true }],
+    ['altKey', { altKey: true }],
+    ['a non-primary button', { button: 1 }],
+  ])(
+    'leaves a click with %s to the browser',
+    fakeAsync((_name: string, init: MouseEventInit) => {
+      const { router, handleNavigation, selectById } = setup();
+
+      selectById('relative-page').dispatchEvent(
+        new MouseEvent('click', { bubbles: true, cancelable: true, ...init }),
+      );
+      tick();
+
+      expect(handleNavigation.mock.results[0].value).toEqual(true);
+      expect(router.navigateByUrl).not.toHaveBeenCalled();
+    }),
+  );
+
   it('navigates to a fragment-only anchor using the current page path and search when a <base> element is present', fakeAsync(() => {
     // A <base> element makes the browser resolve a fragment-only href
     // (e.g. href="#section1") against the base URL, not the current
@@ -188,6 +219,9 @@ function setup() {
           Link with Target Self
         </a>
         <a id="relative-root" href="/">Relative Root</a>
+        <a id="link-with-nested-element" href="/nested">
+          <code id="nested-element">Nested</code>
+        </a>
         <a id="absolute-root" href="{{ protocol }}//{{ host }}">
           Absolute Root
         </a>
