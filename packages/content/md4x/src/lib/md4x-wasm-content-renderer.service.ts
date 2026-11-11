@@ -5,6 +5,7 @@ import {
   RenderedContent,
   TableOfContentItem,
 } from '../../../src/lib/content-renderer';
+import { injectHeadingIds } from './md4x-headings';
 import {
   MD4X_RENDERER_OPTIONS,
   Md4xRendererOptions,
@@ -30,14 +31,6 @@ function headingsToToc(
     level: h.level,
     text: h.text,
   }));
-}
-
-function injectHeadingIds(html: string, toc: TableOfContentItem[]): string {
-  let tocIndex = 0;
-  return html.replace(/<h([1-6])>/g, (match, level) => {
-    const item = toc[tocIndex++];
-    return item ? `<h${level} id="${item.id}">` : match;
-  });
 }
 
 /**

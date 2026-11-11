@@ -120,6 +120,23 @@ describe('Md4xContentRendererService', () => {
       expect(result.content).toContain('id="hello-world"');
     });
 
+    it('keeps each id on its own heading after a raw HTML heading', async () => {
+      const renderer = setup();
+      const result = await renderer.render(
+        '# One\n\n<h2>Raw heading</h2>\n\n## Two *em*\n\n## A &amp; B',
+      );
+
+      expect(result.toc.map((heading) => heading.id)).toEqual([
+        'one',
+        'two-em',
+        'a-b',
+      ]);
+      expect(result.content).toContain('<h1 id="one">One</h1>');
+      expect(result.content).toContain('<h2>Raw heading</h2>');
+      expect(result.content).toContain('<h2 id="two-em">Two <em>em</em></h2>');
+      expect(result.content).toContain('<h2 id="a-b">A &amp; B</h2>');
+    });
+
     it('deduplicates heading slugs', async () => {
       const renderer = setup();
       const result = await renderer.render('# Foo\n\n## Foo\n\n### Foo');
